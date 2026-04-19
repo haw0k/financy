@@ -58,6 +58,20 @@ pnpm dev
 
 Visit `http://localhost:3000` and start using the app!
 
+## Available Commands
+
+```bash
+pnpm dev          # Start dev server
+pnpm build       # Production build
+pnpm start       # Start production server
+pnpm lint        # Lint check
+pnpm lint:fix    # Auto-fix lint issues
+pnpm type-check  # TypeScript check
+pnpm format:check # Check formatting
+pnpm format:fix  # Fix formatting
+pnpm clean       # Clean build cache
+```
+
 ## Features
 
 ### Authentication
@@ -138,10 +152,25 @@ transactions
 - **Frontend**: Next.js 16 + React 19 + TypeScript
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
-- **UI Components**: shadcn/ui
+- **UI Components**: shadcn/ui in `components/shadcn/`
+- **Layout Components**: in `components/layout/`
 - **Charts**: Recharts
 - **Styling**: Tailwind CSS v4
 - **Date Handling**: date-fns
+
+### Project Structure
+
+```
+components/
+├── shadcn/       # shadcn/ui components
+│   └── index.ts  # barrel file
+└── layout/       # custom layout components
+    └── index.ts
+app/              # Next.js pages
+lib/              # utils, Supabase client
+hooks/            # custom React hooks
+scripts/          # database migrations
+```
 
 ## Deployment to Vercel
 

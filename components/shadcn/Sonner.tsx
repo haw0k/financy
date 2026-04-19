@@ -22,4 +22,5 @@ const Toaster = ({ ...props }: ToasterProps) => {
   );
 };
 
-export { Toaster };
+export { Toaster as SonnerToaster };
+export { Toaster as default };

@@ -1,2 +1,2 @@
-export * from './ui';
+export * from './shadcn';
 export * from './layout';

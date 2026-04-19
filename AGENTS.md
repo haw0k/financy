@@ -4,15 +4,23 @@
 
 - `pnpm dev` – start dev server
 - `pnpm build` – production build
+- `pnpm start` – start production server
 - `pnpm lint` – lint check
+- `pnpm lint:fix` – lint auto-fix
+- `pnpm type-check` – TypeScript type check
+- `pnpm format:check` – check code formatting
+- `pnpm format:fix` – fix code formatting
+- `pnpm clean` – clean build cache
 - `pnpm lint && pnpm build` – full pre-deploy check
 
 ## Structure
 
 - `app/` – Next.js app router
-- `components/` – UI component library
-- `lib/` – utils, Supabase client, hooks
-- `middleware.ts` – Edge middleware
+- `components/shadcn/` – UI component library (shadcn/ui)
+- `components/layout/` – layout components
+- `lib/` – utils, Supabase client
+- `hooks/` – custom hooks
+- `proxy.ts` – Edge middleware
 
 ## Env
 

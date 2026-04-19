@@ -16,7 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui';
+} from '@/components/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layout';
 

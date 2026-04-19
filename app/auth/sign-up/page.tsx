@@ -1,6 +1,8 @@
 'use client';
 
-import { createClient } from '@/lib/supabase/client';
+import { useState, type SubmitEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Button,
   Card,
@@ -10,10 +12,8 @@ import {
   CardTitle,
   Input,
   Label,
-} from '@/components/ui';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+} from '@/components/shadcn';
+import { createClient } from '@/lib/supabase/client';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -24,7 +24,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);

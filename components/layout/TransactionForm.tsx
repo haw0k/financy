@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn';
 
 interface TransactionFormProps {
   userId: string;

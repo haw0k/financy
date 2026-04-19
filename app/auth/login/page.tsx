@@ -1,10 +1,10 @@
 'use client';
 
-import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Label } from '@/components/ui';
-import Link from 'next/link';
+import { useState, type SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Link from 'next/link';
+import { Button, Input, Label } from '@/components/shadcn';
+import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
