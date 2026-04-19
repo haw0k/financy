@@ -4,14 +4,14 @@ import { User } from '@supabase/supabase-js'
 import { LogOut, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui'
 import { createClient } from '@/lib/supabase/client'
 
 export function Header({ user }: { user: User }) {

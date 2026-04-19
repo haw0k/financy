@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { CategoriesTable } from '@/components/categories-table'
+import { CategoriesTable } from '@/components/layout'
 
 export default async function CategoriesPage() {
   const supabase = await createClient()

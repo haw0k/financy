@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { TransactionsTable } from '@/components/transactions-table'
+import { TransactionsTable } from '@/components/layout'
 
 export default async function TransactionsPage() {
   const supabase = await createClient()
