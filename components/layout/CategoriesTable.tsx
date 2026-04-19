@@ -58,10 +58,11 @@ export function CategoriesTable({ userId }: { userId: string }) {
   }
 
   useEffect(() => {
-    if (userId) {
-      fetchCategories()
-    }
-  }, [userId, supabase])
+    if (!userId) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

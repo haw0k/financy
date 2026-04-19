@@ -58,10 +58,11 @@ export function TransactionsTable({ userId }: { userId: string }) {
   }
 
   useEffect(() => {
-    if (userId) {
-      fetchTransactions()
-    }
-  }, [userId, supabase])
+    if (!userId) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchTransactions()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId])
 
   const handleDelete = async (id: string) => {
     try {
