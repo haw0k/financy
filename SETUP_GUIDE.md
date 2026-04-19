@@ -8,6 +8,7 @@
 ## Step 1: Set Up Supabase
 
 ### 1.1 Create a Supabase Project
+
 1. Go to [supabase.com](https://supabase.com) and create a free account
 2. Create a new project (choose a region close to you)
 3. Copy your **Project URL** and **Anon Key** from the API settings
@@ -33,6 +34,7 @@ Replace `your_project_url_here` and `your_anon_key_here` with the values from yo
 4. Click "Run" to execute the script
 
 This will create:
+
 - `profiles` table (users with roles: sender/receiver)
 - `categories` table (income/expense categories)
 - `transactions` table (payment transactions)
@@ -59,17 +61,20 @@ Visit `http://localhost:3000` and start using the app!
 ## Features
 
 ### Authentication
+
 - **Email/Password Sign Up**: Create account with email and password
 - **Role Selection**: Choose between "Sender" (send money) or "Receiver" (receive money)
 - **Email Confirmation**: Confirm your email before accessing the dashboard
 
 ### Dashboard
+
 - **Overview Tab**: View income/expense summary with charts
 - **Transactions Tab**: View all transactions with filters and CRUD operations
 - **Categories Tab**: Manage expense categories
 - **Settings Tab**: Account preferences and dark mode toggle
 
 ### Data Security
+
 - **Row Level Security (RLS)**: Users can only see their own data
 - **Authentication Required**: All dashboard routes are protected
 - **Password Hashing**: Passwords are securely hashed by Supabase
@@ -77,6 +82,7 @@ Visit `http://localhost:3000` and start using the app!
 ## Default Test Data
 
 After database initialization, the SQL script creates default categories:
+
 - **Income**: Salary, Freelance, Investments, Other Income
 - **Expenses**: Food, Transport, Entertainment, Utilities, Other Expenses
 
@@ -85,14 +91,17 @@ You can add more categories from the Categories tab in the dashboard.
 ## Troubleshooting
 
 ### "Auth tables not found" error
+
 - Make sure you ran the SQL script in Supabase SQL Editor
 - Verify the script executed without errors
 
 ### "User not found" after sign up
+
 - Check that your email is confirmed in Supabase Authentication
 - Wait a moment and refresh the page
 
 ### Dark mode not working
+
 - Clear browser cookies and refresh
 - Make sure theme-provider component is loaded
 
@@ -153,6 +162,7 @@ transactions
 ## Support
 
 For issues with:
+
 - **Supabase**: Check [Supabase Docs](https://supabase.com/docs)
 - **Next.js**: Check [Next.js Docs](https://nextjs.org/docs)
 - **shadcn/ui**: Check [shadcn/ui Components](https://ui.shadcn.com)

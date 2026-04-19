@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import {
   Card,
   CardContent,
@@ -17,28 +17,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui'
-import { Plus, Trash2, Edit2 } from 'lucide-react'
+} from '@/components/ui';
+import { Plus, Trash2, Edit2 } from 'lucide-react';
 
 interface Category {
-  id: string
-  name: string
-  type: 'income' | 'expense'
-  color: string
-  user_id: string
+  id: string;
+  name: string;
+  type: 'income' | 'expense';
+  color: string;
+  user_id: string;
 }
 
 export function CategoriesTable({ userId }: { userId: string }) {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     type: 'expense' as 'income' | 'expense',
     color: '#3b82f6',
-  })
-  const supabase = createClient()
+  });
+  const supabase = createClient();
 
   const fetchCategories = async () => {
     try {
@@ -46,26 +46,26 @@ export function CategoriesTable({ userId }: { userId: string }) {
         .from('categories')
         .select('*')
         .eq('user_id', userId)
-        .order('name')
+        .order('name');
 
-      if (error) throw error
-      setCategories(data || [])
+      if (error) throw error;
+      setCategories(data || []);
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error fetching categories:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCategories()
+    fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId])
+  }, [userId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       if (editingId) {
@@ -76,43 +76,41 @@ export function CategoriesTable({ userId }: { userId: string }) {
             type: formData.type,
             color: formData.color,
           })
-          .eq('id', editingId)
+          .eq('id', editingId);
 
-        if (error) throw error
+        if (error) throw error;
       } else {
-        const { error } = await supabase
-          .from('categories')
-          .insert([
-            {
-              user_id: userId,
-              name: formData.name,
-              type: formData.type,
-              color: formData.color,
-            },
-          ])
+        const { error } = await supabase.from('categories').insert([
+          {
+            user_id: userId,
+            name: formData.name,
+            type: formData.type,
+            color: formData.color,
+          },
+        ]);
 
-        if (error) throw error
+        if (error) throw error;
       }
 
-      setFormData({ name: '', type: 'expense', color: '#3b82f6' })
-      setEditingId(null)
-      setShowForm(false)
-      fetchCategories()
+      setFormData({ name: '', type: 'expense', color: '#3b82f6' });
+      setEditingId(null);
+      setShowForm(false);
+      fetchCategories();
     } catch (error) {
-      console.error('Error submitting category:', error)
+      console.error('Error submitting category:', error);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase.from('categories').delete().eq('id', id)
+      const { error } = await supabase.from('categories').delete().eq('id', id);
 
-      if (error) throw error
-      setCategories(categories.filter((c) => c.id !== id))
+      if (error) throw error;
+      setCategories(categories.filter((c) => c.id !== id));
     } catch (error) {
-      console.error('Error deleting category:', error)
+      console.error('Error deleting category:', error);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -156,7 +154,9 @@ export function CategoriesTable({ userId }: { userId: string }) {
                       <select
                         id="type"
                         value={formData.type}
-                        onChange={(e) => setFormData({ ...formData, type: e.target.value as 'income' | 'expense' })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, type: e.target.value as 'income' | 'expense' })
+                        }
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <option value="expense">Expense</option>
@@ -192,9 +192,9 @@ export function CategoriesTable({ userId }: { userId: string }) {
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        setShowForm(false)
-                        setEditingId(null)
-                        setFormData({ name: '', type: 'expense', color: '#3b82f6' })
+                        setShowForm(false);
+                        setEditingId(null);
+                        setFormData({ name: '', type: 'expense', color: '#3b82f6' });
                       }}
                     >
                       Cancel
@@ -250,13 +250,13 @@ export function CategoriesTable({ userId }: { userId: string }) {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setEditingId(category.id)
+                              setEditingId(category.id);
                               setFormData({
                                 name: category.name,
                                 type: category.type,
                                 color: category.color,
-                              })
-                              setShowForm(true)
+                              });
+                              setShowForm(true);
                             }}
                           >
                             <Edit2 className="h-4 w-4" />
@@ -279,5 +279,5 @@ export function CategoriesTable({ userId }: { userId: string }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,37 +1,37 @@
-'use client'
+'use client';
 
-import { createClient } from '@/lib/supabase/client'
-import { Button, Input, Label } from '@/components/ui'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client';
+import { Button, Input, Label } from '@/components/ui';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
     try {
-      const supabase = createClient()
+      const supabase = createClient();
       const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
-      })
-      if (authError) throw authError
-      router.push('/dashboard')
+      });
+      if (authError) throw authError;
+      router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-6">
@@ -74,5 +74,5 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

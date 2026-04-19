@@ -1,21 +1,28 @@
 import { defineConfig, globalIgnores } from 'eslint/config'
 import nextVitals from 'eslint-config-next/core-web-vitals'
 import nextTs from 'eslint-config-next/typescript'
-import prettier from 'eslint-config-prettier/flat'
+import { includeIgnoreFile } from '@eslint/compat'
+import prettierConfig from 'eslint-config-prettier'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const eslintConfig = defineConfig([
+  includeIgnoreFile(path.resolve(__dirname, '.gitignore')),
   ...nextVitals,
   ...nextTs,
-  ...prettier,
+  prettierConfig,
 
-  // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     '.next/**',
     'out/**',
     'build/**',
-    'next-env.d.ts',
+    'node_modules/**',
+    '.turbo/**',
+    'dist/**',
   ]),
+
 ])
 
 export default eslintConfig

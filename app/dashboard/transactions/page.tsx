@@ -1,11 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
-import { TransactionsTable } from '@/components/layout'
+import { createClient } from '@/lib/supabase/server';
+import { TransactionsTable } from '@/components/layout';
 
 export default async function TransactionsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">
@@ -15,5 +15,5 @@ export default async function TransactionsPage() {
       </div>
       <TransactionsTable userId={user?.id || ''} />
     </div>
-  )
+  );
 }

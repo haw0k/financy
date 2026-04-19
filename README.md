@@ -40,29 +40,34 @@ Visit `http://localhost:3000` and create your account!
 ## Features
 
 ✅ **Authentication**
+
 - Email/Password signup
 - Google OAuth support
 - Email confirmation
 - Secure session management
 
 ✅ **Role-Based Access**
+
 - Sender (send money, track expenses)
 - Receiver (receive money, track income)
 - Role-specific dashboards
 
 ✅ **Financial Tracking**
+
 - Transaction management
 - Category organization
 - Income/expense breakdown
 - Visual charts & analytics
 
 ✅ **Dashboard**
+
 - Overview with stats cards
 - Transaction data tables
 - Category management
 - Dark/light mode toggle
 
 ✅ **Security**
+
 - Row Level Security (RLS)
 - Password hashing
 - Protected routes
@@ -100,11 +105,11 @@ Visit `http://localhost:3000` and create your account!
 
 Three main tables with Row Level Security:
 
-| Table | Purpose | RLS |
-|-------|---------|-----|
-| `profiles` | User profiles with role | ✓ Users see own profile |
-| `categories` | Income/expense categories | ✓ Users see own categories |
-| `transactions` | Financial transactions | ✓ Users see own transactions |
+| Table          | Purpose                   | RLS                          |
+| -------------- | ------------------------- | ---------------------------- |
+| `profiles`     | User profiles with role   | ✓ Users see own profile      |
+| `categories`   | Income/expense categories | ✓ Users see own categories   |
+| `transactions` | Financial transactions    | ✓ Users see own transactions |
 
 See [DATABASE.md](./scripts/001_init_database.sql) for full schema.
 
@@ -151,12 +156,12 @@ Deploy to Vercel with one click:
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Auth error | Check SQL script was run in Supabase |
-| Missing tables | Run the SQL migration script |
-| Dark mode not working | Clear cookies and refresh |
-| Email not confirmed | Check Supabase Auth emails |
+| Issue                 | Solution                             |
+| --------------------- | ------------------------------------ |
+| Auth error            | Check SQL script was run in Supabase |
+| Missing tables        | Run the SQL migration script         |
+| Dark mode not working | Clear cookies and refresh            |
+| Email not confirmed   | Check Supabase Auth emails           |
 
 ## Features Roadmap
 

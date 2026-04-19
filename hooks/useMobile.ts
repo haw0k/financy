@@ -1,16 +1,16 @@
-import * as React from 'react'
+import * as React from 'react';
 
-const MOBILE_BREAKPOINT = 768
+const MOBILE_BREAKPOINT = 768;
 
 function getSnapshot() {
-  if (typeof window === 'undefined') return false
-  return window.innerWidth < MOBILE_BREAKPOINT
+  if (typeof window === 'undefined') return false;
+  return window.innerWidth < MOBILE_BREAKPOINT;
 }
 
 function subscribe() {
-  return () => {}
+  return () => {};
 }
 
 export function useIsMobile() {
-  return React.useSyncExternalStore(subscribe, getSnapshot, () => false)
+  return React.useSyncExternalStore(subscribe, getSnapshot, () => false);
 }

@@ -1,18 +1,18 @@
-import { createClient } from '@/lib/supabase/server'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
+import { createClient } from '@/lib/supabase/server';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   // Fetch user profile to get role
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user?.id)
-    .single()
+    .single();
 
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">
@@ -58,12 +58,13 @@ export default async function SettingsPage() {
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Description</label>
               <p className="text-sm text-muted-foreground">
-                A simple and effective financial tracking application to manage your income and expenses.
+                A simple and effective financial tracking application to manage your income and
+                expenses.
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import {
   Card,
   CardContent,
@@ -16,29 +16,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui'
-import { Plus, Trash2, Edit2 } from 'lucide-react'
-import { TransactionForm } from '@/components/layout'
+} from '@/components/ui';
+import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { TransactionForm } from '@/components/layout';
 
 interface Transaction {
-  id: string
-  amount: number
-  type: 'income' | 'expense'
-  date: string
-  description: string | null
-  category_id: string | null
-  sender_id: string
-  receiver_id: string
+  id: string;
+  amount: number;
+  type: 'income' | 'expense';
+  date: string;
+  description: string | null;
+  category_id: string | null;
+  sender_id: string;
+  receiver_id: string;
 }
 
 export function TransactionsTable({ userId }: { userId: string }) {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all')
-  const [showForm, setShowForm] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const supabase = createClient()
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const supabase = createClient();
 
   const fetchTransactions = async () => {
     try {
@@ -46,45 +46,42 @@ export function TransactionsTable({ userId }: { userId: string }) {
         .from('transactions')
         .select('*')
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-        .order('date', { ascending: false })
+        .order('date', { ascending: false });
 
-      if (error) throw error
-      setTransactions(data || [])
+      if (error) throw error;
+      setTransactions(data || []);
     } catch (error) {
-      console.error('Error fetching transactions:', error)
+      console.error('Error fetching transactions:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchTransactions()
+    fetchTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId])
+  }, [userId]);
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('transactions')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('transactions').delete().eq('id', id);
 
-      if (error) throw error
-      setTransactions(transactions.filter((t) => t.id !== id))
+      if (error) throw error;
+      setTransactions(transactions.filter((t) => t.id !== id));
     } catch (error) {
-      console.error('Error deleting transaction:', error)
+      console.error('Error deleting transaction:', error);
     }
-  }
+  };
 
   const filteredTransactions = transactions.filter((trans) => {
     const matchesSearch =
       trans.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trans.amount.toString().includes(searchTerm)
-    const matchesFilter = filterType === 'all' || trans.type === filterType
-    return matchesSearch && matchesFilter
-  })
+      trans.amount.toString().includes(searchTerm);
+    const matchesFilter = filterType === 'all' || trans.type === filterType;
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -106,13 +103,13 @@ export function TransactionsTable({ userId }: { userId: string }) {
             <TransactionForm
               userId={userId}
               onSuccess={() => {
-                setShowForm(false)
-                setEditingId(null)
-                fetchTransactions()
+                setShowForm(false);
+                setEditingId(null);
+                fetchTransactions();
               }}
               onCancel={() => {
-                setShowForm(false)
-                setEditingId(null)
+                setShowForm(false);
+                setEditingId(null);
               }}
               editingId={editingId}
             />
@@ -171,9 +168,7 @@ export function TransactionsTable({ userId }: { userId: string }) {
                 <TableBody>
                   {filteredTransactions.map((transaction) => (
                     <TableRow key={transaction.id}>
-                      <TableCell>
-                        {new Date(transaction.date).toLocaleDateString()}
-                      </TableCell>
+                      <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                       <TableCell>{transaction.description || '-'}</TableCell>
                       <TableCell>
                         <span
@@ -187,8 +182,13 @@ export function TransactionsTable({ userId }: { userId: string }) {
                         </span>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        <span className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
-                          {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)}
+                        <span
+                          className={
+                            transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                          }
+                        >
+                          {transaction.type === 'income' ? '+' : '-'}$
+                          {transaction.amount.toFixed(2)}
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
@@ -218,5 +218,5 @@ export function TransactionsTable({ userId }: { userId: string }) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

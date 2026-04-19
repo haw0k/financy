@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
-import { LayoutDashboard, TrendingUp, TrendingDown, Settings } from 'lucide-react'
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { LayoutDashboard, TrendingUp, TrendingDown, Settings } from 'lucide-react';
 
 const navItems = [
   {
@@ -26,10 +26,10 @@ const navItems = [
     label: 'Settings',
     icon: Settings,
   },
-]
+];
 
 export function DashboardNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="hidden border-r border-border bg-card md:block md:w-64">
@@ -43,8 +43,8 @@ export function DashboardNav() {
       </div>
       <div className="space-y-1 p-4">
         {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
 
           return (
             <Link
@@ -60,9 +60,9 @@ export function DashboardNav() {
               <Icon className="h-4 w-4" />
               {item.label}
             </Link>
-          )
+          );
         })}
       </div>
     </nav>
-  )
+  );
 }

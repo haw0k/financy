@@ -51,6 +51,7 @@ finance-tracker/
 ## Key Features Implemented
 
 ### Authentication & Authorization
+
 - Email/Password registration and login
 - Google OAuth (optional, can be configured)
 - Email confirmation flow
@@ -59,12 +60,14 @@ finance-tracker/
 - Protected routes (dashboard requires authentication)
 
 ### Role System
+
 - **Sender**: Can create transactions (send money) and track expenses
 - **Receiver**: Can receive money and track income
 - Role selection during signup
 - Role-specific data filtering (RLS policies)
 
 ### Dashboard Features
+
 1. **Overview Page**
    - Total balance summary
    - Income vs expense breakdown
@@ -91,6 +94,7 @@ finance-tracker/
    - Logout button
 
 ### Design
+
 - Responsive layout (works on mobile, tablet, desktop)
 - Dark/light mode with system preference detection
 - Clean, professional UI using shadcn/ui components
@@ -98,6 +102,7 @@ finance-tracker/
 - Accessible forms and navigation
 
 ### Security Features
+
 - Row Level Security (RLS) - users can only access their own data
 - Secure password hashing by Supabase
 - Protected API routes
@@ -106,22 +111,23 @@ finance-tracker/
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | Next.js 16 (App Router) |
-| **UI Framework** | React 19 |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS v4 |
-| **UI Components** | shadcn/ui |
-| **Charts** | Recharts |
-| **Database** | Supabase (PostgreSQL) |
-| **Authentication** | Supabase Auth |
-| **Date Library** | date-fns |
-| **Deployment** | Vercel |
+| Layer              | Technology              |
+| ------------------ | ----------------------- |
+| **Frontend**       | Next.js 16 (App Router) |
+| **UI Framework**   | React 19                |
+| **Language**       | TypeScript              |
+| **Styling**        | Tailwind CSS v4         |
+| **UI Components**  | shadcn/ui               |
+| **Charts**         | Recharts                |
+| **Database**       | Supabase (PostgreSQL)   |
+| **Authentication** | Supabase Auth           |
+| **Date Library**   | date-fns                |
+| **Deployment**     | Vercel                  |
 
 ## Database Schema
 
 ### profiles (User Profiles)
+
 ```sql
 id (UUID) - references auth.users
 role (enum: sender, receiver)
@@ -129,6 +135,7 @@ created_at (timestamp)
 ```
 
 ### categories (Expense/Income Categories)
+
 ```sql
 id (UUID)
 name (TEXT)
@@ -138,6 +145,7 @@ created_at (timestamp)
 ```
 
 ### transactions (Financial Transactions)
+
 ```sql
 id (UUID)
 amount (NUMERIC)
@@ -161,6 +169,7 @@ created_at (timestamp)
    - Run the script to create tables and RLS policies
 
 3. **Run Application**
+
    ```bash
    pnpm install
    pnpm dev

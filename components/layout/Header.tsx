@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { User } from '@supabase/supabase-js'
-import { LogOut, Moon, Sun } from 'lucide-react'
-import { useTheme } from 'next-themes'
-import { useRouter } from 'next/navigation'
+import { User } from '@supabase/supabase-js';
+import { LogOut, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import {
   Button,
   DropdownMenu,
@@ -11,25 +11,23 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui'
-import { createClient } from '@/lib/supabase/client'
+} from '@/components/ui';
+import { createClient } from '@/lib/supabase/client';
 
 export function Header({ user }: { user: User }) {
-  const { theme, setTheme } = useTheme()
-  const router = useRouter()
-  const supabase = createClient()
+  const { theme, setTheme } = useTheme();
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/auth/login')
-  }
+    await supabase.auth.signOut();
+    router.push('/auth/login');
+  };
 
   return (
     <header className="border-b border-border bg-card">
       <div className="flex h-14 items-center justify-between px-4 md:px-8">
-        <div className="text-sm text-muted-foreground">
-          {user?.email}
-        </div>
+        <div className="text-sm text-muted-foreground">{user?.email}</div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -49,9 +47,7 @@ export function Header({ user }: { user: User }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <div className="px-2 py-1.5 text-sm font-medium">
-                {user?.email}
-              </div>
+              <div className="px-2 py-1.5 text-sm font-medium">{user?.email}</div>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -62,5 +58,5 @@ export function Header({ user }: { user: User }) {
         </div>
       </div>
     </header>
-  )
+  );
 }

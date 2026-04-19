@@ -1,44 +1,50 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
+import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui'
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
-import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface Stats {
-  total_balance: number
-  total_income: number
-  total_expense: number
+  total_balance: number;
+  total_income: number;
+  total_expense: number;
 }
 
 interface Transaction {
-  id: string
-  amount: number
-  type: 'income' | 'expense'
-  date: string
-  description: string | null
+  id: string;
+  amount: number;
+  type: 'income' | 'expense';
+  date: string;
+  description: string | null;
 }
 
 interface CategoryData {
-  name: string
-  value: number
+  name: string;
+  value: number;
 }
 
 export function DashboardOverview({ userId }: { userId: string }) {
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([])
-  const [loading, setLoading] = useState(true)
-  const supabase = createClient()
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
-  const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
+  const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,45 +55,46 @@ export function DashboardOverview({ userId }: { userId: string }) {
           .select('*')
           .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
           .order('date', { ascending: false })
-          .limit(10)
+          .limit(10);
 
-        if (transError) throw transError
-        setTransactions(transData || [])
+        if (transError) throw transError;
+        setTransactions(transData || []);
 
         // Calculate stats
-        const { data: statsData, error: statsError } = await supabase
-          .rpc('get_user_stats', { user_id: userId })
+        const { data: statsData, error: statsError } = await supabase.rpc('get_user_stats', {
+          user_id: userId,
+        });
 
-        if (statsError) throw statsError
+        if (statsError) throw statsError;
         if (statsData && statsData.length > 0) {
-          setStats(statsData[0])
+          setStats(statsData[0]);
         }
 
         // Prepare category data for pie chart
         if (transData) {
-          const categoryMap = new Map<string, number>()
+          const categoryMap = new Map<string, number>();
           transData.forEach((trans) => {
-            const type = trans.type === 'income' ? 'Income' : 'Expense'
-            categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount))
-          })
+            const type = trans.type === 'income' ? 'Income' : 'Expense';
+            categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
+          });
           setCategoryData(
             Array.from(categoryMap, ([name, value]) => ({
               name,
               value: Number(value.toFixed(2)),
             }))
-          )
+          );
         }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error)
+        console.error('Error fetching dashboard data:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (userId) {
-      fetchData()
+      fetchData();
     }
-  }, [userId, supabase])
+  }, [userId, supabase]);
 
   // Prepare data for line chart
   const chartData = transactions
@@ -96,11 +103,12 @@ export function DashboardOverview({ userId }: { userId: string }) {
     .map((trans, idx) => ({
       date: new Date(trans.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       amount: trans.amount,
-      cumulative: (idx + 1) * (trans.type === 'income' ? Number(trans.amount) : -Number(trans.amount)),
-    }))
+      cumulative:
+        (idx + 1) * (trans.type === 'income' ? Number(trans.amount) : -Number(trans.amount)),
+    }));
 
   if (loading) {
-    return <div className="text-center text-muted-foreground">Loading...</div>
+    return <div className="text-center text-muted-foreground">Loading...</div>;
   }
 
   return (
@@ -113,9 +121,7 @@ export function DashboardOverview({ userId }: { userId: string }) {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              ${stats?.total_balance?.toFixed(2) || '0.00'}
-            </div>
+            <div className="text-2xl font-bold">${stats?.total_balance?.toFixed(2) || '0.00'}</div>
             <p className="text-xs text-muted-foreground">Your total balance</p>
           </CardContent>
         </Card>
@@ -211,5 +217,5 @@ export function DashboardOverview({ userId }: { userId: string }) {
         </Card>
       </div>
     </div>
-  )
+  );
 }
