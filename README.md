@@ -88,7 +88,6 @@ Visit `http://localhost:3000` and create your account!
 - **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - Architecture overview
 - **[Naming Conventions](./docs/naming-conventions.md)** - Convention for naming React components, hooks, and TypeScript types
 - **[Commit Message Convention](./docs/commit-message-convention.md)** - Commit message format and guidelines
-- **[Naming Conventions](./docs/naming-conventions.md)** - Convention for naming React components, hooks, and TypeScript types
 
 ## Project Structure
 
@@ -104,6 +103,7 @@ Visit `http://localhost:3000` and create your account!
 │   └── supabase/         # Supabase client & middleware
 ├── hooks/                # Custom hooks
 ├── scripts/              # SQL migration scripts
+├── components.json       # shadcn/ui configuration
 └── proxy.ts              # Auth token refresh
 ```
 

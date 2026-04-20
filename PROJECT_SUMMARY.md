@@ -10,37 +10,38 @@ Complete full-stack financial management application with authentication, role-b
 finance-tracker/
 ├── app/
 │   ├── auth/
-│   │   ├── login/           # Login page (email/password)
-│   │   ├── sign-up/         # Sign up with role selection
-│   │   ├── callback/        # OAuth callback handler
-│   │   └── error/           # Auth error page
+│   │   ├── login/               # Login page (email/password)
+│   │   ├── sign-up/             # Sign up with role selection
+│   │   ├── callback/            # OAuth callback handler
+│   │   └── error/               # Auth error page
 │   ├── dashboard/
-│   │   ├── page.tsx         # Dashboard overview
-│   │   ├── transactions/    # Transactions management
-│   │   ├── categories/      # Categories management
-│   │   ├── settings/        # User settings & theme
-│   │   └── layout.tsx       # Dashboard layout (nav + header)
-│   ├── layout.tsx           # Root layout with theme provider
-│   ├── page.tsx             # Home page (redirects to auth)
-│   └── globals.css          # Global styles & design tokens
+│   │   ├── page.tsx             # Dashboard overview
+│   │   ├── transactions/        # Transactions management
+│   │   ├── categories/          # Categories management
+│   │   ├── settings/            # User settings & theme
+│   │   └── layout.tsx           # Dashboard layout (nav + header)
+│   ├── layout.tsx               # Root layout with theme provider
+│   ├── page.tsx                 # Home page (redirects to auth)
+│   └── globals.css              # Global styles & design tokens
 │
 ├── components/
-│   ├── pages/               # Page components (HomePage, auth/*, dashboard/*)
-│   └── layout/              # Layout components (DashboardNav, Header, etc.)
+│   ├── pages/                   # Page components (HomePage, auth/*, dashboard/*)
+│   └── layout/                  # Layout components (DashboardNav, Header, etc.)
 │
 ├── lib/
-│   ├── shadcn/              # shadcn/ui component library
+│   ├── shadcn/                  # shadcn/ui component library
 │   └── supabase/
-│       ├── client.ts        # Browser client
-│       ├── server.ts        # Server client
-│       └── middleware.ts     # Session management
+│       ├── client.ts            # Browser client
+│       ├── server.ts            # Server client
+│       └── middleware.ts        # Session management
 │
 ├── scripts/
-│   └── 001_init_database.sql   # Database initialization script
+│   └── 001_init_database.sql    # Database initialization script
 │
-├── middleware.ts            # Next.js middleware (auth token refresh)
-├── SETUP_GUIDE.md          # Detailed setup instructions
-└── package.json            # Dependencies
+├── components.json              # shadcn/ui configuration
+├── proxy.ts                     # Next.js middleware (auth token refresh)
+├── SETUP_GUIDE.md               # Detailed setup instructions
+└── package.json                 # Dependencies
 ```
 
 ## Key Features Implemented
