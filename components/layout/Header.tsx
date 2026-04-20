@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/shadcn';
+} from '@/lib/shadcn';
 import { createClient } from '@/lib/supabase/client';
 
 export function Header({ user }: { user: User }) {

@@ -10,7 +10,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/components/shadcn';
+} from '@/lib/shadcn';
 
 interface TransactionFormProps {
   userId: string;

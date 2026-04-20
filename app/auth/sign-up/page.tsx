@@ -12,7 +12,7 @@ import {
   CardTitle,
   Input,
   Label,
-} from '@/components/shadcn';
+} from '@/lib/shadcn';
 import { createClient } from '@/lib/supabase/client';
 
 export default function Page() {

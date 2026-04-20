@@ -3,7 +3,7 @@
 import { useState, type SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, Input, Label } from '@/components/shadcn';
+import { Button, Input, Label } from '@/lib/shadcn';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {

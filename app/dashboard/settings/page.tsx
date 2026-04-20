@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shadcn';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 
 export default async function SettingsPage() {
   const supabase = await createClient();
