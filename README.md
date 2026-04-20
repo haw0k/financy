@@ -93,18 +93,18 @@ Visit `http://localhost:3000` and create your account!
 ## Project Structure
 
 ```
-├── app/                    # Next.js pages (thin re-exports)
-│   ├── auth/              # Authentication pages
-│   └── dashboard/         # Protected dashboard routes
+├── app/                  # Next.js pages (thin re-exports)
+│   ├── auth/             # Authentication pages
+│   └── dashboard/        # Protected dashboard routes
 ├── components/
 │   ├── pages/            # Page components (HomePage, auth/*, dashboard/*)
 │   └── layout/           # Layout components
 ├── lib/
 │   ├── shadcn/           # shadcn/ui component library
 │   └── supabase/         # Supabase client & middleware
-├── hooks/                 # Custom hooks
-├── scripts/               # SQL migration scripts
-└── middleware.ts          # Auth token refresh
+├── hooks/                # Custom hooks
+├── scripts/              # SQL migration scripts
+└── middleware.ts         # Auth token refresh
 ```
 
 ## Database Schema
