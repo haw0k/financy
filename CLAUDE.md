@@ -75,3 +75,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Public anon key
 ## Database Schema
 
 Three tables with RLS: `profiles` (id, role, user_id), `categories` (id, name, type, user_id), `transactions` (id, amount, type, category_id, sender_id, receiver_id, description, date). Default categories created by SQL migration script in `scripts/001_init_database.sql`.
+
+## Documentation
+
+- Naming conventions: [Naming Conventions](docs/naming-conventions.md)

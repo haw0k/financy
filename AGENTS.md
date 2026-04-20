@@ -33,3 +33,7 @@
 - `.env.local` is gitignored but available locally
 - Next.js 16.2, Tailwind CSS v4
 - Uses pnpm as package manager
+
+## Documentation
+
+- Naming conventions: [Naming Conventions](docs/naming-conventions.md)
