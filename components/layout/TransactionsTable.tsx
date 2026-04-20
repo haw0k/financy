@@ -20,7 +20,7 @@ import {
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layout';
 
-interface Transaction {
+interface ITransaction {
   id: string;
   amount: number;
   type: 'income' | 'expense';
@@ -32,11 +32,11 @@ interface Transaction {
 }
 
 export function TransactionsTable({ userId }: { userId: string }) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
-  const [showForm, setShowForm] = useState(false);
+  const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const supabase = createClient();
 
@@ -53,7 +53,7 @@ export function TransactionsTable({ userId }: { userId: string }) {
     } catch (error) {
       console.error('Error fetching transactions:', error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -76,11 +76,11 @@ export function TransactionsTable({ userId }: { userId: string }) {
   };
 
   const filteredTransactions = transactions.filter((trans) => {
-    const matchesSearch =
+    const isMatchesSearch =
       trans.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trans.amount.toString().includes(searchTerm);
-    const matchesFilter = filterType === 'all' || trans.type === filterType;
-    return matchesSearch && matchesFilter;
+    const isMatchesFilter = filterType === 'all' || trans.type === filterType;
+    return isMatchesSearch && isMatchesFilter;
   });
 
   return (
@@ -92,23 +92,23 @@ export function TransactionsTable({ userId }: { userId: string }) {
               <CardTitle>Transactions</CardTitle>
               <CardDescription>View and manage all your transactions</CardDescription>
             </div>
-            <Button onClick={() => setShowForm(true)} size="sm" className="gap-2">
+            <Button onClick={() => setIsShowForm(true)} size="sm" className="gap-2">
               <Plus className="h-4 w-4" />
               Add Transaction
             </Button>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
-          {showForm && (
+          {isShowForm && (
             <TransactionForm
               userId={userId}
               onSuccess={() => {
-                setShowForm(false);
+                setIsShowForm(false);
                 setEditingId(null);
                 fetchTransactions();
               }}
               onCancel={() => {
-                setShowForm(false);
+                setIsShowForm(false);
                 setEditingId(null);
               }}
               editingId={editingId}
@@ -120,28 +120,36 @@ export function TransactionsTable({ userId }: { userId: string }) {
               <Input
                 placeholder="Search transactions..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
                 className="md:w-64"
               />
               <div className="flex gap-2">
                 <Button
                   variant={filterType === 'all' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setFilterType('all')}
+                  onClick={() => {
+                    setFilterType('all');
+                  }}
                 >
                   All
                 </Button>
                 <Button
                   variant={filterType === 'income' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setFilterType('income')}
+                  onClick={() => {
+                    setFilterType('income');
+                  }}
                 >
                   Income
                 </Button>
                 <Button
                   variant={filterType === 'expense' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setFilterType('expense')}
+                  onClick={() => {
+                    setFilterType('expense');
+                  }}
                 >
                   Expenses
                 </Button>
@@ -149,7 +157,7 @@ export function TransactionsTable({ userId }: { userId: string }) {
             </div>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <div className="text-center text-muted-foreground">Loading...</div>
           ) : filteredTransactions.length === 0 ? (
             <div className="text-center text-muted-foreground">No transactions found</div>
@@ -196,14 +204,18 @@ export function TransactionsTable({ userId }: { userId: string }) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setEditingId(transaction.id)}
+                            onClick={() => {
+                              setEditingId(transaction.id);
+                            }}
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDelete(transaction.id)}
+                            onClick={() => {
+                              handleDelete(transaction.id);
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

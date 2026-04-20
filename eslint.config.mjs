@@ -183,6 +183,8 @@ const eslintConfig = defineConfig([
     'node_modules/**',
     '.turbo/**',
     'dist/**',
+    '*.mjs',
+    'lib/**',
   ]),
 
 ])

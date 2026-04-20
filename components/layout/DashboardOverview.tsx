@@ -18,13 +18,13 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-interface Stats {
+interface IStats {
   total_balance: number;
   total_income: number;
   total_expense: number;
 }
 
-interface Transaction {
+interface ITransaction {
   id: string;
   amount: number;
   type: 'income' | 'expense';
@@ -32,16 +32,16 @@ interface Transaction {
   description: string | null;
 }
 
-interface CategoryData {
+interface ICategoryData {
   name: string;
   value: number;
 }
 
 export function DashboardOverview({ userId }: { userId: string }) {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<IStats | null>(null);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
+  const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
 
   const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
@@ -87,7 +87,7 @@ export function DashboardOverview({ userId }: { userId: string }) {
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -107,7 +107,7 @@ export function DashboardOverview({ userId }: { userId: string }) {
         (idx + 1) * (trans.type === 'income' ? Number(trans.amount) : -Number(trans.amount)),
     }));
 
-  if (loading) {
+  if (isLoading) {
     return <div className="text-center text-muted-foreground">Loading...</div>;
   }
 

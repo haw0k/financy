@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 'use client';
 
 // Inspired by react-hot-toast library

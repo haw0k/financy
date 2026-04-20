@@ -1,25 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import {
-  Button,
-  Input,
-  Label,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/lib/shadcn';
+import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
 
-interface TransactionFormProps {
+interface ITransactionFormProps {
   userId: string;
   onSuccess: () => void;
   onCancel: () => void;
   editingId: string | null;
 }
 
-export function TransactionForm({ userId, onSuccess, onCancel, editingId }: TransactionFormProps) {
+export function TransactionForm({ userId, onSuccess, onCancel, editingId }: ITransactionFormProps) {
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
@@ -28,7 +20,7 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
     receiverId: '',
   });
   const [users, setUsers] = useState<Array<{ id: string; email: string }>>([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -50,9 +42,9 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
     fetchUsers();
   }, [userId, supabase]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       const transactionData = {
@@ -81,7 +73,7 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
     } catch (error) {
       console.error('Error submitting transaction:', error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -102,7 +94,9 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
                 min="0"
                 placeholder="0.00"
                 value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, amount: e.target.value });
+                }}
                 required
               />
             </div>
@@ -112,9 +106,9 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
               <select
                 id="type"
                 value={formData.type}
-                onChange={(e) =>
-                  setFormData({ ...formData, type: e.target.value as 'income' | 'expense' })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, type: e.target.value as 'income' | 'expense' });
+                }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="expense">Expense</option>
@@ -128,7 +122,9 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
                 id="date"
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, date: e.target.value });
+                }}
                 required
               />
             </div>
@@ -139,7 +135,9 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
                 <select
                   id="receiver"
                   value={formData.receiverId}
-                  onChange={(e) => setFormData({ ...formData, receiverId: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, receiverId: e.target.value });
+                  }}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <option value="">Select receiver</option>
@@ -158,14 +156,16 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: Tran
                 id="description"
                 placeholder="Optional description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, description: e.target.value });
+                }}
               />
             </div>
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" disabled={loading || !formData.amount}>
-              {loading ? 'Saving...' : editingId ? 'Update' : 'Add'} Transaction
+            <Button type="submit" disabled={isLoading || !formData.amount}>
+              {isLoading ? 'Saving...' : editingId ? 'Update' : 'Add'} Transaction
             </Button>
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel

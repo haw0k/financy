@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
   Card,
@@ -20,7 +20,7 @@ import {
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 
-interface Category {
+interface ICategory {
   id: string;
   name: string;
   type: 'income' | 'expense';
@@ -29,9 +29,9 @@ interface Category {
 }
 
 export function CategoriesTable({ userId }: { userId: string }) {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -53,7 +53,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
     } catch (error) {
       console.error('Error fetching categories:', error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -64,7 +64,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -94,7 +94,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
 
       setFormData({ name: '', type: 'expense', color: '#3b82f6' });
       setEditingId(null);
-      setShowForm(false);
+      setIsShowForm(false);
       fetchCategories();
     } catch (error) {
       console.error('Error submitting category:', error);
@@ -121,14 +121,20 @@ export function CategoriesTable({ userId }: { userId: string }) {
               <CardTitle>Categories</CardTitle>
               <CardDescription>Manage your expense and income categories</CardDescription>
             </div>
-            <Button onClick={() => setShowForm(true)} size="sm" className="gap-2">
+            <Button
+              onClick={() => {
+                setIsShowForm(true);
+              }}
+              size="sm"
+              className="gap-2"
+            >
               <Plus className="h-4 w-4" />
               Add Category
             </Button>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
-          {showForm && (
+          {isShowForm && (
             <Card className="bg-accent/50">
               <CardHeader>
                 <CardTitle className="text-base">
@@ -192,7 +198,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        setShowForm(false);
+                        setIsShowForm(false);
                         setEditingId(null);
                         setFormData({ name: '', type: 'expense', color: '#3b82f6' });
                       }}
@@ -205,7 +211,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
             </Card>
           )}
 
-          {loading ? (
+          {isLoading ? (
             <div className="text-center text-muted-foreground">Loading...</div>
           ) : categories.length === 0 ? (
             <div className="text-center text-muted-foreground">No categories yet</div>
@@ -256,7 +262,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
                                 type: category.type,
                                 color: category.color,
                               });
-                              setShowForm(true);
+                              setIsShowForm(true);
                             }}
                           >
                             <Edit2 className="h-4 w-4" />
@@ -264,7 +270,9 @@ export function CategoriesTable({ userId }: { userId: string }) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDelete(category.id)}
+                            onClick={() => {
+                              handleDelete(category.id);
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
