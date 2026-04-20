@@ -104,7 +104,7 @@ Visit `http://localhost:3000` and create your account!
 │   └── supabase/         # Supabase client & middleware
 ├── hooks/                # Custom hooks
 ├── scripts/              # SQL migration scripts
-└── middleware.ts         # Auth token refresh
+└── proxy.ts              # Auth token refresh
 ```
 
 ## Database Schema
