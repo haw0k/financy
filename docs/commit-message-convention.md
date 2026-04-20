@@ -1,9 +1,7 @@
 # Commit Message Convention
 
-This document follows a conventional commit style inspired by common practice and the gist linked at https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716.
-
 Format
-- Header: `type(optional scope): subject`
+- Header: `type: subject`
 - Body: Optional, multiple paragraphs separated by blank lines
 - Footer: Optional, references to issues or breaking changes
 
@@ -15,25 +13,23 @@ Rules
 - If a change closes an issue, reference it in the footer (e.g. `Closes #123`).
 
 Types
-- feat:     a new feature
-- fix:      a bug fix
-- docs:     documentation only changes
-- style:    changes that do not affect the meaning of code (white-space, formatting, etc)
-- refactor: a code change that neither fixes a bug nor adds a feature
-- perf:     performance improvements
-- test:     adding missing tests or correcting existing tests
 - chore:    changes to the build process or auxiliary tooling and libraries
 - ci:       changes related to CI configuration and scripts
-- build:    changes to build system or external dependencies
+- docs:     documentation only changes
+- feat:     a new feature
+- fix:      a bug fix
+- refactor: a code change that neither fixes a bug nor adds a feature
 - revert:   revert a previous commit
+- style:    changes that do not affect the meaning of code (white-space, formatting, etc)
+- test:     adding missing tests or correcting existing tests
 
 Examples
-- feat(auth): add OAuth login flow
-- fix(api): correct token refresh flow
+- feat: add OAuth login flow
+- fix: correct token refresh flow
 - docs: update README with commit conventions
 - style: fix trailing whitespace in some files
-- refactor(utils): simplify date parsing logic
-- test(api): add unit tests for token validation
+- refactor: simplify date parsing logic
+- test: add unit tests for token validation
 - chore: bump linting tool versions
 - ci: run tests on push to main
 
