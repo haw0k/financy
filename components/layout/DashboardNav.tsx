@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, TrendingUp, TrendingDown, Settings } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, TrendingDown, Settings, Wallet } from 'lucide-react';
 
 const navItems = [
   {
@@ -36,9 +36,9 @@ export function DashboardNav() {
       <div className="flex h-14 items-center border-b border-border px-4">
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            💰
+            <Wallet className="h-4 w-4" />
           </div>
-          <span className="hidden lg:inline-block">FinanceTracker</span>
+          <span className="hidden lg:inline-block">Financy</span>
         </Link>
       </div>
       <div className="space-y-1 p-4">
