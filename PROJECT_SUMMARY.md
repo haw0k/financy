@@ -26,8 +26,7 @@ finance-tracker/
 │
 ├── components/
 │   ├── pages/               # Page components (HomePage, auth/*, dashboard/*)
-│   ├── layout/              # Layout components (DashboardNav, Header, etc.)
-│   └── shadcn/              # shadcn/ui components (moved to lib/)
+│   └── layout/              # Layout components (DashboardNav, Header, etc.)
 │
 ├── lib/
 │   ├── shadcn/              # shadcn/ui component library
@@ -186,14 +185,12 @@ created_at (timestamp)
 
 ## Future Enhancements
 
-- Payment gateway integration (Stripe)
 - Real-time notifications
 - Recurring transactions
 - Budget tracking & alerts
 - Export transactions (CSV/PDF)
 - Advanced filtering & search
 - Multi-currency support
-- Mobile app (React Native)
 
 ## Notes
 

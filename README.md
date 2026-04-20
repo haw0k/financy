@@ -171,13 +171,11 @@ Deploy to Vercel with one click:
 
 ## Features Roadmap
 
-- [ ] Payment integration (Stripe)
 - [ ] Budget tracking & alerts
 - [ ] Recurring transactions
 - [ ] Real-time notifications
 - [ ] CSV/PDF export
 - [ ] Multi-currency support
-- [ ] Mobile app
 
 ## License
 
@@ -191,4 +189,3 @@ MIT - Feel free to use for your projects
 
 ---
 
-Built with ❤️ using v0.app
