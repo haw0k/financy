@@ -78,4 +78,8 @@ Three tables with RLS: `profiles` (id, role, user_id), `categories` (id, name, t
 
 ## Documentation
 
+- Commit Message Convention: [Commit Message Convention](docs/commit-message-convention.md)
+
+## Documentation
+
 - Naming conventions: [Naming Conventions](docs/naming-conventions.md)

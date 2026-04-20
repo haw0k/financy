@@ -87,6 +87,8 @@ Visit `http://localhost:3000` and create your account!
 - **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Detailed setup instructions
 - **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - Architecture overview
 - **[Naming Conventions](./docs/naming-conventions.md)** - Convention for naming React components, hooks, and TypeScript types
+- **[Commit Message Convention](./docs/commit-message-convention.md)** - Commit message format and guidelines
+- **[Naming Conventions](./docs/naming-conventions.md)** - Convention for naming React components, hooks, and TypeScript types
 
 ## Project Structure
 
