@@ -25,16 +25,12 @@ finance-tracker/
 │   └── globals.css          # Global styles & design tokens
 │
 ├── components/
-│   ├── dashboard-nav.tsx       # Sidebar navigation
-│   ├── header.tsx              # Top header with user menu & theme toggle
-│   ├── dashboard-overview.tsx   # Stats cards & charts
-│   ├── transactions-table.tsx   # Transactions data table
-│   ├── transaction-form.tsx     # Add/edit transaction form
-│   ├── categories-table.tsx     # Categories data table
-│   ├── theme-provider.tsx       # Dark/light mode provider
-│   └── ui/                      # shadcn/ui components (button, input, card, etc.)
+│   ├── pages/               # Page components (HomePage, auth/*, dashboard/*)
+│   ├── layout/              # Layout components (DashboardNav, Header, etc.)
+│   └── shadcn/              # shadcn/ui components (moved to lib/)
 │
 ├── lib/
+│   ├── shadcn/              # shadcn/ui component library
 │   └── supabase/
 │       ├── client.ts        # Browser client
 │       ├── server.ts        # Server client

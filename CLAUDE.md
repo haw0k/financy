@@ -36,12 +36,13 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*)
 
 ### Key Directories
 
-- `app/` - Next.js App Router pages
+- `app/` - Next.js App Router pages (thin re-exports)
   - `app/auth/` - Login, sign-up, OAuth callback, error pages
   - `app/dashboard/` - Protected routes (transactions, categories, settings)
   - `app/layout.tsx` - Root layout with ThemeProvider
-- `components/shadcn/` - shadcn/ui component library (auto-imported)
+- `components/pages/` - Page components (HomePage, auth/*, dashboard/*)
 - `components/layout/` - App-specific components (dashboard-nav, header, etc.)
+- `lib/shadcn/` - shadcn/ui component library
 - `lib/supabase/` - Supabase client singleton pattern
 - `hooks/` - Custom hooks (useToast, useMobile)
 - `scripts/001_init_database.sql` - Database schema + RLS policies
@@ -62,7 +63,7 @@ Users have `sender` or `receiver` role (set at signup). RLS policies enforce:
 - **Formatting**: 100 char line width, single quotes, semicolons, trailing commas (es5)
 - **ESLint**: Flat config with `eslint.config.mjs`, extends `eslint-config-next`
 - **Prettier config** in `.prettierrc.json`
-- shadcn/ui components in `components/shadcn/` - use `import { Button } from "@/components/shadcn"`
+- shadcn/ui components in `lib/shadcn/` - use `import { Button } from "@/lib/shadcn"`
 
 ## Environment Variables
 

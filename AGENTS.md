@@ -15,10 +15,11 @@
 
 ## Structure
 
-- `app/` – Next.js app router
-- `components/shadcn/` – UI component library (shadcn/ui)
+- `app/` – Next.js app router (thin page re-exports)
+- `components/pages/` – Page components (HomePage, auth/*, dashboard/*)
 - `components/layout/` – layout components
-- `lib/` – utils, Supabase client
+- `lib/shadcn/` – shadcn/ui component library
+- `lib/supabase/` – utils, Supabase client
 - `hooks/` – custom hooks
 - `proxy.ts` – Edge middleware
 

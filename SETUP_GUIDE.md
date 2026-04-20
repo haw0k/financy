@@ -162,14 +162,15 @@ transactions
 
 ```
 components/
-├── shadcn/       # shadcn/ui components
-│   └── index.ts  # barrel file
-└── layout/       # custom layout components
-    └── index.ts
-app/              # Next.js pages
-lib/              # utils, Supabase client
-hooks/            # custom React hooks
-scripts/          # database migrations
+├── pages/               # Page components (HomePage, auth/*, dashboard/*)
+├── layout/              # Layout components
+└── index.ts             # Barrel exports
+lib/
+├── shadcn/              # shadcn/ui components
+└── supabase/            # Supabase clients
+app/                     # Next.js pages (thin re-exports)
+hooks/                   # Custom hooks
+scripts/                 # Database migrations
 ```
 
 ## Deployment to Vercel
