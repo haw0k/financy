@@ -78,7 +78,7 @@ export default function SignUpPage() {
                       placeholder="m@example.com"
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => { setEmail(e.target.value); }}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -90,7 +90,7 @@ export default function SignUpPage() {
                       type="password"
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => { setPassword(e.target.value); }}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -102,7 +102,7 @@ export default function SignUpPage() {
                       type="password"
                       required
                       value={repeatPassword}
-                      onChange={(e) => setRepeatPassword(e.target.value)}
+                      onChange={(e) => { setRepeatPassword(e.target.value); }}
                     />
                   </div>
                   <div className="grid gap-2">
@@ -110,7 +110,7 @@ export default function SignUpPage() {
                     <select
                       id="role"
                       value={role}
-                      onChange={(e) => setRole(e.target.value as 'sender' | 'receiver')}
+                      onChange={(e) => { setRole(e.target.value as 'sender' | 'receiver'); }}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="sender">Sender (Send Money)</option>

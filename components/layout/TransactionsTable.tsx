@@ -92,7 +92,7 @@ export function TransactionsTable({ userId }: { userId: string }) {
               <CardTitle>Transactions</CardTitle>
               <CardDescription>View and manage all your transactions</CardDescription>
             </div>
-            <Button onClick={() => setIsShowForm(true)} size="sm" className="gap-2">
+            <Button onClick={() => { setIsShowForm(true); }} size="sm" className="gap-2">
               <Plus className="h-4 w-4" />
               Add Transaction
             </Button>

@@ -150,7 +150,7 @@ export function CategoriesTable({ userId }: { userId: string }) {
                         id="name"
                         placeholder="e.g., Groceries"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => { setFormData({ ...formData, name: e.target.value }); }}
                         required
                       />
                     </div>
@@ -177,13 +177,13 @@ export function CategoriesTable({ userId }: { userId: string }) {
                           id="color"
                           type="color"
                           value={formData.color}
-                          onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, color: e.target.value }); }}
                           className="h-10 w-14 cursor-pointer p-1"
                         />
                         <Input
                           type="text"
                           value={formData.color}
-                          onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, color: e.target.value }); }}
                           className="flex-1"
                         />
                       </div>
