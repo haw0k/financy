@@ -73,3 +73,6 @@ Users have `sender` or `receiver` role (set at signup). RLS policies enforce:
 
 - Commit Message Convention: [Commit Message Convention](docs/commit-message-convention.md)
 - Naming Conventions: [Naming Conventions](docs/naming-conventions.md)
+
+## Git conventions
+- Always use `git switch` instead of `git checkout` for branch operations

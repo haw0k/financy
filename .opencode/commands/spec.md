@@ -6,7 +6,7 @@ description: "Create a feature spec and git branch. Usage: /spec <short feature 
 You are helping to spin up a new feature spec for this application.
 Always adhere to any rules or requirements set out in any AGENTS.md or CLAUDE.md files.
 
-The user's feature description is the text they typed after `/spec` in the chat.
+User input: $ARGUMENTS
 
 ## High level behavior
 
@@ -19,40 +19,37 @@ Then save the spec file to disk and print a short summary.
 
 ## Step 1. Check the current branch
 
-Check the current Git branch. If there are any uncommitted, unstaged,
-or untracked files in the working directory — abort the entire process.
-Tell the user to commit or stash changes before proceeding. DO NOT CONTINUE.
+Run `git status --porcelain` and check for uncommitted, unstaged, or untracked files.
+If any exist — abort entirely. Tell the user to commit or stash changes. DO NOT CONTINUE.
 
-## Step 2. Parse the user's input
+Current git status:
+!`git status --porcelain`
 
-From the user's message, extract:
+## Step 2. Parse the arguments
 
-1. `feature_title`
-   - Short, human readable title in Title Case
-   - Example: "Card Component for Dashboard Stats"
+From `$ARGUMENTS`, extract:
 
-2. `feature_slug`
-   - Rules: lowercase, kebab-case, only `a-z 0-9 -`,
-     replace spaces/punctuation with `-`, collapse multiple `-`,
-     trim `-` from edges, max 40 characters
-   - Example: `card-component-dashboard`
-
-3. `branch_name`
-   - Format: `feature/<feature_slug>`
-   - Example: `feature/card-component`
+1. `feature_title` — short, human readable, Title Case
+2. `feature_slug` — lowercase, kebab-case, only `a-z 0-9 -`, max 40 chars
+3. `branch_name` — format: `feature/<feature_slug>`
 
 If you cannot infer a sensible title and slug — ask the user to clarify instead of guessing.
 
 ## Step 3. Switch to a new Git branch
 
 Switch to the new branch before creating any files.
-If the branch name is already taken, append a number: e.g. `feature/card-component-01`.
+If the branch name is already taken, append a number: e.g. `feature/slug-01`.
 
-## Step 4. Read the spec template
+Existing branches:
+!`git branch --list`
 
-Read the file `_specs/template.md` to get the exact spec structure to follow.
+## Step 4. Draft the spec content
+
+Use the template below and save the spec to `_specs/<feature_slug>.md`.
 Do not add technical implementation details such as code examples.
-Save the resulting spec to `_specs/<feature_slug>.md`.
+
+Template:
+@_specs/template.md
 
 ## Step 5. Final output
 
