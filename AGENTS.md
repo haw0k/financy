@@ -12,6 +12,8 @@
 - `pnpm format:fix` – fix code formatting
 - `pnpm clean` – clean build cache
 - `pnpm lint && pnpm build` – full pre-deploy check
+- `pnpm test` – run Vitest tests (watch mode)
+- `pnpm test:run` – run Vitest tests (single run)
 
 ## Structure
 
@@ -25,6 +27,7 @@
 - `lib/supabase/` – Supabase client singleton pattern
 - `hooks/` – custom hooks (useToast, useMobile)
 - `scripts/001_init_database.sql` – Database schema + RLS policies
+- `tests/` – Vitest test files
 
 ## Tech Stack
 

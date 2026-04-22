@@ -19,6 +19,8 @@ pnpm format:check # Check formatting
 pnpm format:fix   # Fix formatting
 pnpm clean        # Clean .next build cache
 pnpm lint && pnpm build  # Full pre-deploy check
+pnpm test            # Run Vitest tests (watch mode)
+pnpm test:run        # Run Vitest tests (single run)
 ```
 
 ## Architecture
@@ -46,6 +48,7 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*)
 - `lib/supabase/` - Supabase client singleton pattern
 - `hooks/` - Custom hooks (useToast, useMobile)
 - `scripts/001_init_database.sql` - Database schema + RLS policies
+- `tests/` - Vitest test files
 
 ### Authentication Strategy
 

@@ -80,6 +80,7 @@ Visit `http://localhost:3000` and create your account!
 - **Auth**: Supabase Auth
 - **UI**: shadcn/ui + Tailwind CSS
 - **Charts**: Recharts
+- **Testing**: Vitest
 - **Dates**: date-fns
 
 ## Documentation
@@ -103,6 +104,7 @@ Visit `http://localhost:3000` and create your account!
 │   └── supabase/         # Supabase client & middleware
 ├── hooks/                # Custom hooks
 ├── scripts/              # SQL migration scripts
+├── tests/                # Vitest test files
 ├── components.json       # shadcn/ui configuration
 └── proxy.ts              # Auth token refresh
 ```
@@ -143,6 +145,10 @@ pnpm start
 
 # Lint and check types
 pnpm lint
+
+# Run tests
+pnpm test          # Watch mode
+pnpm test:run      # Single run
 ```
 
 ## Deployment

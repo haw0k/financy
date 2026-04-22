@@ -38,6 +38,8 @@ finance-tracker/
 ├── scripts/
 │   └── 001_init_database.sql    # Database initialization script
 │
+├── tests/                       # Vitest test files
+│
 ├── components.json              # shadcn/ui configuration
 ├── proxy.ts                     # Next.js middleware (auth token refresh)
 ├── SETUP_GUIDE.md               # Detailed setup instructions
@@ -115,6 +117,7 @@ finance-tracker/
 | **Styling**        | Tailwind CSS v4         |
 | **UI Components**  | shadcn/ui               |
 | **Charts**         | Recharts                |
+| **Testing**        | Vitest                  |
 | **Database**       | Supabase (PostgreSQL)   |
 | **Authentication** | Supabase Auth           |
 | **Date Library**   | date-fns                |
@@ -171,7 +174,14 @@ created_at (timestamp)
    pnpm dev
    ```
 
-4. **Visit Application**
+4. **Run Tests** (optional)
+
+   ```bash
+   pnpm test          # Watch mode
+   pnpm test:run      # Single run
+   ```
+
+5. **Visit Application**
    - Open http://localhost:3000
    - Sign up for an account
    - Choose your role (sender or receiver)
