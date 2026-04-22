@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type SubmitEvent } from 'react';
+import { type FC, useEffect, useState, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
   Card,
@@ -20,6 +20,10 @@ import {
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 
+interface ICategoriesTable {
+  userId: string;
+}
+
 interface ICategory {
   id: string;
   name: string;
@@ -28,7 +32,7 @@ interface ICategory {
   user_id: string;
 }
 
-export function CategoriesTable({ userId }: { userId: string }) {
+export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isShowForm, setIsShowForm] = useState(false);
@@ -294,4 +298,4 @@ export function CategoriesTable({ userId }: { userId: string }) {
       </Card>
     </div>
   );
-}
+};

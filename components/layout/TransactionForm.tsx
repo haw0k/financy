@@ -1,17 +1,22 @@
 'use client';
 
-import { useState, useEffect, type SubmitEvent } from 'react';
+import { type FC, useState, useEffect, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
 
-interface ITransactionFormProps {
+interface ITransactionForm {
   userId: string;
   onSuccess: () => void;
   onCancel: () => void;
   editingId: string | null;
 }
 
-export function TransactionForm({ userId, onSuccess, onCancel, editingId }: ITransactionFormProps) {
+export const TransactionForm: FC<ITransactionForm> = ({
+  userId,
+  onSuccess,
+  onCancel,
+  editingId,
+}) => {
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',
@@ -175,4 +180,4 @@ export function TransactionForm({ userId, onSuccess, onCancel, editingId }: ITra
       </CardContent>
     </Card>
   );
-}
+};

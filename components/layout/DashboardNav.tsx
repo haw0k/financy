@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -28,7 +29,7 @@ const navItems = [
   },
 ];
 
-export function DashboardNav() {
+export const DashboardNav: FC = () => {
   const pathname = usePathname();
 
   return (
@@ -65,4 +66,4 @@ export function DashboardNav() {
       </div>
     </nav>
   );
-}
+};

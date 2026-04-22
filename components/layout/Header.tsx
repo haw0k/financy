@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import { User } from '@supabase/supabase-js';
 import { LogOut, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -14,7 +15,11 @@ import {
 } from '@/lib/shadcn';
 import { createClient } from '@/lib/supabase/client';
 
-export function Header({ user }: { user: User }) {
+interface IHeader {
+  user: User;
+}
+
+export const Header: FC<IHeader> = ({ user }) => {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const supabase = createClient();
@@ -61,4 +66,4 @@ export function Header({ user }: { user: User }) {
       </div>
     </header>
   );
-}
+};

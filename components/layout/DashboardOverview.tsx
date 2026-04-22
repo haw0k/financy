@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
@@ -17,6 +17,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+
+interface IDashboardOverview {
+  userId: string;
+}
 
 interface IStats {
   total_balance: number;
@@ -37,7 +41,7 @@ interface ICategoryData {
   value: number;
 }
 
-export function DashboardOverview({ userId }: { userId: string }) {
+export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
   const [stats, setStats] = useState<IStats | null>(null);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
@@ -218,4 +222,4 @@ export function DashboardOverview({ userId }: { userId: string }) {
       </div>
     </div>
   );
-}
+};

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
   Card,
@@ -20,6 +20,10 @@ import {
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layout';
 
+interface ITransactionsTable {
+  userId: string;
+}
+
 interface ITransaction {
   id: string;
   amount: number;
@@ -31,7 +35,7 @@ interface ITransaction {
   receiver_id: string;
 }
 
-export function TransactionsTable({ userId }: { userId: string }) {
+export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -237,4 +241,4 @@ export function TransactionsTable({ userId }: { userId: string }) {
       </Card>
     </div>
   );
-}
+};
