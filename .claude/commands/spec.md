@@ -13,7 +13,7 @@ User input: $ARGUMENTS
 Your job will be to turn the user input above into:
 
 - A human friendly feature title in kebab-case (e.g. new-heist-form)
-- A safe git branch name not already taken (e.g. claude/feature/new-heist-form)
+- A safe git branch name not already taken (e.g. feature/new-heist-form)
 - A detailed markdown spec file under the _specs/ directory
 
 Then save the spec file to disk and print a short summary of what you did.
@@ -43,14 +43,14 @@ From `$ARGUMENTS`, extract:
    - Example: `card-component` or `card-component-dashboard`.
 
 3. `branch_name`  
-   - Format: `claude/feature/<feature_slug>`  
-   - Example: `claude/feature/card-component`.
+   - Format: `feature/<feature_slug>`  
+   - Example: `feature/card-component`.
 
 If you cannot infer a sensible `feature_title` and `feature_slug`, ask the user to clarify instead of guessing.
 
 ## Step 3. Switch to a new Git branch
 
-Before making any content, switch to a new Git branch using the `branch_name` derived from the `$ARGUMENTS`. If the branch name is already taken, then append a version number to it: e.g. `claude/feature/card-component-01`
+Before making any content, switch to a new Git branch using the `branch_name` derived from the `$ARGUMENTS`. If the branch name is already taken, then append a version number to it: e.g. `feature/card-component-01`
 
 ## Step 4. Draft the spec content
 
