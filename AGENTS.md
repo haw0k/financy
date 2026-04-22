@@ -2,7 +2,7 @@
 
 ## Commands
 
-- `pnpm dev` – start dev server
+- `pnpm dev` – start dev server (http://localhost:3000)
 - `pnpm build` – production build
 - `pnpm start` – start production server
 - `pnpm lint` – lint check
@@ -16,28 +16,25 @@
 ## Structure
 
 - `app/` – Next.js app router (thin page re-exports)
+  - `app/auth/` – Login, sign-up, OAuth callback, error pages
+  - `app/dashboard/` – Protected routes (transactions, categories, settings)
+  - `app/layout.tsx` – Root layout with ThemeProvider
 - `components/pages/` – Page components (HomePage, auth/*, dashboard/*)
-- `components/layout/` – layout components
-- `lib/shadcn/` – shadcn/ui component library
-- `lib/supabase/` – utils, Supabase client
-- `hooks/` – custom hooks
-- `proxy.ts` – Edge middleware
+- `components/layout/` – layout components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `lib/shadcn/` – shadcn/ui component library (~50 components)
+- `lib/supabase/` – Supabase client singleton pattern
+- `hooks/` – custom hooks (useToast, useMobile)
+- `scripts/001_init_database.sql` – Database schema + RLS policies
 
-## Env
+## Tech Stack
 
-- `.env` contains secrets (gitignored). Use `.env.example` as template.
-- Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## Notes
-
-- `.env.local` is gitignored but available locally
-- Next.js 16.2, Tailwind CSS v4
-- Uses pnpm as package manager
+- Next.js 16.2.4 (App Router)
+- React 19.2.5
+- Supabase (PostgreSQL + Auth)
+- Tailwind CSS
+- pnpm as package manager
 
 ## Documentation
 
 - Commit Message Convention: [Commit Message Convention](docs/commit-message-convention.md)
-
-## Documentation
-
-- Naming conventions: [Naming Conventions](docs/naming-conventions.md)
+- Naming Conventions: [Naming Conventions](docs/naming-conventions.md)

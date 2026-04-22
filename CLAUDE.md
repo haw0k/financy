@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Financy is a full-stack financial management application built with Next.js 16 (App Router), React 19, and Supabase (PostgreSQL + Auth). It features role-based access (sender/receiver), transaction tracking, category management, and visual analytics via Recharts.
+Financy is a full-stack financial management application built with Next.js 16.2.4 (App Router), React 19.2.5, and Supabase (PostgreSQL + Auth). It features role-based access (sender/receiver), transaction tracking, category management, and visual analytics via Recharts.
 
 ## Commands
 
@@ -41,8 +41,8 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*)
   - `app/dashboard/` - Protected routes (transactions, categories, settings)
   - `app/layout.tsx` - Root layout with ThemeProvider
 - `components/pages/` - Page components (HomePage, auth/*, dashboard/*)
-- `components/layout/` - App-specific components (dashboard-nav, header, etc.)
-- `lib/shadcn/` - shadcn/ui component library
+- `components/layout/` - App-specific components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase client singleton pattern
 - `hooks/` - Custom hooks (useToast, useMobile)
 - `scripts/001_init_database.sql` - Database schema + RLS policies
@@ -61,25 +61,11 @@ Users have `sender` or `receiver` role (set at signup). RLS policies enforce:
 ## Code Style
 
 - **Formatting**: 100 char line width, single quotes, semicolons, trailing commas (es5)
-- **ESLint**: Flat config with `eslint.config.mjs`, extends `eslint-config-next`
+- **ESLint**: Flat config with `eslint.config.mjs`, extends `eslint-config-next/core-web-vitals`
 - **Prettier config** in `.prettierrc.json`
 - shadcn/ui components in `lib/shadcn/` - use `import { Button } from "@/lib/shadcn"`
-
-## Environment Variables
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=       # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Public anon key
-```
-
-## Database Schema
-
-Three tables with RLS: `profiles` (id, role, user_id), `categories` (id, name, type, user_id), `transactions` (id, amount, type, category_id, sender_id, receiver_id, description, date). Default categories created by SQL migration script in `scripts/001_init_database.sql`.
 
 ## Documentation
 
 - Commit Message Convention: [Commit Message Convention](docs/commit-message-convention.md)
-
-## Documentation
-
-- Naming conventions: [Naming Conventions](docs/naming-conventions.md)
+- Naming Conventions: [Naming Conventions](docs/naming-conventions.md)
