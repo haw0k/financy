@@ -41,3 +41,10 @@
 
 - Commit Message Convention: [Commit Message Convention](docs/commit-message-convention.md)
 - Naming Conventions: [Naming Conventions](docs/naming-conventions.md)
+
+## Spec-Driven Development
+
+- All features must have a spec in `_spec/<feature-name>.md` before implementation
+- Check `_spec/` for existing specs before starting any task
+- When implementing, reference the spec and mark checklist items as done
+- Never implement a feature without a corresponding spec file
