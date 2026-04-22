@@ -19,7 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geist.className} ${geistMono.className} bg-background font-sans antialiased`}>
+      <body
+        className={`${geist.className} ${geistMono.className} bg-background font-sans antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

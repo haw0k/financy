@@ -21,7 +21,7 @@
   - `app/auth/` – Login, sign-up, OAuth callback, error pages
   - `app/dashboard/` – Protected routes (transactions, categories, settings)
   - `app/layout.tsx` – Root layout with ThemeProvider
-- `components/pages/` – Page components (HomePage, auth/*, dashboard/*)
+- `components/pages/` – Page components (HomePage, auth/_, dashboard/_)
 - `components/layout/` – layout components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
 - `lib/shadcn/` – shadcn/ui component library (~50 components)
 - `lib/supabase/` – Supabase client singleton pattern

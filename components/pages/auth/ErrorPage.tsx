@@ -1,6 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
 
-export default async function ErrorPage({ searchParams }: { searchParams: Promise<{ error: string }> }) {
+export default async function ErrorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error: string }>;
+}) {
   const params = await searchParams;
 
   return (

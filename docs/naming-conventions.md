@@ -13,11 +13,13 @@ examples: `App`, `CommonInput`
 lowerCamelCase
 
 #### React Component internal boolean const
+
 `is` + CamelCase
 
 examples: `isLoading`, `isInvalid`
 
 #### React Component external handler function
+
 `on` + CamelCase
 
 examples: `onClick`, `onClose`

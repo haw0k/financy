@@ -10,20 +10,9 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/lib/shadcn/Button';
 import { Input } from '@/lib/shadcn/Input';
 import { Separator } from '@/lib/shadcn/Separator';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/lib/shadcn/Sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/lib/shadcn/Sheet';
 import { Skeleton } from '@/lib/shadcn/Skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/lib/shadcn/Tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/lib/shadcn/Tooltip';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

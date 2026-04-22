@@ -42,7 +42,7 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*)
   - `app/auth/` - Login, sign-up, OAuth callback, error pages
   - `app/dashboard/` - Protected routes (transactions, categories, settings)
   - `app/layout.tsx` - Root layout with ThemeProvider
-- `components/pages/` - Page components (HomePage, auth/*, dashboard/*)
+- `components/pages/` - Page components (HomePage, auth/_, dashboard/_)
 - `components/layout/` - App-specific components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase client singleton pattern
@@ -57,6 +57,7 @@ Middleware handles session refresh via `supabase.auth.getUser()`. Protected rout
 ### Role System
 
 Users have `sender` or `receiver` role (set at signup). RLS policies enforce:
+
 - `profiles`: Users see only their own profile
 - `categories`: Users see only their own categories
 - `transactions`: Users see transactions where they are sender OR receiver

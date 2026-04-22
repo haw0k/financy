@@ -14,7 +14,7 @@ Your job will be to turn the user input above into:
 
 - A human friendly feature title in kebab-case (e.g. new-heist-form)
 - A safe git branch name not already taken (e.g. feature/new-heist-form)
-- A detailed markdown spec file under the _specs/ directory
+- A detailed markdown spec file under the \_specs/ directory
 
 Then save the spec file to disk and print a short summary of what you did.
 
@@ -26,24 +26,24 @@ Check the current Git branch, and abort this entire process if there are any unc
 
 From `$ARGUMENTS`, extract:
 
-1. `feature_title`  
-   - A short, human readable title in Title Case.  
+1. `feature_title`
+   - A short, human readable title in Title Case.
    - Example: "Card Component for Dashboard Stats".
 
-2. `feature_slug`  
-   - A git safe slug.  
-   - Rules:  
-     - Lowercase 
-     - Kebab-case 
-     - Only `a-z`, `0-9` and `-`  
-     - Replace spaces and punctuation with `-`  
-     - Collapse multiple `-` into one  
-     - Trim `-` from start and end  
-     - Maximum length 40 characters  
+2. `feature_slug`
+   - A git safe slug.
+   - Rules:
+     - Lowercase
+     - Kebab-case
+     - Only `a-z`, `0-9` and `-`
+     - Replace spaces and punctuation with `-`
+     - Collapse multiple `-` into one
+     - Trim `-` from start and end
+     - Maximum length 40 characters
    - Example: `card-component` or `card-component-dashboard`.
 
-3. `branch_name`  
-   - Format: `feature/<feature_slug>`  
+3. `branch_name`
+   - Format: `feature/<feature_slug>`
    - Example: `feature/card-component`.
 
 If you cannot infer a sensible `feature_title` and `feature_slug`, ask the user to clarify instead of guessing.
@@ -54,7 +54,7 @@ Before making any content, switch to a new Git branch using the `branch_name` de
 
 ## Step 4. Draft the spec content
 
-Create a markdown spec document that Plan mode can use directly and save it in the _specs folder using the `feature_slug`. Use the exact structure as defined in the spec template file here: @_specs/template.md. Do not add technical implementation details such as code examples.
+Create a markdown spec document that Plan mode can use directly and save it in the \_specs folder using the `feature_slug`. Use the exact structure as defined in the spec template file here: @\_specs/template.md. Do not add technical implementation details such as code examples.
 
 ## Step 5. Final output to the user
 

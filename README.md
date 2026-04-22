@@ -192,4 +192,3 @@ MIT - Feel free to use for your projects
 - **Supabase Issues**: [Supabase Docs](https://supabase.com/docs)
 - **Next.js Issues**: [Next.js Docs](https://nextjs.org/docs)
 - **UI Component Issues**: [shadcn/ui](https://ui.shadcn.com)
-
