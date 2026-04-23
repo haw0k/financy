@@ -19,20 +19,10 @@ import {
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layout';
+import type { ITransaction } from '@/interfaces';
 
 interface ITransactionsTable {
   userId: string;
-}
-
-interface ITransaction {
-  id: string;
-  amount: number;
-  type: 'income' | 'expense';
-  date: string;
-  description: string | null;
-  category_id: string | null;
-  sender_id: string;
-  receiver_id: string;
 }
 
 export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {

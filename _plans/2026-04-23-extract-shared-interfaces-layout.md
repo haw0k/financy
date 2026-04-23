@@ -32,10 +32,10 @@ Two different `ITransaction` interfaces with different structures:
 
 ```
 interfaces/
-├── index.ts          # Barrel file
-├── transactions.ts   # Transaction types
-├── categories.ts    # Category types
-└── stats.ts         # Statistics types
+├── index.ts                 # Barrel file
+├── transactions.interface.ts # Transaction types
+├── categories.interface.ts     # Category types
+└── stats.interface.ts        # Statistics types
 ```
 
 ### Type Definitions
@@ -95,9 +95,9 @@ export interface ICategoryData {
 
 **`interfaces/index.ts`**
 ```typescript
-export * from './transactions';
-export * from './categories';
-export * from './stats';
+export * from './transactions.interface';
+export * from './categories.interface';
+export * from './stats.interface';
 ```
 
 ## Component Updates
@@ -126,9 +126,9 @@ Only extract **domain types** (Transaction, Category, Stats, CategoryData). Comp
 
 ## Files to Create
 
-1. `interfaces/transactions.ts` — Transaction types
-2. `interfaces/categories.ts` — Category types
-3. `interfaces/stats.ts` — Statistics and chart types
+1. `interfaces/transactions.interface.ts` — Transaction types
+2. `interfaces/categories.interface.ts` — Category types
+3. `interfaces/stats.interface.ts` — Statistics and chart types
 4. `interfaces/index.ts` — Barrel file
 
 ## Files to Modify
@@ -145,8 +145,15 @@ Only extract **domain types** (Transaction, Category, Stats, CategoryData). Comp
 - [ ] Component-specific prop interfaces remain inline (not extracted)
 - [ ] TypeScript compiles without errors: `pnpm type-check`
 - [ ] No breaking changes to existing functionality
+- [ ] Update `_specs/_description.md` and `_plans/_description.md` to mark task as completed
 
 ## Testing
 
 - Run `pnpm type-check` to verify no type errors
 - Verify all layout components still render correctly
+
+## Post-Implementation
+
+After completing the implementation, update the tracking files:
+- Mark task as completed in `_specs/_description.md`
+- Mark task as completed in `_plans/_description.md`

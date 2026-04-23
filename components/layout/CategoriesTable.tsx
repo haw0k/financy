@@ -19,17 +19,10 @@ import {
   TableRow,
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
+import type { ICategory } from '@/interfaces';
 
 interface ICategoriesTable {
   userId: string;
-}
-
-interface ICategory {
-  id: string;
-  name: string;
-  type: 'income' | 'expense';
-  color: string;
-  user_id: string;
 }
 
 export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {

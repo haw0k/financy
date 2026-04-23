@@ -4,6 +4,7 @@ import { type FC, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import type { ITransaction, IStats, ICategoryData } from '@/interfaces';
 import {
   LineChart,
   Line,
@@ -20,25 +21,6 @@ import {
 
 interface IDashboardOverview {
   userId: string;
-}
-
-interface IStats {
-  total_balance: number;
-  total_income: number;
-  total_expense: number;
-}
-
-interface ITransaction {
-  id: string;
-  amount: number;
-  type: 'income' | 'expense';
-  date: string;
-  description: string | null;
-}
-
-interface ICategoryData {
-  name: string;
-  value: number;
 }
 
 export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
