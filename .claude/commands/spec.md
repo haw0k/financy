@@ -1,7 +1,7 @@
 ---
 description: Create a feature spec file and branch from a short idea
 argument-hint: Short feature description
-allowed-tools: Read, Write, Glob, Bash(git switch:*)
+allowed-tools: Read, Write, Glob, Bash(git switch:*), Bash(git status:*), Bash(git branch:*), Bash(date:*)
 ---
 
 You are helping to spin up a new feature spec for this application, from a short idea provided in the user input below. Always adhere to any rules or requirements set out in any CLAUDE.md files when responding.
@@ -12,9 +12,9 @@ User input: $ARGUMENTS
 
 Your job will be to turn the user input above into:
 
-- A human friendly feature title in kebab-case (e.g. new-heist-form)
-- A safe git branch name not already taken (e.g. feature/new-heist-form)
-- A detailed markdown spec file under the \_specs/ directory
+- A human friendly feature title in Title Case
+- A safe git branch name not already taken
+- A detailed markdown spec file under the `_spec/` directory
 
 Then save the spec file to disk and print a short summary of what you did.
 
@@ -26,42 +26,52 @@ Check the current Git branch, and abort this entire process if there are any unc
 
 From `$ARGUMENTS`, extract:
 
-1. `feature_title`
-   - A short, human readable title in Title Case.
-   - Example: "Card Component for Dashboard Stats".
+1. `feature_type` — conventional commit prefix:
+   `chore` | `docs` | `feat` | `fix` | `perf` | `refactor` | `test`;
+   Infer from context if not explicitly stated.
 
-2. `feature_slug`
-   - A git safe slug.
+2. `feature_title`
+   - A short, human readable title in Title Case.
+   - Example: "Extract Shared Interfaces".
+
+3. `feature_slug`
    - Rules:
-     - Lowercase
-     - Kebab-case
-     - Only `a-z`, `0-9` and `-`
+     - Lowercase, kebab-case, only `a-z`, `0-9` and `-`
      - Replace spaces and punctuation with `-`
      - Collapse multiple `-` into one
      - Trim `-` from start and end
      - Maximum length 40 characters
-   - Example: `card-component` or `card-component-dashboard`.
+     - Do NOT include the type prefix in the slug
+   - Example: `extract-shared-interfaces`
 
-3. `branch_name`
-   - Format: `feature/<feature_slug>`
-   - Example: `feature/card-component`.
+4. `branch_name`
+   - Format: `<feature_type>/<feature_slug>`
+   - Example: `refactor/extract-shared-interfaces`
 
 If you cannot infer a sensible `feature_title` and `feature_slug`, ask the user to clarify instead of guessing.
 
 ## Step 3. Switch to a new Git branch
 
-Before making any content, switch to a new Git branch using the `branch_name` derived from the `$ARGUMENTS`. If the branch name is already taken, then append a version number to it: e.g. `feature/card-component-01`
+Before making any content, switch to a new Git branch using the `branch_name` derived from the `$ARGUMENTS`. If the branch name is already taken, then append a version number to it: e.g. `refactor/extract-shared-interfaces-01`
 
 ## Step 4. Draft the spec content
 
-Create a markdown spec document that Plan mode can use directly and save it in the \_specs folder using the `feature_slug`. Use the exact structure as defined in the spec template file here: @\_specs/template.md. Do not add technical implementation details such as code examples.
+Get today's date by running `date +%Y-%m-%d`.
 
-## Step 5. Final output to the user
+Create a markdown spec document that Plan mode can use directly and save it to `_spec/<date>-<feature_slug>.md`. Use the exact structure as defined in the spec template file here: @\_spec/template.md. Do not add technical implementation details such as code examples.
+
+## Step 5. Update the index
+
+Append a line to `_spec/_description.md`:
+
+- [ ] [<feature_type>: <feature_title>](<date>-<feature_slug>.md) — `<date>`
+
+## Step 6. Final output to the user
 
 After the file is saved, respond to the user with a short summary in this exact format:
 
 Branch: <branch_name>
-Spec file: specs/<feature_slug>.md
-Title: <feature_title>
+Spec file: _spec/<date>-<feature_slug>.md
+Title: <feature_type>: <feature_title>
 
-Do not repeat the full spec in the chat output unless the user explicitly asks to see it. The main goal is to save the spec file and report where it lives and what branch name to use.
+Do not repeat the full spec in the chat output unless the user explicitly asks to see it.

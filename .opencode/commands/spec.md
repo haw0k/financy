@@ -13,7 +13,7 @@ User input: $ARGUMENTS
 Turn the user's input into:
 - A human friendly feature title in Title Case
 - A safe git branch name not already taken
-- A detailed markdown spec file under the `_specs/` directory
+- A detailed markdown spec file under the `_spec/` directory
 
 Then save the spec file to disk and print a short summary.
 
@@ -29,34 +29,51 @@ Current git status:
 
 From `$ARGUMENTS`, extract:
 
-1. `feature_title` — short, human readable, Title Case
-2. `feature_slug` — lowercase, kebab-case, only `a-z 0-9 -`, max 40 chars
-3. `branch_name` — format: `feature/<feature_slug>`
+1. `feature_type` — conventional commit prefix:
+  `chore` | `docs` | `feat` | `fix` | `perf` | `refactor` | `test`;
+  Infer from context if not explicitly stated.
 
-If you cannot infer a sensible title and slug — ask the user to clarify instead of guessing.
+2. `feature_title` — short, human readable, format: `<type>: <Title Case description>`
+  Example: `refactor: Extract Shared Interfaces`
+
+3. `feature_slug` — lowercase, kebab-case, only `a-z 0-9 -`, max 40 chars,
+  do NOT include the type prefix in the slug
+  Example: `extract-shared-interfaces`
+
+4. `branch_name` — format: `<type>/<feature_slug>`
+  Example: `refactor/extract-shared-interfaces`
 
 ## Step 3. Switch to a new Git branch
 
 Switch to the new branch before creating any files.
-If the branch name is already taken, append a number: e.g. `feature/slug-01`.
+If the branch name is already taken, append a number: e.g. `refactor/slug-01`.
 
 Existing branches:
 !`git branch --list`
 
+Current date:
+!`date +%Y-%m-%d`
+
 ## Step 4. Draft the spec content
 
-Use the template below and save the spec to `_specs/<feature_slug>.md`.
+Use the template below and save the spec to `_spec/<date>-<feature_slug>.md`.
 Do not add technical implementation details such as code examples.
 
 Template:
-@_specs/template.md
+@_spec/template.md
 
-## Step 5. Final output
+## Step 5. Update the index
+
+Append a line to `_spec/_description.md`:
+
+- [ ] [<feature_type>: <feature_title>](<date>-<feature_slug>.md) — `<date>`
+
+## Step 6. Final output
 
 After the file is saved, respond with exactly this format and nothing more:
 
 Branch: <branch_name>
-Spec file: _specs/<feature_slug>.md
-Title: <feature_title>
+Spec file: _spec/<date>-<feature_slug>.md
+Title: <feature_type>: <feature_title>
 
 Do not repeat the full spec in chat unless the user explicitly asks for it.
