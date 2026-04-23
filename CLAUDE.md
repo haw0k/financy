@@ -76,7 +76,7 @@ Users have `sender` or `receiver` role (set at signup). RLS policies enforce:
 
 ## Spec-Driven Development
 
-All features must have a spec in `_spec/<date>-<feature_slug>.md` before implementation. Check `_specs/` for existing specs before starting any task. When implementing, reference the spec and mark checklist items as done. Never implement a feature without a corresponding spec file. After completing a plan/spec task, update `_specs/_description.md` and `_plans/_description.md` to mark as completed.
+All features must have a spec in `_specs/<date>-<feature_slug>.md` before implementation. Check `_specs/` for existing specs before starting any task. When implementing, reference the spec and mark checklist items as done. Never implement a feature without a corresponding spec file. After completing a plan/spec task, update `_specs/_description.md` and `_plans/_description.md` to mark as completed.
 
 ## Git conventions
 

@@ -44,8 +44,8 @@
 
 ## Spec-Driven Development
 
-- All features must have a spec in `_spec/<feature-name>.md` before implementation
-- Check `_spec/` for existing specs before starting any task
+- All features must have a spec in `_specs/<feature-name>.md` before implementation
+- Check `_specs/` for existing specs before starting any task
 - When implementing, reference the spec and mark checklist items as done
 - Never implement a feature without a corresponding spec file
 - After completing a plan/spec task, update `_specs/_description.md` and `_plans/_description.md` to mark as completed
