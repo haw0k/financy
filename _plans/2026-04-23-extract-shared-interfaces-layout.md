@@ -102,25 +102,27 @@ export * from './stats';
 
 ## Component Updates
 
+Only extract **domain types** (Transaction, Category, Stats, CategoryData). Component-specific prop interfaces (`I<ComponentName>`) remain inline in their respective component files — **do not extract**.
+
 ### TransactionsTable.tsx
-- Remove `ITransactionsTable`, `ITransaction` interfaces
+- Remove `ITransaction` interface (domain type)
 - Import: `import type { ITransaction } from '@/interfaces'`
-- Keep `ITransactionsTable` as component prop type (component-specific, stays inline)
+- **Keep** `ITransactionsTable` inline (component-specific)
 
 ### CategoriesTable.tsx
-- Remove `ICategoriesTable`, `ICategory` interfaces
+- Remove `ICategory` interface (domain type)
 - Import: `import type { ICategory } from '@/interfaces'`
-- Keep `ICategoriesTable` as component prop type (component-specific, stays inline)
+- **Keep** `ICategoriesTable` inline (component-specific)
 
 ### DashboardOverview.tsx
-- Remove `IDashboardOverview`, `IStats`, `ITransaction`, `ICategoryData` interfaces
-- Import: `import type { IStats, ITransaction, ICategoryData } from '@/interfaces'`
-- Keep `IDashboardOverview` as component prop type (component-specific, stays inline)
+- Remove `IStats`, `ICategoryData`, `ITransaction` interfaces (domain types)
+- Import: `import type { ITransaction, IStats, ICategoryData } from '@/interfaces'`
+- **Keep** `IDashboardOverview` inline (component-specific)
 
 ### TransactionForm.tsx
-- Remove `ITransactionForm` interface
-- Import: `import type { ITransactionInput } from '@/interfaces'`
-- Rename to use component-specific name for props (e.g., `TransactionFormProps`)
+- No domain types to extract (has only `ITransactionForm` prop type)
+- **Keep** `ITransactionForm` inline (component-specific)
+- No changes needed
 
 ## Files to Create
 
@@ -131,10 +133,9 @@ export * from './stats';
 
 ## Files to Modify
 
-1. `components/layout/TransactionsTable.tsx` — Update imports
-2. `components/layout/CategoriesTable.tsx` — Update imports
-3. `components/layout/DashboardOverview.tsx` — Update imports
-4. `components/layout/TransactionForm.tsx` — Update imports
+1. `components/layout/TransactionsTable.tsx` — Update imports (remove ITransaction)
+2. `components/layout/CategoriesTable.tsx` — Update imports (remove ICategory)
+3. `components/layout/DashboardOverview.tsx` — Update imports (remove IStats, ICategoryData)
 
 ## Acceptance Criteria
 
