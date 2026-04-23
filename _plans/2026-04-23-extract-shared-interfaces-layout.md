@@ -145,15 +145,8 @@ Only extract **domain types** (Transaction, Category, Stats, CategoryData). Comp
 - [ ] Component-specific prop interfaces remain inline (not extracted)
 - [ ] TypeScript compiles without errors: `pnpm type-check`
 - [ ] No breaking changes to existing functionality
-- [ ] Update `_specs/_description.md` and `_plans/_description.md` to mark task as completed
 
 ## Testing
 
 - Run `pnpm type-check` to verify no type errors
 - Verify all layout components still render correctly
-
-## Post-Implementation
-
-After completing the implementation, update the tracking files:
-- Mark task as completed in `_specs/_description.md`
-- Mark task as completed in `_plans/_description.md`
