@@ -27,13 +27,6 @@ Add a new `category-types` table to organize categories into groups (e.g., "Cons
 
 Add `type_id` column referencing `category-types.id`
 
-### Initial Data
-
-Seeding categories with type_id:
-
-- Category "Headphones" → type "Consumer goods"
-- Category "Meat" → type "Food"
-
 ## Possible Edge Cases
 
 - User deletes a category type that is still referenced by categories
