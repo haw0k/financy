@@ -4,40 +4,36 @@
 
 The application uses `next-themes` with `enableSystem` and `defaultTheme="system"` for automatic system theme detection. Chrome works correctly, but Firefox fails to detect OS dark mode — users with dark mode in OS see light theme in the application.
 
-The root cause is that **ThemeScript is missing from `app/layout.tsx`**. This script is essential for:
-- Reading system preference before React hydration
-- Preventing theme flash
-- Ensuring consistent behavior across browsers
-
-Current layout.tsx does NOT include ThemeScript, relying only on the client-side ThemeProvider which fails in Firefox.
+The root cause was that `ThemeProvider` from next-themes reads saved theme from localStorage and uses it even when the user previously selected a different theme. Additionally, the initial theme class wasn't set before React hydration.
 
 ## Implementation
 
 ### Critical Files
 
-- `app/layout.tsx` — Add ThemeScript for cross-browser SSR theme detection
-- `components/layout/ThemeProvider.tsx` — Already correct, no changes needed
+- `app/layout.tsx` — Add inline script for cross-browser theme detection
+- `components/layout/Header.tsx` — Remove theme persistence on toggle
 
 ### Changes
 
-1. **Add ThemeScript to `app/layout.tsx`**
-   - Import `ThemeScript` from `next-themes`
-   - Add `<ThemeScript />` inside `<head>` tag
-   - Place it before any other scripts for earliest possible execution
-   - This enables next-themes to read `prefers-color-scheme` before hydration
+1. **Add inline script to `app/layout.tsx`**
+   - Script runs before React hydration
+   - Reads `prefers-color-scheme` using `window.matchMedia`
+   - Sets `.dark` class on `<html>` element
+   - Sets `colorScheme` style property
 
-2. **Update ThemeProvider props in `app/layout.tsx`**
-   - Remove `disableTransitionOnChange` prop — it can interfere with theme detection
-   - Add `enableColorScheme={true}` for browsers to respect theme
+2. **Update `Header.tsx` toggle button**
+   - When user toggles theme, remove `theme` key from localStorage
+   - This ensures next page load uses system preference
 
-Note: `components/layout/ThemeProvider.tsx` is a thin wrapper and needs no changes.
+### Result
+
+- First load (no localStorage) → theme from OS
+- Toggle theme → changes immediately but not saved
+- Reload → back to OS theme
 
 ## Verification
 
-1. `pnpm dev` — Start dev server
-2. Test in Firefox with OS dark mode — theme should automatically be dark
-3. Test in Firefox with OS light mode — theme should automatically be light
-4. Test in Chrome to confirm it still works
-5. Test switching OS theme while app is open in both browsers
-6. Verify no theme flash on page load
-7. `pnpm test` — Run existing tests
+1. Clear localStorage (`localStorage.clear()`)
+2. Open page with dark OS theme → should show dark
+3. Click toggle → shows light/dark based on current state
+4. Reload page → returns to OS theme

@@ -51,4 +51,5 @@
 - After completing a plan/spec task, update `_specs/_description.md` and `_plans/_description.md` to mark as completed
 
 ## Git conventions
+
 - Always use `git switch` instead of `git checkout` for branch operations

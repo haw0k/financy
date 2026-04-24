@@ -14,7 +14,7 @@ Your job will be to turn the user input above into:
 
 - A human friendly feature title in Title Case
 - A safe git branch name not already taken
-- A detailed markdown spec file under the `_spec/` directory
+- A detailed markdown spec file under the `_specs/` directory
 
 Then save the spec file to disk and print a short summary of what you did.
 
@@ -58,11 +58,11 @@ Before making any content, switch to a new Git branch using the `branch_name` de
 
 Get today's date by running `date +%Y-%m-%d`.
 
-Create a markdown spec document that Plan mode can use directly and save it to `_spec/<date>-<feature_slug>.md`. Use the exact structure as defined in the spec template file here: @\_spec/template.md. Do not add technical implementation details such as code examples.
+Create a markdown spec document that Plan mode can use directly and save it to `_specs/<date>-<feature_slug>.md`. Use the exact structure as defined in the spec template file here: @\_specs/template.md. Do not add technical implementation details such as code examples.
 
 ## Step 5. Update the index
 
-Append a line to `_spec/_description.md`:
+Append a line to `_specs/_description.md`:
 
 - [ ] [<feature_type>: <feature_title>](<date>-<feature_slug>.md) — `<date>`
 
@@ -71,7 +71,7 @@ Append a line to `_spec/_description.md`:
 After the file is saved, respond to the user with a short summary in this exact format:
 
 Branch: <branch_name>
-Spec file: _spec/<date>-<feature_slug>.md
+Spec file: \_specs/<date>-<feature_slug>.md
 Title: <feature_type>: <feature_title>
 
 Do not repeat the full spec in the chat output unless the user explicitly asks to see it.

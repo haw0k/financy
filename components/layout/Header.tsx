@@ -29,18 +29,20 @@ export const Header: FC<IHeader> = ({ user }) => {
     router.push('/auth/login');
   };
 
+  const handleToggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+    // Remove from localStorage so system preference applies on next load
+    try {
+      localStorage.removeItem('theme');
+    } catch {}
+  };
+
   return (
     <header className="border-b border-border bg-card">
       <div className="flex h-14 items-center justify-between px-4 md:px-8">
         <div className="text-sm text-muted-foreground">{user?.email}</div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              setTheme(theme === 'dark' ? 'light' : 'dark');
-            }}
-          >
+          <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>

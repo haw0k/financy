@@ -52,24 +52,30 @@ Save the plan to `_plans/<date>-<feature_slug>.md` using this structure:
 # Plan: <feature_type>: <feature_title>
 
 ## Spec
+
 Link: [<feature_title>](_spec/<date>-<feature_slug>.md) (if exists)
 
 ## Current State
+
 Brief description of the current state of the codebase relevant to this plan.
 
 ## Implementation Steps
 
 ### Phase 1 — <phase title>
+
 - [ ] Step 1
 - [ ] Step 2
 
 ### Phase 2 — <phase title>
+
 - [ ] Step 3
 
 ## Risks & Notes
+
 - ...
 
 ## Definition of Done
+
 - [ ] ...
 ```
 
@@ -85,7 +91,7 @@ Append a line to `_plans/_description.md` (create the file if it doesn't exist):
 
 After the file is saved, respond to the user with a short summary in this exact format:
 
-Plan file: _plans/<date>-<feature_slug>.md
+Plan file: \_plans/<date>-<feature_slug>.md
 Title: <feature_type>: <feature_title>
 
 Do not repeat the full plan in the chat output unless the user explicitly asks to see it.

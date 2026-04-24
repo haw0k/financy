@@ -1,6 +1,6 @@
 ---
 name: spec
-description: "Create a feature spec and git branch. Usage: /spec <short feature description>"
+description: 'Create a feature spec and git branch. Usage: /spec <short feature description>'
 ---
 
 You are helping to spin up a new feature spec for this application.
@@ -11,9 +11,10 @@ User input: $ARGUMENTS
 ## High level behavior
 
 Turn the user's input into:
+
 - A human friendly feature title in Title Case
 - A safe git branch name not already taken
-- A detailed markdown spec file under the `_spec/` directory
+- A detailed markdown spec file under the `_specs/` directory
 
 Then save the spec file to disk and print a short summary.
 
@@ -30,18 +31,18 @@ Current git status:
 From `$ARGUMENTS`, extract:
 
 1. `feature_type` — conventional commit prefix:
-  `chore` | `docs` | `feat` | `fix` | `perf` | `refactor` | `test`;
-  Infer from context if not explicitly stated.
+   `chore` | `docs` | `feat` | `fix` | `perf` | `refactor` | `test`;
+   Infer from context if not explicitly stated.
 
 2. `feature_title` — short, human readable, format: `<type>: <Title Case description>`
-  Example: `refactor: Extract Shared Interfaces`
+   Example: `refactor: Extract Shared Interfaces`
 
 3. `feature_slug` — lowercase, kebab-case, only `a-z 0-9 -`, max 40 chars,
-  do NOT include the type prefix in the slug
-  Example: `extract-shared-interfaces`
+   do NOT include the type prefix in the slug
+   Example: `extract-shared-interfaces`
 
 4. `branch_name` — format: `<type>/<feature_slug>`
-  Example: `refactor/extract-shared-interfaces`
+   Example: `refactor/extract-shared-interfaces`
 
 ## Step 3. Switch to a new Git branch
 
@@ -56,15 +57,15 @@ Current date:
 
 ## Step 4. Draft the spec content
 
-Use the template below and save the spec to `_spec/<date>-<feature_slug>.md`.
+Use the template below and save the spec to `_specs/<date>-<feature_slug>.md`.
 Do not add technical implementation details such as code examples.
 
 Template:
-@_spec/template.md
+@\_specs/template.md
 
 ## Step 5. Update the index
 
-Append a line to `_spec/_description.md`:
+Append a line to `_specs/_description.md`:
 
 - [ ] [<feature_type>: <feature_title>](<date>-<feature_slug>.md) — `<date>`
 
@@ -73,7 +74,7 @@ Append a line to `_spec/_description.md`:
 After the file is saved, respond with exactly this format and nothing more:
 
 Branch: <branch_name>
-Spec file: _spec/<date>-<feature_slug>.md
+Spec file: \_specs/<date>-<feature_slug>.md
 Title: <feature_type>: <feature_title>
 
 Do not repeat the full spec in chat unless the user explicitly asks for it.

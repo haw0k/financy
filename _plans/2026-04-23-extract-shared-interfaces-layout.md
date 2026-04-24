@@ -8,21 +8,22 @@ Create a centralized `interfaces/` directory with domain types extracted from la
 
 ### Layout Component Interfaces (inline, component-specific)
 
-| Component | Interface | Purpose |
-|-----------|-----------|---------|
-| `TransactionsTable.tsx` | `ITransactionsTable` | Props for table component |
-| `TransactionsTable.tsx` | `ITransaction` | Transaction data (with `sender_id`, `receiver_id`, `category_id`) |
-| `CategoriesTable.tsx` | `ICategoriesTable` | Props for table component |
-| `CategoriesTable.tsx` | `ICategory` | Category data |
-| `DashboardOverview.tsx` | `IDashboardOverview` | Props for dashboard |
-| `DashboardOverview.tsx` | `IStats` | User statistics |
-| `DashboardOverview.tsx` | `ITransaction` | Transaction data (subset, no sender/receiver) |
-| `DashboardOverview.tsx` | `ICategoryData` | Chart data |
-| `TransactionForm.tsx` | `ITransactionForm` | Props for form component |
+| Component               | Interface            | Purpose                                                           |
+| ----------------------- | -------------------- | ----------------------------------------------------------------- |
+| `TransactionsTable.tsx` | `ITransactionsTable` | Props for table component                                         |
+| `TransactionsTable.tsx` | `ITransaction`       | Transaction data (with `sender_id`, `receiver_id`, `category_id`) |
+| `CategoriesTable.tsx`   | `ICategoriesTable`   | Props for table component                                         |
+| `CategoriesTable.tsx`   | `ICategory`          | Category data                                                     |
+| `DashboardOverview.tsx` | `IDashboardOverview` | Props for dashboard                                               |
+| `DashboardOverview.tsx` | `IStats`             | User statistics                                                   |
+| `DashboardOverview.tsx` | `ITransaction`       | Transaction data (subset, no sender/receiver)                     |
+| `DashboardOverview.tsx` | `ICategoryData`      | Chart data                                                        |
+| `TransactionForm.tsx`   | `ITransactionForm`   | Props for form component                                          |
 
 ### Issue
 
 Two different `ITransaction` interfaces with different structures:
+
 - **TransactionsTable**: Full type with `sender_id`, `receiver_id`, `category_id`
 - **DashboardOverview**: Subset without sender/receiver fields
 
@@ -41,6 +42,7 @@ interfaces/
 ### Type Definitions
 
 **`interfaces/transactions.ts`**
+
 ```typescript
 export interface ITransaction {
   id: string;
@@ -63,6 +65,7 @@ export interface ITransactionInput {
 ```
 
 **`interfaces/categories.ts`**
+
 ```typescript
 export interface ICategory {
   id: string;
@@ -80,6 +83,7 @@ export interface ICategoryInput {
 ```
 
 **`interfaces/stats.ts`**
+
 ```typescript
 export interface IStats {
   total_balance: number;
@@ -94,6 +98,7 @@ export interface ICategoryData {
 ```
 
 **`interfaces/index.ts`**
+
 ```typescript
 export * from './transactions.interface';
 export * from './categories.interface';
@@ -105,21 +110,25 @@ export * from './stats.interface';
 Only extract **domain types** (Transaction, Category, Stats, CategoryData). Component-specific prop interfaces (`I<ComponentName>`) remain inline in their respective component files — **do not extract**.
 
 ### TransactionsTable.tsx
+
 - Remove `ITransaction` interface (domain type)
 - Import: `import type { ITransaction } from '@/interfaces'`
 - **Keep** `ITransactionsTable` inline (component-specific)
 
 ### CategoriesTable.tsx
+
 - Remove `ICategory` interface (domain type)
 - Import: `import type { ICategory } from '@/interfaces'`
 - **Keep** `ICategoriesTable` inline (component-specific)
 
 ### DashboardOverview.tsx
+
 - Remove `IStats`, `ICategoryData`, `ITransaction` interfaces (domain types)
 - Import: `import type { ITransaction, IStats, ICategoryData } from '@/interfaces'`
 - **Keep** `IDashboardOverview` inline (component-specific)
 
 ### TransactionForm.tsx
+
 - No domain types to extract (has only `ITransactionForm` prop type)
 - **Keep** `ITransactionForm` inline (component-specific)
 - No changes needed

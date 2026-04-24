@@ -1,6 +1,6 @@
 ---
 name: plan
-description: "Create an implementation plan from a spec. Usage: /plan <spec file or feature description>"
+description: 'Create an implementation plan from a spec. Usage: /plan <spec file or feature description>'
 ---
 
 You are helping to create an implementation plan for this application.
@@ -46,6 +46,6 @@ Current date:
 Existing branches:
 !`git branch --list`
 
-Read the linked spec file if provided: @_spec/
+Read the linked spec file if provided: @\_spec/
 
 Save the plan to `_plans/<date>-<feature_slug>.md` using this structure:
