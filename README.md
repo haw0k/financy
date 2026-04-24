@@ -1,5 +1,10 @@
 # Finance Tracker
 
+> **Test Project for Spec-Driven Development**
+>
+> This is a test project for validating spec-driven development workflows using AI coding assistants.
+> The project is designed to be fully compatible with both **Claude Code** and **OpenCode**, with dedicated support for spec-driven development patterns.
+
 A modern, full-stack financial management application built with Next.js 16, Supabase, and React 19. Track income and expenses with role-based access, secure authentication, and beautiful visualizations.
 
 ## Quick Start
