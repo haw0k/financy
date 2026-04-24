@@ -4,8 +4,8 @@ import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from '@/components/layout';
 import './globals.css';
 
-const geist = Geist({ subsets: ['latin'] });
-const geistMono = Geist_Mono({ subsets: ['latin'] });
+const geist = Geist({ subsets: ['latin', 'cyrillic'] });
+const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'] });
 
 export const metadata: Metadata = {
   title: 'Finance Tracker',
