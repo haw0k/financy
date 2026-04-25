@@ -38,8 +38,8 @@ The goal is to port over the visual theme configuration (CSS variables, componen
 ## Open Questions
 
 - Should we keep Lucide icons or migrate to Tabler icons as specified in the source config? Keep Lucide.
-- Is the `shadcn/tailwind.css` import compatible with the current Tailwind CSS v4 / Next.js 16 setup? I hope so.
-- Do we need to reinstall or update shadcn components after changing the style from `new-york` to `radix-nova`? I hope not.
+- Is the `shadcn/tailwind.css` import compatible with the current Tailwind CSS v4 / Next.js 16 setup? You decide - use contex7 to find the answer.
+- Do we need to reinstall or update shadcn components after changing the style from `new-york` to `radix-nova`? You decide - use contex7 to find the answer.
 
 ## Testing Guidelines
 
