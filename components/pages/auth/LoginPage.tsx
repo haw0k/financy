@@ -35,7 +35,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-6">
-      <div className="w-full max-w-sm border rounded-lg p-8 bg-white shadow">
+      <div className="w-full max-w-sm border rounded-lg p-8 bg-card text-card-foreground shadow">
         <h1 className="text-2xl font-bold mb-6">Finance Tracker</h1>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
