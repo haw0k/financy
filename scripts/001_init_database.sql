@@ -10,9 +10,19 @@ create table if not exists public.profiles (
 alter table public.profiles enable row level security;
 
 -- RLS policies for profiles
+drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
+drop policy if exists "profiles_insert_own" on public.profiles;
 create policy "profiles_insert_own" on public.profiles for insert with check (auth.uid() = id);
+drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
+
+-- Create category_types table (global reference, not user-specific)
+create table if not exists public.category_types (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  created_at timestamp with time zone default now()
+);
 
 -- Create categories table
 create table if not exists public.categories (
@@ -20,6 +30,7 @@ create table if not exists public.categories (
   user_id uuid not null references public.profiles(id) on delete cascade,
   name text not null,
   type text not null check (type in ('income', 'expense')),
+  type_id uuid references public.category_types(id) on delete set null,
   color text default '#3b82f6',
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
@@ -28,9 +39,13 @@ create table if not exists public.categories (
 alter table public.categories enable row level security;
 
 -- RLS policies for categories
+drop policy if exists "categories_select_own" on public.categories;
 create policy "categories_select_own" on public.categories for select using (auth.uid() = user_id);
+drop policy if exists "categories_insert_own" on public.categories;
 create policy "categories_insert_own" on public.categories for insert with check (auth.uid() = user_id);
+drop policy if exists "categories_update_own" on public.categories;
 create policy "categories_update_own" on public.categories for update using (auth.uid() = user_id);
+drop policy if exists "categories_delete_own" on public.categories;
 create policy "categories_delete_own" on public.categories for delete using (auth.uid() = user_id);
 
 -- Create transactions table
@@ -50,20 +65,24 @@ create table if not exists public.transactions (
 alter table public.transactions enable row level security;
 
 -- RLS policies for transactions - users can see their own transactions
-create policy "transactions_select_own" on public.transactions 
-  for select 
+drop policy if exists "transactions_select_own" on public.transactions;
+create policy "transactions_select_own" on public.transactions
+  for select
   using (auth.uid() = sender_id or auth.uid() = receiver_id);
 
-create policy "transactions_insert_own" on public.transactions 
-  for insert 
+drop policy if exists "transactions_insert_own" on public.transactions;
+create policy "transactions_insert_own" on public.transactions
+  for insert
   with check (auth.uid() = sender_id);
 
-create policy "transactions_update_own" on public.transactions 
-  for update 
+drop policy if exists "transactions_update_own" on public.transactions;
+create policy "transactions_update_own" on public.transactions
+  for update
   using (auth.uid() = sender_id);
 
-create policy "transactions_delete_own" on public.transactions 
-  for delete 
+drop policy if exists "transactions_delete_own" on public.transactions;
+create policy "transactions_delete_own" on public.transactions
+  for delete
   using (auth.uid() = sender_id);
 
 -- Create trigger for auto-creating profile on signup
@@ -114,3 +133,6 @@ as $$
   from transactions
   where sender_id = user_id or receiver_id = user_id;
 $$;
+
+-- Notify PostgREST to reload schema cache (run manually if needed)
+-- NOTIFY pgrst, 'reload schema';

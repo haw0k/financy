@@ -19,7 +19,7 @@ import {
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layout';
-import type { ITransaction } from '@/interfaces';
+import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 
 interface ITransactionsTable {
   userId: string;
@@ -27,6 +27,8 @@ interface ITransactionsTable {
 
 export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
@@ -51,10 +53,43 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase.from('categories').select('*');
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchCategoryTypes = async () => {
+    try {
+      const { data, error } = await supabase.from('category_types').select('*');
+
+      if (error) throw error;
+      setCategoryTypes(data || []);
+    } catch (error) {
+      console.error('Error fetching category types:', error);
+    }
+  };
+
+  const getCategoryDisplayName = (categoryId: string | null) => {
+    if (!categoryId) return '-';
+    const category = categories.find((c) => c.id === categoryId);
+    if (!category) return '-';
+    const categoryType = categoryTypes.find((ct) => ct.id === category.type_id);
+    if (!categoryType) return category.name;
+    return `${category.name} (${categoryType.name})`;
+  };
+
   useEffect(() => {
     if (!userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTransactions();
+    fetchCategories();
+    fetchCategoryTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
@@ -168,6 +203,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
                   <TableRow>
                     <TableHead>Date</TableHead>
                     <TableHead>Description</TableHead>
+                    <TableHead>Category</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -178,6 +214,9 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
                     <TableRow key={transaction.id}>
                       <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                       <TableCell>{transaction.description || '-'}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {getCategoryDisplayName(transaction.category_id)}
+                      </TableCell>
                       <TableCell>
                         <span
                           className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${

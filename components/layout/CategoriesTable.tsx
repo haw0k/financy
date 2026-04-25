@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
-import type { ICategory } from '@/interfaces';
+import type { ICategory, ICategoryType } from '@/interfaces';
 
 interface ICategoriesTable {
   userId: string;
@@ -27,6 +27,7 @@ interface ICategoriesTable {
 
 export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -34,6 +35,7 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
     name: '',
     type: 'expense' as 'income' | 'expense',
     color: '#3b82f6',
+    type_id: '',
   });
   const supabase = createClient();
 
@@ -54,10 +56,22 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
     }
   };
 
+  const fetchCategoryTypes = async () => {
+    try {
+      const { data, error } = await supabase.from('category_types').select('*').order('name');
+
+      if (error) throw error;
+      setCategoryTypes(data || []);
+    } catch (error) {
+      console.error('Error fetching category types:', error);
+    }
+  };
+
   useEffect(() => {
     if (!userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCategories();
+    fetchCategoryTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
@@ -72,6 +86,7 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
             name: formData.name,
             type: formData.type,
             color: formData.color,
+            type_id: formData.type_id || null,
           })
           .eq('id', editingId);
 
@@ -83,13 +98,14 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
             name: formData.name,
             type: formData.type,
             color: formData.color,
+            type_id: formData.type_id || null,
           },
         ]);
 
         if (error) throw error;
       }
 
-      setFormData({ name: '', type: 'expense', color: '#3b82f6' });
+      setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
       setEditingId(null);
       setIsShowForm(false);
       fetchCategories();
@@ -191,6 +207,25 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
                         />
                       </div>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="type_id">Category Type</Label>
+                      <select
+                        id="type_id"
+                        value={formData.type_id}
+                        onChange={(e) => {
+                          setFormData({ ...formData, type_id: e.target.value });
+                        }}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="">Select type (optional)</option>
+                        {categoryTypes.map((ct) => (
+                          <option key={ct.id} value={ct.id}>
+                            {ct.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   <div className="flex gap-2">
@@ -203,7 +238,7 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
                       onClick={() => {
                         setIsShowForm(false);
                         setEditingId(null);
-                        setFormData({ name: '', type: 'expense', color: '#3b82f6' });
+                        setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
                       }}
                     >
                       Cancel
@@ -225,64 +260,74 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
+                    <TableHead>Category Type</TableHead>
                     <TableHead>Color</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {categories.map((category) => (
-                    <TableRow key={category.id}>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-                            category.type === 'income'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                          }`}
-                        >
-                          {category.type === 'income' ? 'Income' : 'Expense'}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="h-6 w-6 rounded border border-border"
-                            style={{ backgroundColor: category.color }}
-                          />
-                          <span className="text-sm text-muted-foreground">{category.color}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setEditingId(category.id);
-                              setFormData({
-                                name: category.name,
-                                type: category.type,
-                                color: category.color,
-                              });
-                              setIsShowForm(true);
-                            }}
+                  {categories.map((category) => {
+                    const categoryType = categoryTypes.find((ct) => ct.id === category.type_id);
+                    return (
+                      <TableRow key={category.id}>
+                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
+                              category.type === 'income'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                            }`}
                           >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              handleDelete(category.id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                            {category.type === 'income' ? 'Income' : 'Expense'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-muted-foreground">
+                            {categoryType?.name || '-'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="h-6 w-6 rounded border border-border"
+                              style={{ backgroundColor: category.color }}
+                            />
+                            <span className="text-sm text-muted-foreground">{category.color}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditingId(category.id);
+                                setFormData({
+                                  name: category.name,
+                                  type: category.type,
+                                  color: category.color,
+                                  type_id: category.type_id || '',
+                                });
+                                setIsShowForm(true);
+                              }}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                handleDelete(category.id);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
