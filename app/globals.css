@@ -122,4 +122,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  select,
+  option {
+    font-family: 'Geist Mono', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
 }

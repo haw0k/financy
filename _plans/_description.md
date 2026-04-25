@@ -2,4 +2,5 @@
 - [x] refactor: `export const Name:FC<IName>` - { 2026-04-22-tsx-components-refactoring.md } — 2025-04-22
 - [x] refactor: Extract common interfaces to `@/intefaces` { 2026-04-23-extract-shared-interfaces-layout.md } — 2025-04-23
 - [x] fix: Cross-Browser System Theme Detection - { 2026-04-23-cross-browser-system-theme-detection.md } — 2026-04-23
+- [x] fix: Fix Select Options Font in Firefox - { 2026-04-25-fix-select-options-font-firefox.md } — 2026-04-25
 - [ ] feat: Add Category Types Table - { 2026-04-24-add-category-types-table.md } — 2026-04-24
