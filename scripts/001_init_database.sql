@@ -1,3 +1,8 @@
+-- Drop tables in reverse dependency order (for idempotent re-run)
+drop table if exists public.transactions;
+drop table if exists public.categories;
+drop table if exists public.category_types;
+
 -- Create profiles table with role support
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -39,10 +44,9 @@ create policy "category_types_update_all" on public.category_types for update us
 drop policy if exists "category_types_delete_all" on public.category_types;
 create policy "category_types_delete_all" on public.category_types for delete using (auth.role() = 'authenticated');
 
--- Create categories table
+-- Create categories table (global reference, not user-specific)
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.profiles(id) on delete cascade,
   name text not null,
   type text not null check (type in ('income', 'expense')),
   type_id uuid references public.category_types(id) on delete set null,
@@ -53,15 +57,20 @@ create table if not exists public.categories (
 
 alter table public.categories enable row level security;
 
--- RLS policies for categories
+-- RLS policies for categories (global)
 drop policy if exists "categories_select_own" on public.categories;
-create policy "categories_select_own" on public.categories for select using (auth.uid() = user_id);
 drop policy if exists "categories_insert_own" on public.categories;
-create policy "categories_insert_own" on public.categories for insert with check (auth.uid() = user_id);
 drop policy if exists "categories_update_own" on public.categories;
-create policy "categories_update_own" on public.categories for update using (auth.uid() = user_id);
 drop policy if exists "categories_delete_own" on public.categories;
-create policy "categories_delete_own" on public.categories for delete using (auth.uid() = user_id);
+
+drop policy if exists "categories_select_all" on public.categories;
+create policy "categories_select_all" on public.categories for select using (auth.role() = 'authenticated');
+drop policy if exists "categories_insert_all" on public.categories;
+create policy "categories_insert_all" on public.categories for insert with check (auth.role() = 'authenticated');
+drop policy if exists "categories_update_all" on public.categories;
+create policy "categories_update_all" on public.categories for update using (auth.role() = 'authenticated');
+drop policy if exists "categories_delete_all" on public.categories;
+create policy "categories_delete_all" on public.categories for delete using (auth.role() = 'authenticated');
 
 -- Create transactions table
 create table if not exists public.transactions (

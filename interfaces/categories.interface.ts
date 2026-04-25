@@ -3,7 +3,6 @@ export interface ICategory {
   name: string;
   type: 'income' | 'expense';
   color: string;
-  user_id: string;
   type_id?: string;
 }
 

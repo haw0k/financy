@@ -5,3 +5,4 @@
 - [x] fix: Fix Select Options Font in Firefox - { 2026-04-25-fix-select-options-font-firefox.md } — 2026-04-25
 - [x] feat: Add Category Types Table - { 2026-04-24-add-category-types-table.md } — 2026-04-24
 - [x] feat: Add Category Type Management - { 2026-04-25-add-category-type-management.md } — 2026-04-25
+- [x] fix: Remove User Id From Categories Table - { 2026-04-25-remove-user-id-from-categories-table.md } — 2026-04-25

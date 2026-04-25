@@ -29,11 +29,7 @@ import {
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
 
-interface ICategoriesTable {
-  userId: string;
-}
-
-export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
+export const CategoriesTable: FC = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,11 +49,7 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('user_id', userId)
-        .order('name');
+      const { data, error } = await supabase.from('categories').select('*').order('name');
 
       if (error) throw error;
       setCategories(data || []);
@@ -124,12 +116,11 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
   };
 
   useEffect(() => {
-    if (!userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCategories();
     fetchCategoryTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, []);
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -150,7 +141,6 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
       } else {
         const { error } = await supabase.from('categories').insert([
           {
-            user_id: userId,
             name: formData.name,
             type: formData.type,
             color: formData.color,
