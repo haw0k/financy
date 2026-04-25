@@ -31,10 +31,6 @@ export const Header: FC<IHeader> = ({ user }) => {
 
   const handleToggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
-    // Remove from localStorage so system preference applies on next load
-    try {
-      localStorage.removeItem('theme');
-    } catch {}
   };
 
   return (
