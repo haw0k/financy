@@ -4,3 +4,4 @@
 - [x] fix: Cross-Browser System Theme Detection - { 2026-04-23-cross-browser-system-theme-detection.md } — 2026-04-23
 - [ ] feat: Add Category Types Table - { 2026-04-24-add-category-types-table.md } — 2026-04-24
 - [x] fix: Fix Select Options Font in Firefox - { 2026-04-25-fix-select-options-font-firefox.md } — 2026-04-25
+- [ ] feat: Add Category Type Management - { 2026-04-25-add-category-type-management.md } — 2026-04-25
