@@ -24,6 +24,21 @@ create table if not exists public.category_types (
   created_at timestamp with time zone default now()
 );
 
+alter table public.category_types enable row level security;
+
+-- RLS policies for category_types
+drop policy if exists "category_types_select_all" on public.category_types;
+create policy "category_types_select_all" on public.category_types for select using (auth.role() = 'authenticated');
+
+drop policy if exists "category_types_insert_all" on public.category_types;
+create policy "category_types_insert_all" on public.category_types for insert with check (auth.role() = 'authenticated');
+
+drop policy if exists "category_types_update_all" on public.category_types;
+create policy "category_types_update_all" on public.category_types for update using (auth.role() = 'authenticated');
+
+drop policy if exists "category_types_delete_all" on public.category_types;
+create policy "category_types_delete_all" on public.category_types for delete using (auth.role() = 'authenticated');
+
 -- Create categories table
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),

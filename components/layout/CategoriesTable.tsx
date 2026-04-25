@@ -17,9 +17,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
-import type { ICategory, ICategoryType } from '@/interfaces';
+import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
 
 interface ICategoriesTable {
   userId: string;
@@ -37,6 +45,10 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
     color: '#3b82f6',
     type_id: '',
   });
+  const [ctFormData, setCtFormData] = useState<ICategoryTypeInput>({ name: '' });
+  const [ctEditingId, setCtEditingId] = useState<string | null>(null);
+  const [isCtShowForm, setCtIsShowForm] = useState(false);
+  const [ctDeleteId, setCtDeleteId] = useState<string | null>(null);
   const supabase = createClient();
 
   const fetchCategories = async () => {
@@ -64,6 +76,50 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
       setCategoryTypes(data || []);
     } catch (error) {
       console.error('Error fetching category types:', error);
+    }
+  };
+
+  const handleCtSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      if (ctEditingId) {
+        const { error } = await supabase
+          .from('category_types')
+          .update({ name: ctFormData.name })
+          .eq('id', ctEditingId);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('category_types').insert([{ name: ctFormData.name }]);
+
+        if (error) throw error;
+      }
+
+      setCtFormData({ name: '' });
+      setCtEditingId(null);
+      setCtIsShowForm(false);
+      fetchCategoryTypes();
+    } catch (error) {
+      console.error('Error submitting category type:', error);
+    }
+  };
+
+  const handleCtEdit = (ct: ICategoryType) => {
+    setCtFormData({ name: ct.name });
+    setCtEditingId(ct.id);
+    setCtIsShowForm(true);
+  };
+
+  const handleCtDelete = async (id: string) => {
+    try {
+      const { error } = await supabase.from('category_types').delete().eq('id', id);
+
+      if (error) throw error;
+      setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
+      setCtDeleteId(null);
+    } catch (error) {
+      console.error('Error deleting category type:', error);
     }
   };
 
@@ -334,6 +390,144 @@ export const CategoriesTable: FC<ICategoriesTable> = ({ userId }) => {
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Category Types</CardTitle>
+              <CardDescription>Manage category types</CardDescription>
+            </div>
+            <Button
+              onClick={() => {
+                setCtIsShowForm(true);
+              }}
+              size="sm"
+              className="gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Category Type
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-6">
+          {isCtShowForm && (
+            <Card className="bg-accent/50">
+              <CardHeader>
+                <CardTitle className="text-base">
+                  {ctEditingId ? 'Edit Category Type' : 'Add New Category Type'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCtSubmit} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="ctName">Type Name</Label>
+                      <Input
+                        id="ctName"
+                        placeholder="e.g., Consumer goods"
+                        value={ctFormData.name}
+                        onChange={(e) => {
+                          setCtFormData({ name: e.target.value });
+                        }}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={!ctFormData.name}>
+                      {ctEditingId ? 'Update' : 'Add'} Type
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setCtIsShowForm(false);
+                        setCtEditingId(null);
+                        setCtFormData({ name: '' });
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          {categoryTypes.length === 0 ? (
+            <div className="text-center text-muted-foreground">No category types yet</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {categoryTypes.map((ct) => (
+                    <TableRow key={ct.id}>
+                      <TableCell className="font-medium">{ct.name}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              handleCtEdit(ct);
+                            }}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setCtDeleteId(ct.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <AlertDialog
+        open={ctDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setCtDeleteId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Categories using this type will have the type removed but won&apos;t be deleted. This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (ctDeleteId) handleCtDelete(ctDeleteId);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

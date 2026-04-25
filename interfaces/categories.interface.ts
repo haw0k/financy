@@ -23,3 +23,7 @@ export interface ICategoryType {
   id: string;
   name: string;
 }
+
+export interface ICategoryTypeInput {
+  name: string;
+}
