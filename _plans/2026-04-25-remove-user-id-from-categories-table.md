@@ -17,6 +17,7 @@ The categories `user_id` field was added before `category_types` existed. Now ca
 - Update RLS policies: categories become global (all authenticated users can read/write)
 
 **Current:**
+
 ```sql
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
@@ -31,6 +32,7 @@ create table if not exists public.categories (
 ```
 
 **Updated:**
+
 ```sql
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
@@ -44,6 +46,7 @@ create table if not exists public.categories (
 ```
 
 Update RLS policies for categories (global, like `category_types`):
+
 ```sql
 drop policy if exists "categories_select_own" on public.categories;
 drop policy if exists "categories_insert_own" on public.categories;
@@ -87,12 +90,12 @@ create policy "categories_delete_all" on public.categories for delete using (aut
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `scripts/001_init_database.sql` | Remove `user_id` from categories table + update RLS |
-| `interfaces/categories.interface.ts` | Remove `user_id` from `ICategory` and `ICategoryInput` |
-| `components/layout/CategoriesTable.tsx` | Remove `userId` prop, filters, insert payload |
-| `components/pages/dashboard/CategoriesPage.tsx` | Remove server user fetch, simplify |
+| File                                            | Change                                                 |
+| ----------------------------------------------- | ------------------------------------------------------ |
+| `scripts/001_init_database.sql`                 | Remove `user_id` from categories table + update RLS    |
+| `interfaces/categories.interface.ts`            | Remove `user_id` from `ICategory` and `ICategoryInput` |
+| `components/layout/CategoriesTable.tsx`         | Remove `userId` prop, filters, insert payload          |
+| `components/pages/dashboard/CategoriesPage.tsx` | Remove server user fetch, simplify                     |
 
 ## Verification
 

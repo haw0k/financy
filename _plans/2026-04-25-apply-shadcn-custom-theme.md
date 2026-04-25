@@ -15,18 +15,18 @@ The project at `/home/haw0k/shadcn/shadcn-custom-theme` was created via the shad
 
 - Add `@import "shadcn/tailwind.css";` after `@import "tw-animate-css";`
 - Replace all `:root` CSS variables with the source project's olive/green values (light mode)
-- Replace all `.dark` CSS variables with the source's dark mode olive/green values  
+- Replace all `.dark` CSS variables with the source's dark mode olive/green values
 - Replace `@theme inline` block with the source's version (includes radius scaling like `--radius-sm: calc(var(--radius) * 0.6);`)
 - Add `--font-heading` and `--font-sans` to `@theme inline` (needed for the new font setup)
 - **Preserve**: `@import 'tailwindcss';`, `@import 'tw-animate-css';`, `@custom-variant dark`, `@layer base` rules, and the Firefox select/option font fix
 
 ### 2. `components.json` — Update style configuration
 
-| Field | Current | New |
-|---|---|---|
-| `style` | `"new-york"` | `"radix-nova"` |
-| `tailwind.baseColor` | `"neutral"` | `"olive"` |
-| `iconLibrary` | `"lucide"` | `"lucide"` (unchanged) |
+| Field                | Current      | New                    |
+| -------------------- | ------------ | ---------------------- |
+| `style`              | `"new-york"` | `"radix-nova"`         |
+| `tailwind.baseColor` | `"neutral"`  | `"olive"`              |
+| `iconLibrary`        | `"lucide"`   | `"lucide"` (unchanged) |
 
 - Keep all existing `aliases` (they point to `@/lib/shadcn`)
 

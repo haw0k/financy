@@ -17,11 +17,11 @@ Add a new `category-types` table to organize categories into groups (e.g., "Cons
 
 ### category-types table
 
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | uuid | primary key, default gen_random_uuid() |
-| name | text | not null, unique |
-| created_at | timestamptz | default now() |
+| Column     | Type        | Constraints                            |
+| ---------- | ----------- | -------------------------------------- |
+| id         | uuid        | primary key, default gen_random_uuid() |
+| name       | text        | not null, unique                       |
+| created_at | timestamptz | default now()                          |
 
 ### categories table (updated)
 

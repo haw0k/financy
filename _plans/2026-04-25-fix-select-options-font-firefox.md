@@ -15,7 +15,13 @@ Added explicit font-family for `select` and `option` elements in `app/globals.cs
 ```css
 select,
 option {
-  font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    'Geist',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 }
 ```
 

@@ -3,6 +3,7 @@
 ## Context
 
 Need to add categorization to expenses/income by grouping categories into types (e.g., "Consumer goods", "Food"). This is a database schema change that requires:
+
 1. New `category-types` reference table
 2. FK relationship from `categories` to `category-types`
 3. UI updates to display and manage category type association
@@ -14,6 +15,7 @@ Need to add categorization to expenses/income by grouping categories into types 
 **File:** `scripts/002_add_category_types.sql` (new file)
 
 Create migration script:
+
 - Create `category_types` table (id, name, created_at) — global reference, no user_id
 - Add `type_id` column to `categories` table with FK constraint
 
@@ -55,13 +57,13 @@ add column type_id uuid references public.category_types(id) on delete set null;
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `scripts/002_add_category_types.sql` | Create new migration |
-| `interfaces/categories.interface.ts` | Add `type_id` field + `ICategoryType` interface |
-| `components/layout/CategoriesTable.tsx` | Add type selection in form + display column |
-| `components/layout/TransactionsTable.tsx` | Display category type in table |
-| `components/layout/TransactionForm.tsx` | Optional: filter or display category type |
+| File                                      | Change                                          |
+| ----------------------------------------- | ----------------------------------------------- |
+| `scripts/002_add_category_types.sql`      | Create new migration                            |
+| `interfaces/categories.interface.ts`      | Add `type_id` field + `ICategoryType` interface |
+| `components/layout/CategoriesTable.tsx`   | Add type selection in form + display column     |
+| `components/layout/TransactionsTable.tsx` | Display category type in table                  |
+| `components/layout/TransactionForm.tsx`   | Optional: filter or display category type       |
 
 ## Verification
 
