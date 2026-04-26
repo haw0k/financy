@@ -40,7 +40,12 @@ export const DashboardNav: FC = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
             <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
           </div>
-          <span className="hidden lg:inline-block">Financy</span>
+          <span
+            className="hidden font-semibold lg:inline-block"
+            style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
+          >
+            Financy
+          </span>
         </Link>
       </div>
       <div className="space-y-1 p-4">

@@ -66,7 +66,9 @@ export default function SignUpPage() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
             <Image src="/icon.svg" alt="Financy" width={48} height={48} loading="eager" />
-            <h1 className="text-2xl font-bold">Financy</h1>
+            <h1 className="text-2xl font-bold" style={{ color: '#00A541' }}>
+              Financy
+            </h1>
           </div>
           <Card>
             <CardHeader>
