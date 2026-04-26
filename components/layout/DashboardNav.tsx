@@ -1,10 +1,11 @@
 'use client';
 
 import { type FC } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, TrendingUp, TrendingDown, Settings, Wallet } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, TrendingDown, Settings } from 'lucide-react';
 
 const navItems = [
   {
@@ -35,9 +36,9 @@ export const DashboardNav: FC = () => {
   return (
     <nav className="hidden border-r border-border bg-card md:block md:w-64">
       <div className="flex h-14 items-center border-b border-border px-4">
-        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Wallet className="h-4 w-4" />
+        <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
+            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
           </div>
           <span className="hidden lg:inline-block">Financy</span>
         </Link>

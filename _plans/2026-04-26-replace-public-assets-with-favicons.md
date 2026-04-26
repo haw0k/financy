@@ -1,55 +1,57 @@
-# Plan: Replace Public Assets with App Favicons
+# Plan: Generate Icons from SVG Source
 
 branch: chore/replace-public-assets-with-favicons
 
 ## Context
 
-The `public/` directory contains 9 unused placeholder files that were never referenced. The archive `~/tmp/favicon-for-app.zip` provides real favicon and app icon assets. Next.js auto-detects icon files (`favicon.ico`, `icon.*`, `apple-icon.*`) only when placed in `app/`, not `public/`. The `manifest.json` must be explicitly referenced via metadata config.
+The previous archive `~/tmp/favicon-for-app.zip` contained placeholder icons. The user has a new source SVG (`~/tmp/favicon-5.svg`) with the correct brand color (#00A541). We need to generate all icon files from this source: favicon.ico, apple-icon.png, icon.svg, and PWA manifest PNGs (192x192, 512x512). ImageMagick (`convert`) is available.
 
-## Findings from Context7
+## Current Files to Replace
 
-- `favicon.ico` → auto-detected only when placed at `app/favicon.ico`
-- `icon.*`, `apple-icon.*` → auto-detected when placed in `app/**/*`
-- `manifest.json` → NOT auto-detected, must be linked via `metadata.manifest`
-- `public/` files are not auto-detected for icons/metadata
+All generated from `~/tmp/favicon-5.svg`:
+
+| File | Size | Format |
+|---|---|---|
+| `app/favicon.ico` | Multi-res (16,32,48) | .ico |
+| `app/apple-icon.png` | 180×180 | .png |
+| `app/icon.svg` | source copy | .svg |
+| `public/icon-192x192.png` | 192×192 | .png |
+| `public/icon-512x512.png` | 512×512 | .png |
+| `app/manifest.json` | — | update `icons` array |
+
+## Tool
+
+ImageMagick 6 (`convert`) with `-background none -density 256`.
+
+### Commands
+
+```bash
+# favicon.ico (16, 32, 48)
+convert -background none -density 256 favicon-5.svg -define icon:auto-resize=16,32,48 app/favicon.ico
+
+# apple-icon 180x180
+convert -background none -density 256 -resize 180x180 favicon-5.svg app/apple-icon.png
+
+# PWA icons
+convert -background none -density 256 -resize 192x192 favicon-5.svg public/icon-192x192.png
+convert -background none -density 256 -resize 512x512 favicon-5.svg public/icon-512x512.png
+
+# icon.svg — just copy the source
+cp favicon-5.svg app/icon.svg
+```
 
 ## Changes
 
-### 1. Delete all files from `public/`
-
-Remove: `apple-icon.png`, `icon-dark-32x32.png`, `icon-light-32x32.png`, `icon.svg`, `placeholder-logo.png`, `placeholder-logo.svg`, `placeholder-user.jpg`, `placeholder.jpg`, `placeholder.svg`.
-
-### 2. Extract archive assets to correct locations
-
-| Archive file | Destination | Reasoning |
-|---|---|---|
-| `favicon.ico` | `app/favicon.ico` | Auto-detected by Next.js (must be app/ top-level) |
-| `apple-icon.png` | `app/apple-icon.png` | Auto-detected by Next.js |
-| `icon0.svg` | `app/icon.svg` (renamed) | Auto-detected as app icon; renamed per Next.js convention |
-| `icon1.png` | `public/icon1.png` | Served as static asset |
-| `manifest.json` | `public/manifest.json` | Served from public, referenced via metadata |
-
-### 3. Update `app/layout.tsx`
-
-Add `manifest` field to the existing `metadata` export:
-```ts
-export const metadata: Metadata = {
-  title: 'Finance Tracker',
-  description: 'Track your income and expenses with ease',
-  manifest: '/manifest.json',
-};
-```
-
-## Files Modified
-
-- [app/layout.tsx](app/layout.tsx) — add `manifest` to metadata
-- `public/*` — delete 9 files, add `icon1.png` and `manifest.json`
-- `app/favicon.ico` — new
-- `app/apple-icon.png` — new
-- `app/icon.svg` — new (renamed from `icon0.svg`)
+1. Generate `app/favicon.ico` (multi-res 16,32,48)
+2. Generate `app/apple-icon.png` (180×180)
+3. Copy source SVG to `app/icon.svg`
+4. Generate `public/icon-192x192.png` and `public/icon-512x512.png`
+5. Delete `public/icon1.png` (from old archive, replaced by PWA icons)
+6. Update `app/manifest.json` — add `icons` array referencing the new PNGs
+7. Update `_specs` and `_plans` checklists to mark complete
 
 ## Verification
 
-1. Clear `public/` and place files as described
-2. `pnpm dev` → check browser tab shows favicon, no 404s in DevTools Network tab for `/favicon.ico`, `/apple-icon.png`, `/icon.svg`
+1. `pnpm dev` → browser tab shows new favicon
+2. DevTools Network tab: all icon URLs return 200
 3. `pnpm lint && pnpm build`
