@@ -31,7 +31,7 @@ export const MobileNav: FC = () => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
+      <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <div className="flex h-[57px] items-center border-b border-border px-4">
           <Link
