@@ -12,3 +12,4 @@
 - [x] feat: Add Logo and SEO Tags to Login and Signup Pages - { 2026-04-26-add-logo-and-seo-tags-to-auth-pages.md } — 2026-04-26
 - [x] feat: Add Metadata to All Pages - { 2026-04-26-add-metadata-to-all-pages.md } — 2026-04-26
 - [ ] [fix: Fix DashboardNav Visibility On Mobile Breakpoint](2026-04-26-dashboardnav-mobile-visibility.md) — 2026-04-26
+- [ ] [refactor: Remove Email From Header And Adjust Avatar Spacing](2026-04-26-remove-header-email-fix-avatar-padding.md) — 2026-04-26
