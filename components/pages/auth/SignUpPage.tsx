@@ -2,6 +2,7 @@
 
 import { useState, type SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   Button,
@@ -63,6 +64,10 @@ export default function SignUpPage() {
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-2">
+            <Image src="/icon.svg" alt="Financy" width={48} height={48} />
+            <h1 className="text-2xl font-bold">Financy</h1>
+          </div>
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Sign up</CardTitle>
