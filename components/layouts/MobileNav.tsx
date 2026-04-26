@@ -1,15 +1,15 @@
 'use client';
 
-import { type FC } from 'react';
+import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { useMobileNav } from '@/components/providers';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Moon, Sun } from 'lucide-react';
 import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { useTheme } from 'next-themes';
 import { navItems } from '@/config';
-import { useMobileNav } from './MobileNavContext';
 import { cn } from '@/lib/utils';
+import { type FC } from 'react';
 
 export const MobileNav: FC = () => {
   const { isOpen, setIsOpen } = useMobileNav();
@@ -32,7 +32,7 @@ export const MobileNav: FC = () => {
               setIsOpen(false);
             }}
           >
-            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
+            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" loading="eager" />
             <span
               className="font-semibold"
               style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}

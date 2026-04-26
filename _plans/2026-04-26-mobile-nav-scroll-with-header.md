@@ -41,13 +41,13 @@ Replace the fixed container with an inline element inside the Header's flex layo
 
 ## Files to Modify/Create
 
-| File | Action |
-|---|---|
-| `components/layout/MobileNavContext.tsx` | **Create** — context provider + hook |
-| `components/layout/MobileNav.tsx` | Use context instead of local state, remove fixed container |
-| `components/layout/Header.tsx` | Add hamburger + logo on left side (mobile only) |
-| `app/dashboard/layout.tsx` | Wrap with DashboardShell |
-| `components/layout/index.ts` | Export DashboardShell |
+| File                                     | Action                                                     |
+| ---------------------------------------- | ---------------------------------------------------------- |
+| `components/layout/MobileNavContext.tsx` | **Create** — context provider + hook                       |
+| `components/layout/MobileNav.tsx`        | Use context instead of local state, remove fixed container |
+| `components/layout/Header.tsx`           | Add hamburger + logo on left side (mobile only)            |
+| `app/dashboard/layout.tsx`               | Wrap with DashboardShell                                   |
+| `components/layout/index.ts`             | Export DashboardShell                                      |
 
 ## Verification
 

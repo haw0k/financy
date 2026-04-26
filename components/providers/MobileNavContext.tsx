@@ -18,8 +18,6 @@ export const DashboardShell: FC<{ children: ReactNode }> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <MobileNavContext.Provider value={{ isOpen, setIsOpen }}>
-      {children}
-    </MobileNavContext.Provider>
+    <MobileNavContext.Provider value={{ isOpen, setIsOpen }}>{children}</MobileNavContext.Provider>
   );
 };

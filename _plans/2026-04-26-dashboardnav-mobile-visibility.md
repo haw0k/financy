@@ -1,6 +1,6 @@
 # Plan for Fix DashboardNav Visibility On Mobile Breakpoint
 
-Spec: [_specs/2026-04-26-dashboardnav-mobile-visibility.md](../_specs/2026-04-26-dashboardnav-mobile-visibility.md)
+Spec: [\_specs/2026-04-26-dashboardnav-mobile-visibility.md](../_specs/2026-04-26-dashboardnav-mobile-visibility.md)
 Branch: `fix/dashboardnav-mobile-visibility`
 
 ## Summary
@@ -59,12 +59,12 @@ This is a server component, so we need a new client component wrapper for the mo
 
 ## Files to Modify
 
-| File | Action |
-|---|---|
-| `hooks/useMobile.ts` | Fix `subscribe` to listen to resize events |
-| `components/layout/MobileNav.tsx` | **Create** — mobile sheet navigation |
-| `app/dashboard/layout.tsx` | Add `MobileNav` to layout |
-| `components/layout/Header.tsx` | Add hamburger trigger button (optional, could be in MobileNav itself) |
+| File                              | Action                                                                |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `hooks/useMobile.ts`              | Fix `subscribe` to listen to resize events                            |
+| `components/layout/MobileNav.tsx` | **Create** — mobile sheet navigation                                  |
+| `app/dashboard/layout.tsx`        | Add `MobileNav` to layout                                             |
+| `components/layout/Header.tsx`    | Add hamburger trigger button (optional, could be in MobileNav itself) |
 
 ## Open Questions
 

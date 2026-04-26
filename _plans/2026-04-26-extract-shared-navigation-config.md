@@ -34,7 +34,7 @@ export const navItems: INavItem[] = [
 
 ### 3. Update `MobileNav.tsx`
 
-- Remove local `navItems` array  
+- Remove local `navItems` array
 - Add `import { navItems } from '@/config/navigation';`
 - Remove unused lucide-react icon imports
 

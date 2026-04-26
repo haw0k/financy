@@ -14,6 +14,7 @@ Three UI issues in the dashboard layout: (1) DashboardNav has an unnecessary rig
 **File: [components/layout/DashboardNav.tsx](../components/layout/DashboardNav.tsx)**
 
 Remove `border-r border-border` from the `<nav>` element:
+
 ```
 - className="hidden border-r border-border bg-card md:block md:w-64"
 + className="hidden bg-card md:block md:w-64"
@@ -24,6 +25,7 @@ Remove `border-r border-border` from the `<nav>` element:
 **File: [components/layout/DashboardNav.tsx](../components/layout/DashboardNav.tsx)**
 
 Change the brand text class from `hidden lg:inline-block` to just `inline-block`:
+
 ```
 - className="hidden font-semibold lg:inline-block"
 + className="inline-block font-semibold"
@@ -36,6 +38,7 @@ Change the brand text class from `hidden lg:inline-block` to just `inline-block`
 Replace the single fixed hamburger button with a fixed container at the top-left that holds both the hamburger trigger and the Financy logo + name link, with 16px gap (`gap-4`) between them.
 
 The container structure:
+
 ```tsx
 <div className="fixed left-4 top-3 z-50 flex items-center gap-4 md:hidden">
   <SheetTrigger asChild>
@@ -57,10 +60,10 @@ The container structure:
 
 ## Files to Modify
 
-| File | Action |
-|---|---|
+| File                                 | Action                                                            |
+| ------------------------------------ | ----------------------------------------------------------------- |
 | `components/layout/DashboardNav.tsx` | Remove `border-r border-border`; change brand text to always show |
-| `components/layout/MobileNav.tsx` | Wrap hamburger trigger + add logo/brand link with 16px gap |
+| `components/layout/MobileNav.tsx`    | Wrap hamburger trigger + add logo/brand link with 16px gap        |
 
 ## Verification
 

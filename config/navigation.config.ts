@@ -1,10 +1,4 @@
-import {
-  LayoutDashboard,
-  TrendingUp,
-  TrendingDown,
-  Settings,
-  type LucideIcon,
-} from 'lucide-react';
+import { LayoutDashboard, TrendingUp, TrendingDown, Settings, type LucideIcon } from 'lucide-react';
 
 export interface INavItem {
   href: string;

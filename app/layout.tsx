@@ -1,7 +1,8 @@
-import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Geist, Geist_Mono, Roboto } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import { ThemeProvider } from '@/components/layout';
+import { ThemeProvider } from '@/components/providers';
+import type { Metadata } from 'next';
 import './globals.css';
 
 const geist = Geist({ subsets: ['latin', 'cyrillic'] });
@@ -22,18 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            __html: `
-              (function() {
-                var mq = window.matchMedia('(prefers-color-scheme: dark)');
-                document.documentElement.classList.toggle('dark', mq.matches);
-                document.documentElement.style.colorScheme = mq.matches ? 'dark' : 'light';
-              })();
-            `,
-          }}
-        />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`
+            (function() {
+              var mq = window.matchMedia('(prefers-color-scheme: dark)');
+              document.documentElement.classList.toggle('dark', mq.matches);
+              document.documentElement.style.colorScheme = mq.matches ? 'dark' : 'light';
+            })();
+          `}
+        </Script>
       </head>
       <body
         className={`${geist.className} ${geistMono.className} ${robotoHeading.variable} bg-background font-sans antialiased`}

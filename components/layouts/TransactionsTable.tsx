@@ -18,7 +18,7 @@ import {
   TableRow,
 } from '@/lib/shadcn';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
-import { TransactionForm } from '@/components/layout';
+import { TransactionForm } from '@/components/layouts';
 import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 
 interface ITransactionsTable {

@@ -1,4 +1,4 @@
-import { CategoriesTable } from '@/components/layout';
+import { CategoriesTable } from '@/components/layouts';
 
 export default async function CategoriesPage() {
   return (
