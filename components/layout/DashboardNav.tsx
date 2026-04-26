@@ -35,7 +35,7 @@ export const DashboardNav: FC = () => {
 
   return (
     <nav className="hidden border-r border-border bg-card md:block md:w-64">
-      <div className="flex h-14 items-center border-b border-border px-4">
+      <div className="flex h-[57px] items-center border-b border-border px-4">
         <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
             <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
