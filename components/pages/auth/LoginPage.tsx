@@ -4,6 +4,7 @@ import { useState, type SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button, Input, Label } from '@/lib/shadcn';
+import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 
 export default function LoginPage() {
@@ -43,6 +44,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="m@example.com"
               required
               value={email}
@@ -52,19 +54,15 @@ export default function LoginPage() {
               className="mt-1"
             />
           </div>
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              className="mt-1"
-            />
-          </div>
+          <PasswordField
+            id="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Logging in...' : 'Login'}

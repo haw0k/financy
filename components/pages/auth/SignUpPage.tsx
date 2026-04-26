@@ -13,6 +13,7 @@ import {
   Input,
   Label,
 } from '@/lib/shadcn';
+import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 
 export default function SignUpPage() {
@@ -75,6 +76,7 @@ export default function SignUpPage() {
                     <Input
                       id="email"
                       type="email"
+                      autoComplete="email"
                       placeholder="m@example.com"
                       required
                       value={email}
@@ -83,34 +85,25 @@ export default function SignUpPage() {
                       }}
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-                      }}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="repeat-password">Repeat Password</Label>
-                    </div>
-                    <Input
-                      id="repeat-password"
-                      type="password"
-                      required
-                      value={repeatPassword}
-                      onChange={(e) => {
-                        setRepeatPassword(e.target.value);
-                      }}
-                    />
-                  </div>
+                  <PasswordField
+                    id="password"
+                    autoComplete="new-password"
+                    required
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
+                  />
+                  <PasswordField
+                    id="repeat-password"
+                    autoComplete="new-password"
+                    label="Repeat Password"
+                    required
+                    value={repeatPassword}
+                    onChange={(e) => {
+                      setRepeatPassword(e.target.value);
+                    }}
+                  />
                   <div className="grid gap-2">
                     <Label htmlFor="role">Account Type</Label>
                     <select
