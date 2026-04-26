@@ -10,14 +10,14 @@ The previous archive `~/tmp/favicon-for-app.zip` contained placeholder icons. Th
 
 All generated from `~/tmp/favicon-5.svg`:
 
-| File | Size | Format |
-|---|---|---|
-| `app/favicon.ico` | Multi-res (16,32,48) | .ico |
-| `app/apple-icon.png` | 180×180 | .png |
-| `app/icon.svg` | source copy | .svg |
-| `public/icon-192x192.png` | 192×192 | .png |
-| `public/icon-512x512.png` | 512×512 | .png |
-| `app/manifest.json` | — | update `icons` array |
+| File                      | Size                 | Format               |
+| ------------------------- | -------------------- | -------------------- |
+| `app/favicon.ico`         | Multi-res (16,32,48) | .ico                 |
+| `app/apple-icon.png`      | 180×180              | .png                 |
+| `app/icon.svg`            | source copy          | .svg                 |
+| `public/icon-192x192.png` | 192×192              | .png                 |
+| `public/icon-512x512.png` | 512×512              | .png                 |
+| `app/manifest.json`       | —                    | update `icons` array |
 
 ## Tool
 
