@@ -8,3 +8,4 @@
 - [x] fix: Remove User Id From Categories Table - { 2026-04-25-remove-user-id-from-categories-table.md } — 2026-04-25
 - [x] feat: Apply Shadcn Custom Theme - { 2026-04-25-apply-shadcn-custom-theme.md } — 2026-04-25
 - [x] feat: Password Visibility Toggle for Login and Signup Pages - { 2026-04-26-password-visibility-toggle.md } — 2026-04-26
+- [ ] chore: Replace Public Assets with App Favicons - { 2026-04-26-replace-public-assets-with-favicons.md } — 2026-04-26

@@ -1,0 +1,9 @@
+{
+  "name": "Financy",
+  "short_name": "Financy",
+  "description": "Track your income and expenses with ease",
+  "start_url": "/",
+  "theme_color": "#00A541",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
