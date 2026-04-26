@@ -4,18 +4,12 @@ import { type FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, TrendingUp, TrendingDown, Settings, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
 import { useTheme } from 'next-themes';
+import { navItems } from '@/config';
 import { useMobileNav } from './MobileNavContext';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/transactions', label: 'Transactions', icon: TrendingUp },
-  { href: '/dashboard/categories', label: 'Categories', icon: TrendingDown },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-];
 
 export const MobileNav: FC = () => {
   const { isOpen, setIsOpen } = useMobileNav();
@@ -34,15 +28,11 @@ export const MobileNav: FC = () => {
           <Link
             href="/dashboard"
             className="flex items-center gap-4 font-semibold"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+            }}
           >
-            <Image
-              src="/icon.svg"
-              alt="Financy"
-              width={32}
-              height={32}
-              className="h-8 w-8"
-            />
+            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
             <span
               className="font-semibold"
               style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
@@ -60,7 +50,9 @@ export const MobileNav: FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                }}
                 className={cn(
                   'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                   isActive
@@ -75,12 +67,7 @@ export const MobileNav: FC = () => {
           })}
         </div>
         <div className="mt-auto border-t border-border p-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleToggleTheme}
-            className="mx-auto flex"
-          >
+          <Button variant="ghost" size="icon" onClick={handleToggleTheme} className="mx-auto flex">
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>

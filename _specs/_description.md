@@ -15,3 +15,4 @@
 - [ ] [refactor: Remove Email From Header And Adjust Avatar Spacing](2026-04-26-remove-header-email-fix-avatar-padding.md) — 2026-04-26
 - [ ] [fix: Fix DashboardNav Border, Brand Visibility, and Mobile Logo Position](2026-04-26-nav-header-border-brand-visibility.md) — 2026-04-26
 - [ ] [fix: Fix Horizontal Scroll On Small Screens](2026-04-26-small-screen-overflow.md) — 2026-04-26
+- [ ] [refactor: Extract Shared Navigation Config](2026-04-26-extract-shared-navigation-config.md) — 2026-04-26

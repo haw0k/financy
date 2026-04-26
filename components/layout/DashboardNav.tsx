@@ -5,30 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, TrendingUp, TrendingDown, Settings } from 'lucide-react';
-
-const navItems = [
-  {
-    href: '/dashboard',
-    label: 'Overview',
-    icon: LayoutDashboard,
-  },
-  {
-    href: '/dashboard/transactions',
-    label: 'Transactions',
-    icon: TrendingUp,
-  },
-  {
-    href: '/dashboard/categories',
-    label: 'Categories',
-    icon: TrendingDown,
-  },
-  {
-    href: '/dashboard/settings',
-    label: 'Settings',
-    icon: Settings,
-  },
-];
+import { navItems } from '@/config';
 
 export const DashboardNav: FC = () => {
   const pathname = usePathname();
