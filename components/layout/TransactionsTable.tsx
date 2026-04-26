@@ -116,7 +116,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Transactions</CardTitle>
               <CardDescription>View and manage all your transactions</CardDescription>

@@ -175,7 +175,7 @@ export const CategoriesTable: FC = () => {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Categories</CardTitle>
               <CardDescription>Manage your expense and income categories</CardDescription>
@@ -383,7 +383,7 @@ export const CategoriesTable: FC = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Category Types</CardTitle>
               <CardDescription>Manage category types</CardDescription>
