@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, type FC } from 'react';
+import { type FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, LayoutDashboard, TrendingUp, TrendingDown, Settings, Moon, Sun } from 'lucide-react';
-import { Button, Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/lib/shadcn';
+import { LayoutDashboard, TrendingUp, TrendingDown, Settings, Moon, Sun } from 'lucide-react';
+import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
 import { useTheme } from 'next-themes';
+import { useMobileNav } from './MobileNavContext';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -17,7 +18,7 @@ const navItems = [
 ];
 
 export const MobileNav: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
@@ -27,22 +28,6 @@ export const MobileNav: FC = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <div className="fixed left-4 top-3 z-50 flex items-center gap-4 md:hidden">
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Open navigation">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
-          <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
-          <span
-            className="font-semibold"
-            style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
-          >
-            Financy
-          </span>
-        </Link>
-      </div>
       <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <div className="flex h-[57px] items-center border-b border-border px-4">

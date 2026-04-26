@@ -2,7 +2,9 @@
 
 import { type FC } from 'react';
 import { User } from '@supabase/supabase-js';
-import { LogOut, Moon, Sun } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { LogOut, Moon, Sun, Menu } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import {
@@ -13,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
+import { useMobileNav } from './MobileNavContext';
 import { createClient } from '@/lib/supabase/client';
 
 interface IHeader {
@@ -23,6 +26,7 @@ export const Header: FC<IHeader> = ({ user }) => {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const supabase = createClient();
+  const { setIsOpen } = useMobileNav();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -35,7 +39,22 @@ export const Header: FC<IHeader> = ({ user }) => {
 
   return (
     <header className="border-b border-border bg-card">
-      <div className="flex h-14 items-center justify-end pl-4 md:pl-8 pr-4">
+      <div className="flex h-14 items-center pl-4 md:pl-8 pr-4">
+        <div className="flex items-center gap-4 md:hidden">
+          <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} aria-label="Open navigation">
+            <Menu className="h-5 w-5" />
+          </Button>
+          <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
+            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
+            <span
+              className="font-semibold"
+              style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
+            >
+              Financy
+            </span>
+          </Link>
+        </div>
+        <div className="flex-1 md:hidden" />
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleToggleTheme} className="hidden md:inline-flex">
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
