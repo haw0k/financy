@@ -37,7 +37,7 @@ export const Header: FC<IHeader> = ({ user }) => {
     <header className="border-b border-border bg-card">
       <div className="flex h-14 items-center justify-end pl-4 md:pl-8 pr-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={handleToggleTheme}>
+          <Button variant="ghost" size="icon" onClick={handleToggleTheme} className="hidden md:inline-flex">
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>

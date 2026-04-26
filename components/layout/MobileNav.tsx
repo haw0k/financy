@@ -4,8 +4,9 @@ import { useState, type FC } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, LayoutDashboard, TrendingUp, TrendingDown, Settings } from 'lucide-react';
+import { Menu, LayoutDashboard, TrendingUp, TrendingDown, Settings, Moon, Sun } from 'lucide-react';
 import { Button, Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/lib/shadcn';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -18,6 +19,11 @@ const navItems = [
 export const MobileNav: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
+
+  const handleToggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -82,6 +88,18 @@ export const MobileNav: FC = () => {
               </Link>
             );
           })}
+        </div>
+        <div className="mt-auto border-t border-border p-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleTheme}
+            className="mx-auto flex"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
         </div>
       </SheetContent>
     </Sheet>
