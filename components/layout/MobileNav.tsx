@@ -21,16 +21,22 @@ export const MobileNav: FC = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed left-4 top-3 z-50 md:hidden"
-          aria-label="Open navigation"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-      </SheetTrigger>
+      <div className="fixed left-4 top-3 z-50 flex items-center gap-4 md:hidden">
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Open navigation">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
+          <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" />
+          <span
+            className="font-semibold"
+            style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
+          >
+            Financy
+          </span>
+        </Link>
+      </div>
       <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <div className="flex h-[57px] items-center border-b border-border px-4">
