@@ -35,7 +35,7 @@ At screen widths of 767px and below, the DashboardNav component is hidden from v
 
 - Should we use a slide-in drawer, a bottom navigation bar, or a dropdown/hamburger menu? a slide-in drawer
 - Should the mobile nav auto-hide on scroll for more screen real estate? yes
-- Does the current DashboardNav component already have any responsive markup or CSS classes that we should extend? Check it.
+- Does the current DashboardNav component already have any responsive markup or CSS classes that we should extend? Check this.
 
 ## Testing Guidelines
 

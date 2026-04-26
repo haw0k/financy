@@ -7,8 +7,10 @@ function getSnapshot() {
   return window.innerWidth < MOBILE_BREAKPOINT;
 }
 
-function subscribe() {
-  return () => {};
+function subscribe(onStoreChange: () => void) {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener('resize', onStoreChange);
+  return () => window.removeEventListener('resize', onStoreChange);
 }
 
 export function useIsMobile() {
