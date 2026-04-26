@@ -227,3 +227,18 @@
     cursor: pointer;
   }
 }
+
+/* Autofill fix for all browsers */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px hsl(var(--background)) inset;
+  -webkit-text-fill-color: hsl(var(--foreground));
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Firefox-specific fix */
+input:-moz-autofill {
+  filter: none;
+  box-shadow: 0 0 0px 1000px hsl(var(--background)) inset;
+}
