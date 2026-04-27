@@ -26,7 +26,11 @@ export const DashboardNav: FC = () => {
           </div>
           <span
             className="inline-block font-semibold"
-            style={{ color: siteConfig.accentColor, fontSize: siteConfig.logoFontSize, fontWeight: siteConfig.logoFontWeight }}
+            style={{
+              color: siteConfig.accentColor,
+              fontSize: siteConfig.logoFontSize,
+              fontWeight: siteConfig.logoFontWeight,
+            }}
           >
             {siteConfig.name}
           </span>

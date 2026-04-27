@@ -53,7 +53,9 @@ export default async function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Application</label>
-              <p className="text-sm font-medium">{siteConfig.name} {siteConfig.version}</p>
+              <p className="text-sm font-medium">
+                {siteConfig.name} {siteConfig.version}
+              </p>
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Description</label>

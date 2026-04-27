@@ -97,5 +97,6 @@ Title: <feature_type>: <feature_title>
 Do not repeat the full plan in the chat output unless the user explicitly asks to see it.
 
 ## Step 6. After plan implementation
+
 Launch the command
 `pnpm run format:fix`

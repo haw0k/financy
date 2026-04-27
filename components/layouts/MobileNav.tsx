@@ -42,7 +42,11 @@ export const MobileNav: FC = () => {
             />
             <span
               className="font-semibold"
-              style={{ color: siteConfig.accentColor, fontSize: siteConfig.logoFontSize, fontWeight: siteConfig.logoFontWeight }}
+              style={{
+                color: siteConfig.accentColor,
+                fontSize: siteConfig.logoFontSize,
+                fontWeight: siteConfig.logoFontWeight,
+              }}
             >
               {siteConfig.name}
             </span>

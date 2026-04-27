@@ -106,7 +106,9 @@ export const DatePicker: FC<IDatePicker> = ({ value, onChange }) => {
     <Label htmlFor="date">Date</Label>
     <DatePicker
       value={formData.date}
-      onChange={(date) => { setFormData({ ...formData, date }) }}
+      onChange={(date) => {
+        setFormData({ ...formData, date });
+      }}
     />
   </div>
   ```

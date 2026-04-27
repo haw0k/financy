@@ -36,29 +36,29 @@ Add: `export { siteConfig } from './site.config';`
 
 Replace string literal titles with template literals using `siteConfig.name`:
 
-| File | Current | New |
-|---|---|---|
-| `app/layout.tsx:14` | `'Finance Tracker'` | `siteConfig.name` |
-| `app/page.tsx:5` | `'Financy — Track Your Finances'` | `` `${siteConfig.name} — Track Your Finances` `` |
-| `app/dashboard/page.tsx:5` | `'Dashboard — Financy'` | `` `Dashboard — ${siteConfig.name}` `` |
-| `app/dashboard/transactions/page.tsx:5` | `'Transactions — Financy'` | `` `Transactions — ${siteConfig.name}` `` |
-| `app/dashboard/categories/page.tsx:5` | `'Categories — Financy'` | `` `Categories — ${siteConfig.name}` `` |
-| `app/dashboard/settings/page.tsx:5` | `'Settings — Financy'` | `` `Settings — ${siteConfig.name}` `` |
-| `app/auth/login/page.tsx:5-6` | `'Login — Financy'` / `'Sign in to your Financy account'` | `` `Login — ${siteConfig.name}` `` / `` `Sign in to your ${siteConfig.name} account` `` |
-| `app/auth/sign-up/page.tsx:5-6` | `'Sign Up — Financy'` / `'Create a new Financy account'` | `` `Sign Up — ${siteConfig.name}` `` / `` `Create a new ${siteConfig.name} account` `` |
-| `app/auth/sign-up-success/page.tsx:5` | `'Check Your Email — Financy'` | `` `Check Your Email — ${siteConfig.name}` `` |
-| `app/auth/error/page.tsx:5` | `'Error — Financy'` | `` `Error — ${siteConfig.name}` `` |
+| File                                    | Current                                                   | New                                                                                     |
+| --------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `app/layout.tsx:14`                     | `'Finance Tracker'`                                       | `siteConfig.name`                                                                       |
+| `app/page.tsx:5`                        | `'Financy — Track Your Finances'`                         | `` `${siteConfig.name} — Track Your Finances` ``                                        |
+| `app/dashboard/page.tsx:5`              | `'Dashboard — Financy'`                                   | `` `Dashboard — ${siteConfig.name}` ``                                                  |
+| `app/dashboard/transactions/page.tsx:5` | `'Transactions — Financy'`                                | `` `Transactions — ${siteConfig.name}` ``                                               |
+| `app/dashboard/categories/page.tsx:5`   | `'Categories — Financy'`                                  | `` `Categories — ${siteConfig.name}` ``                                                 |
+| `app/dashboard/settings/page.tsx:5`     | `'Settings — Financy'`                                    | `` `Settings — ${siteConfig.name}` ``                                                   |
+| `app/auth/login/page.tsx:5-6`           | `'Login — Financy'` / `'Sign in to your Financy account'` | `` `Login — ${siteConfig.name}` `` / `` `Sign in to your ${siteConfig.name} account` `` |
+| `app/auth/sign-up/page.tsx:5-6`         | `'Sign Up — Financy'` / `'Create a new Financy account'`  | `` `Sign Up — ${siteConfig.name}` `` / `` `Create a new ${siteConfig.name} account` ``  |
+| `app/auth/sign-up-success/page.tsx:5`   | `'Check Your Email — Financy'`                            | `` `Check Your Email — ${siteConfig.name}` ``                                           |
+| `app/auth/error/page.tsx:5`             | `'Error — Financy'`                                       | `` `Error — ${siteConfig.name}` ``                                                      |
 
 ### 4. Update components (`components/`)
 
-| File | Line(s) | Current | New |
-|---|---|---|---|
+| File               | Line(s)    | Current                                                                                    | New                                                                                                                                                         |
+| ------------------ | ---------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `DashboardNav.tsx` | 20, 29, 31 | `alt="Financy"`, `color: '#00A541'`, `fontSize: '26px'`, `fontWeight: 700`, `Financy` text | `alt={siteConfig.name}`, `color: siteConfig.accentColor`, `fontSize: siteConfig.logoFontSize`, `fontWeight: siteConfig.logoFontWeight`, `{siteConfig.name}` |
-| `Header.tsx` | 56, 64, 66 | same pattern | same replacements |
-| `MobileNav.tsx` | 37, 45, 47 | same pattern | same replacements |
-| `LoginPage.tsx` | 44, 45, 46 | `alt="Financy"`, `color: '#00A541'`, `Financy` heading | same replacements |
-| `SignUpPage.tsx` | 73, 74, 75 | `alt="Financy"`, `color: '#00A541'`, `Financy` heading | same replacements |
-| `SettingsPage.tsx` | 55 | `'Financy v1.0'` | `` `${siteConfig.name} v1.0` `` |
+| `Header.tsx`       | 56, 64, 66 | same pattern                                                                               | same replacements                                                                                                                                           |
+| `MobileNav.tsx`    | 37, 45, 47 | same pattern                                                                               | same replacements                                                                                                                                           |
+| `LoginPage.tsx`    | 44, 45, 46 | `alt="Financy"`, `color: '#00A541'`, `Financy` heading                                     | same replacements                                                                                                                                           |
+| `SignUpPage.tsx`   | 73, 74, 75 | `alt="Financy"`, `color: '#00A541'`, `Financy` heading                                     | same replacements                                                                                                                                           |
+| `SettingsPage.tsx` | 55         | `'Financy v1.0'`                                                                           | `` `${siteConfig.name} v1.0` ``                                                                                                                             |
 
 ### 5. Logo text style refactor
 
