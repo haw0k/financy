@@ -2,7 +2,7 @@
 
 import { type FC, useState, useEffect, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
+import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/lib/shadcn';
 
 interface ITransactionForm {
   userId: string;
@@ -108,17 +108,20 @@ export const TransactionForm: FC<ITransactionForm> = ({
 
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
-              <select
-                id="type"
+              <Select
                 value={formData.type}
-                onChange={(e) => {
-                  setFormData({ ...formData, type: e.target.value as 'income' | 'expense' });
+                onValueChange={(v) => {
+                  setFormData({ ...formData, type: v as 'income' | 'expense' });
                 }}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-              </select>
+                <SelectTrigger className="w-full" id="type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -137,21 +140,23 @@ export const TransactionForm: FC<ITransactionForm> = ({
             {users.length > 0 && (
               <div className="space-y-2">
                 <Label htmlFor="receiver">Receiver</Label>
-                <select
-                  id="receiver"
+                <Select
                   value={formData.receiverId}
-                  onChange={(e) => {
-                    setFormData({ ...formData, receiverId: e.target.value });
+                  onValueChange={(v) => {
+                    setFormData({ ...formData, receiverId: v });
                   }}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="">Select receiver</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.email}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full" id="receiver">
+                    <SelectValue placeholder="Select receiver" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 

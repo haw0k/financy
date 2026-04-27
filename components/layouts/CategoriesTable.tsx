@@ -11,6 +11,11 @@ import {
   Button,
   Input,
   Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Table,
   TableBody,
   TableCell,
@@ -218,17 +223,20 @@ export const CategoriesTable: FC = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="type">Type</Label>
-                      <select
-                        id="type"
+                      <Select
                         value={formData.type}
-                        onChange={(e) =>
-                          setFormData({ ...formData, type: e.target.value as 'income' | 'expense' })
+                        onValueChange={(v) =>
+                          setFormData({ ...formData, type: v as 'income' | 'expense' })
                         }
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        <option value="expense">Expense</option>
-                        <option value="income">Income</option>
-                      </select>
+                        <SelectTrigger className="w-full" id="type">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="expense">Expense</SelectItem>
+                          <SelectItem value="income">Income</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -256,21 +264,23 @@ export const CategoriesTable: FC = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="type_id">Category Type</Label>
-                      <select
-                        id="type_id"
+                      <Select
                         value={formData.type_id}
-                        onChange={(e) => {
-                          setFormData({ ...formData, type_id: e.target.value });
+                        onValueChange={(v) => {
+                          setFormData({ ...formData, type_id: v });
                         }}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        <option value="">Select type (optional)</option>
-                        {categoryTypes.map((ct) => (
-                          <option key={ct.id} value={ct.id}>
-                            {ct.name}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="w-full" id="type_id">
+                          <SelectValue placeholder="Select type (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categoryTypes.map((ct) => (
+                            <SelectItem key={ct.id} value={ct.id}>
+                              {ct.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 

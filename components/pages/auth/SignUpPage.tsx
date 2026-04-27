@@ -13,6 +13,11 @@ import {
   CardTitle,
   Input,
   Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
@@ -113,17 +118,20 @@ export default function SignUpPage() {
                   />
                   <div className="grid gap-2">
                     <Label htmlFor="role">Account Type</Label>
-                    <select
-                      id="role"
+                    <Select
                       value={role}
-                      onChange={(e) => {
-                        setRole(e.target.value as 'sender' | 'receiver');
+                      onValueChange={(v) => {
+                        setRole(v as 'sender' | 'receiver');
                       }}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      <option value="sender">Sender (Send Money)</option>
-                      <option value="receiver">Receiver (Receive Money)</option>
-                    </select>
+                      <SelectTrigger className="w-full" id="role">
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sender">Sender (Send Money)</SelectItem>
+                        <SelectItem value="receiver">Receiver (Receive Money)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   {error && <p className="text-sm text-red-500">{error}</p>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
