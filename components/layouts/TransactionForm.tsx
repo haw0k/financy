@@ -2,7 +2,20 @@
 
 import { type FC, useState, useEffect, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/lib/shadcn';
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/lib/shadcn';
 
 interface ITransactionForm {
   userId: string;

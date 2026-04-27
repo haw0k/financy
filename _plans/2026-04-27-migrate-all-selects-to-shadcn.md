@@ -8,6 +8,7 @@ Branch: `refactor/migrate-all-selects-to-shadcn`
 Three components use native `<select>` elements with Tailwind classes that manually replicate shadcn styling. They need to be replaced with `Select` from `@/lib/shadcn` for consistent theming, accessibility, and behavior.
 
 Native selects to replace (5 total):
+
 - `SignUpPage.tsx` — role selector (sender/receiver)
 - `TransactionForm.tsx` — transaction type (expense/income) and receiver selector
 - `CategoriesTable.tsx` — category type (expense/income) and category type selector
@@ -43,7 +44,10 @@ Native selects to replace (5 total):
 - Add imports: `Select, SelectTrigger, SelectValue, SelectContent, SelectItem` from `@/lib/shadcn`
 - Replace transaction type `<select>` with shadcn Select:
   ```tsx
-  <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v as 'income' | 'expense' })}>
+  <Select
+    value={formData.type}
+    onValueChange={(v) => setFormData({ ...formData, type: v as 'income' | 'expense' })}
+  >
     <SelectTrigger className="w-full" id="type">
       <SelectValue placeholder="Select type" />
     </SelectTrigger>
@@ -55,7 +59,10 @@ Native selects to replace (5 total):
   ```
 - Replace receiver `<select>` with shadcn Select:
   ```tsx
-  <Select value={formData.receiverId} onValueChange={(v) => setFormData({ ...formData, receiverId: v })}>
+  <Select
+    value={formData.receiverId}
+    onValueChange={(v) => setFormData({ ...formData, receiverId: v })}
+  >
     <SelectTrigger className="w-full" id="receiver">
       <SelectValue placeholder="Select receiver" />
     </SelectTrigger>
@@ -74,7 +81,10 @@ Native selects to replace (5 total):
 - Add imports: `Select, SelectTrigger, SelectValue, SelectContent, SelectItem` from `@/lib/shadcn`
 - Replace category type `<select>` (expense/income) with shadcn Select:
   ```tsx
-  <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v as 'income' | 'expense' })}>
+  <Select
+    value={formData.type}
+    onValueChange={(v) => setFormData({ ...formData, type: v as 'income' | 'expense' })}
+  >
     <SelectTrigger className="w-full" id="type">
       <SelectValue placeholder="Select type" />
     </SelectTrigger>
