@@ -103,34 +103,40 @@ Visit `http://localhost:3000` and create your account!
 │   └── dashboard/        # Protected dashboard routes
 ├── components/
 │   ├── pages/            # Page components (HomePage, auth/*, dashboard/*)
-│   └── layout/           # Layout components
+│   ├── layouts/          # Layout components (DashboardNav, Header)
+│   ├── providers/        # React context providers
+│   └── ui/               # Reusable UI components
+├── config/               # Centralized configuration
 ├── lib/
 │   ├── shadcn/           # shadcn/ui component library
 │   └── supabase/         # Supabase client & middleware
 ├── hooks/                # Custom hooks
+├── _specs/               # Feature specs
+├── _plans/               # Implementation plans
 ├── scripts/              # SQL migration scripts
 ├── tests/                # Vitest test files
 ├── components.json       # shadcn/ui configuration
-└── proxy.ts              # Auth token refresh
 ```
 
 ## Database Schema
 
 Three main tables with Row Level Security:
 
-| Table          | Purpose                   | RLS                          |
-| -------------- | ------------------------- | ---------------------------- |
-| `profiles`     | User profiles with role   | ✓ Users see own profile      |
-| `categories`   | Income/expense categories | ✓ Users see own categories   |
-| `transactions` | Financial transactions    | ✓ Users see own transactions |
+| Table            | Purpose                   | RLS                                      |
+| ---------------- | ------------------------- | ---------------------------------------- |
+| `profiles`       | User profiles with role   | ✓ Users see own profile                  |
+| `category_types` | Global category types     | ✓ All authenticated users                |
+| `categories`     | Income/expense categories | ✓ All authenticated users                |
+| `transactions`   | Financial transactions    | ✓ Users see own transactions (sender/receiver) |
 
 See [DATABASE.md](./scripts/001_init_database.sql) for full schema.
 
 ## Environment Variables
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=       # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Public anon key
+NEXT_PUBLIC_SUPABASE_URL=              # Supabase project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=         # Public anon key
+NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL= # Dev-only redirect override (optional)
 ```
 
 ## Development

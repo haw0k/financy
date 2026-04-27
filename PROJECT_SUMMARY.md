@@ -1,4 +1,4 @@
-# Finance Tracker - Project Summary
+# Financy - Project Summary
 
 ## What Was Built
 
@@ -26,7 +26,15 @@ finance-tracker/
 │
 ├── components/
 │   ├── pages/                   # Page components (HomePage, auth/*, dashboard/*)
-│   └── layout/                  # Layout components (DashboardNav, Header, etc.)
+│   ├── layouts/                 # Layout components (DashboardNav, Header)
+│   ├── providers/               # React context providers (ThemeProvider, MobileNavContext)
+│   └── ui/                      # Reusable UI components (PasswordField, DatePicker)
+│
+├── config/                      # Centralized configuration
+│   ├── env.config.ts            # Typed environment variables
+│   ├── routes.config.ts         # Route path constants
+│   ├── site.config.ts           # Site metadata
+│   └── navigation.config.ts     # Navigation item definitions
 │
 ├── lib/
 │   ├── shadcn/                  # shadcn/ui component library
@@ -35,13 +43,14 @@ finance-tracker/
 │       ├── server.ts            # Server client
 │       └── middleware.ts        # Session management
 │
+├── _specs/                      # Feature specification documents
+├── _plans/                      # Implementation plans
 ├── scripts/
 │   └── 001_init_database.sql    # Database initialization script
 │
 ├── tests/                       # Vitest test files
 │
 ├── components.json              # shadcn/ui configuration
-├── proxy.ts                     # Next.js middleware (auth token refresh)
 ├── SETUP_GUIDE.md               # Detailed setup instructions
 └── package.json                 # Dependencies
 ```
@@ -129,32 +138,45 @@ finance-tracker/
 
 ```sql
 id (UUID) - references auth.users
-role (enum: sender, receiver)
-created_at (timestamp)
+email (TEXT)
+role (sender | receiver)
+created_at (TIMESTAMPTZ)
+updated_at (TIMESTAMPTZ)
 ```
 
-### categories (Expense/Income Categories)
+### category_types (Category Types)
+
+```sql
+id (UUID)
+name (TEXT) - unique
+created_at (TIMESTAMPTZ)
+```
+
+### categories (Income/Expense Categories)
 
 ```sql
 id (UUID)
 name (TEXT)
-type (enum: income, expense)
-user_id (UUID) - references profiles
-created_at (timestamp)
+type (income | expense)
+type_id (UUID) - references category_types
+color (TEXT) - default '#3b82f6'
+created_at (TIMESTAMPTZ)
+updated_at (TIMESTAMPTZ)
 ```
 
 ### transactions (Financial Transactions)
 
 ```sql
 id (UUID)
-amount (NUMERIC)
-type (enum: income, expense)
+amount (DECIMAL(12,2))
+type (income | expense)
 category_id (UUID) - references categories
 sender_id (UUID) - references profiles
 receiver_id (UUID) - references profiles
 description (TEXT)
 date (DATE)
-created_at (timestamp)
+created_at (TIMESTAMPTZ)
+updated_at (TIMESTAMPTZ)
 ```
 
 ## Getting Started

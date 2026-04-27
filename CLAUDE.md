@@ -30,11 +30,23 @@ pnpm test:run        # Run Vitest tests (single run)
 ```
 Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*)
                 ↓
-         lib/supabase/
-         ├── client.ts  # Browser client (createBrowserClient)
-         ├── server.ts  # Server client (createServerClient)
-         └── middleware.ts  # Session refresh logic
+         lib/supabase/         config/
+         ├── client.ts         ├── env.config.ts
+         ├── server.ts         ├── routes.config.ts
+         └── middleware.ts     ├── site.config.ts
+                               └── navigation.config.ts
 ```
+
+### Configuration Pattern
+
+Application configuration is centralized in `config/` and re-exported from `@/config`. Each domain has its own file with a `const` assertion (`as const`) for type safety:
+
+- `env.config.ts` - Typed environment variables from `process.env`
+- `routes.config.ts` - Route path constants
+- `site.config.ts` - Site metadata (name, description, accent color, version)
+- `navigation.config.ts` - Navigation item definitions with icons
+
+The optional `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` env var provides a local development redirect override for the sign-up flow.
 
 ### Key Directories
 
@@ -43,12 +55,18 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*)
   - `app/dashboard/` - Protected routes (transactions, categories, settings)
   - `app/layout.tsx` - Root layout with ThemeProvider
 - `components/pages/` - Page components (HomePage, auth/_, dashboard/_)
-- `components/layout/` - App-specific components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `components/layouts/` - Dashboard layout components (DashboardNav, Header)
+- `components/providers/` - React context providers (ThemeProvider, MobileNavContext)
+- `components/ui/` - Reusable UI components (PasswordField, DatePicker)
+- `components/pages/` - Page components (HomePage, auth/*, dashboard/*)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase client singleton pattern
+- `config/` - Centralized configuration (env, routes, site, navigation)
 - `hooks/` - Custom hooks (useToast, useMobile)
 - `scripts/001_init_database.sql` - Database schema + RLS policies
 - `tests/` - Vitest test files
+- `_specs/` - Feature specification documents
+- `_plans/` - Implementation plans
 
 ### Authentication Strategy
 

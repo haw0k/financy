@@ -22,7 +22,12 @@
   - `app/dashboard/` – Protected routes (transactions, categories, settings)
   - `app/layout.tsx` – Root layout with ThemeProvider
 - `components/pages/` – Page components (HomePage, auth/_, dashboard/_)
-- `components/layout/` – layout components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `components/layouts/` – layout components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `components/providers/` – React context providers (ThemeProvider, MobileNavContext)
+- `components/ui/` – reusable UI components (PasswordField, DatePicker)
+- `config/` – centralized configuration (env, routes, site, navigation)
+- `_specs/` – feature specification documents
+- `_plans/` – implementation plans
 - `lib/shadcn/` – shadcn/ui component library (~50 components)
 - `lib/supabase/` – Supabase client singleton pattern
 - `hooks/` – custom hooks (useToast, useMobile)

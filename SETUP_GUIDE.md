@@ -22,6 +22,12 @@ NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 ```
 
+For local development, you can optionally set a redirect URL override:
+
+```bash
+NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000/auth/callback
+```
+
 Replace `your_project_url_here` and `your_anon_key_here` with the values from your Supabase project.
 
 ## Step 2: Initialize the Database
@@ -124,27 +130,38 @@ You can add more categories from the Categories tab in the dashboard.
 ### Database Schema
 
 ```
-profiles
-├── id (UUID, references auth.users)
-├── role (sender | receiver)
-├── created_at
+profiles (User Profiles)
+├── id (UUID, PK, references auth.users)
+├── email (TEXT, not null)
+├── role (TEXT, not null, default 'sender')
+├── created_at (TIMESTAMPTZ)
+├── updated_at (TIMESTAMPTZ)
 
-categories
-├── id (UUID)
-├── name (TEXT)
-├── type (income | expense)
-├── user_id (references profiles)
+category_types (Global Types)
+├── id (UUID, PK)
+├── name (TEXT, not null, unique)
+├── created_at (TIMESTAMPTZ)
 
-transactions
-├── id (UUID)
-├── amount (NUMERIC)
-├── type (income | expense)
-├── category_id (references categories)
-├── sender_id (references profiles)
-├── receiver_id (references profiles)
+categories (Income/Expense Categories)
+├── id (UUID, PK)
+├── name (TEXT, not null)
+├── type (TEXT, check: income | expense)
+├── type_id (UUID, FK → category_types)
+├── color (TEXT, default '#3b82f6')
+├── created_at (TIMESTAMPTZ)
+├── updated_at (TIMESTAMPTZ)
+
+transactions (Financial Transactions)
+├── id (UUID, PK)
+├── sender_id (UUID, not null, FK → profiles)
+├── receiver_id (UUID, not null, FK → profiles)
+├── amount (DECIMAL(12,2), not null, check: > 0)
+├── category_id (UUID, FK → categories)
+├── type (TEXT, check: income | expense)
 ├── description (TEXT)
-├── date (DATE)
-├── created_at
+├── date (DATE, not null)
+├── created_at (TIMESTAMPTZ)
+├── updated_at (TIMESTAMPTZ)
 ```
 
 ### Tech Stack
@@ -153,7 +170,9 @@ transactions
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
 - **UI Components**: shadcn/ui in `components/shadcn/`
-- **Layout Components**: in `components/layout/`
+- **Layout Components**: in `components/layouts/`
+- **Context Providers**: in `components/providers/`
+- **Configuration**: in `config/` (env, routes, site, navigation)
 - **Charts**: Recharts
 - **Styling**: Tailwind CSS v4
 - **Date Handling**: date-fns
@@ -163,11 +182,15 @@ transactions
 ```
 components/
 ├── pages/               # Page components (HomePage, auth/*, dashboard/*)
-├── layout/              # Layout components
-└── index.ts             # Barrel exports
+├── layouts/             # Layout components
+├── providers/           # React context providers
+└── ui/                  # Reusable UI components
+config/                  # Centralized configuration
 lib/
 ├── shadcn/              # shadcn/ui components
 └── supabase/            # Supabase clients
+_specs/                  # Feature specs
+_plans/                  # Implementation plans
 app/                     # Next.js pages (thin re-exports)
 hooks/                   # Custom hooks
 scripts/                 # Database migrations
@@ -180,6 +203,7 @@ scripts/                 # Database migrations
 3. Add environment variables in Vercel Settings:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` (optional, for custom redirect)
 4. Deploy
 
 ## Notes
