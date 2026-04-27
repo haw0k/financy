@@ -2,6 +2,7 @@
 
 import { type FC, useState, useEffect, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { DatePicker } from '@/components/ui';
 import {
   Button,
   Input,
@@ -139,14 +140,11 @@ export const TransactionForm: FC<ITransactionForm> = ({
 
             <div className="space-y-2">
               <Label htmlFor="date">Date</Label>
-              <Input
-                id="date"
-                type="date"
+              <DatePicker
                 value={formData.date}
-                onChange={(e) => {
-                  setFormData({ ...formData, date: e.target.value });
+                onChange={(date) => {
+                  setFormData({ ...formData, date });
                 }}
-                required
               />
             </div>
 

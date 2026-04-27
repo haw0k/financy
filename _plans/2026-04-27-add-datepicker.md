@@ -31,10 +31,10 @@ The DatePicker should use **Popover on desktop** and **Drawer (bottom sheet) on 
 'use client';
 
 import { useState, type FC } from 'react';
+import { useIsMobile } from '@/hooks';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks';
 import { Button } from '@/lib/shadcn';
 import { Calendar } from '@/lib/shadcn/Calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/lib/shadcn/Popover';
