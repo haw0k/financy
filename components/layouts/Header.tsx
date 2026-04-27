@@ -39,8 +39,8 @@ export const Header: FC<IHeader> = ({ user }) => {
   };
 
   return (
-    <header className="border-b border-border bg-card">
-      <div className="flex h-14 items-center justify-end pl-4 md:pl-8 pr-4">
+    <header className="bg-card">
+      <div className="flex h-14 items-center justify-end pl-4 md:pl-8 pr-4 border-b border-border">
         <div className="flex items-center gap-4 md:hidden">
           <Button
             variant="ghost"

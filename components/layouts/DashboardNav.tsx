@@ -11,8 +11,8 @@ export const DashboardNav: FC = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="hidden bg-card md:block md:w-64">
-      <div className="flex h-[57px] items-center border-b border-border px-4">
+    <nav className="hidden bg-card md:flex md:flex-col md:w-64">
+      <div className="flex h-14 items-center border-b border-border px-4">
         <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
             <Image
@@ -32,7 +32,7 @@ export const DashboardNav: FC = () => {
           </span>
         </Link>
       </div>
-      <div className="space-y-1 p-4">
+      <div className="flex-1 space-y-1 p-4 border-r border-border">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
