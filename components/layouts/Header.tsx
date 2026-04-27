@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
-import { routes } from '@/config';
+import { routes, siteConfig } from '@/config';
 import { useMobileNav } from '@/components/providers';
 import { createClient } from '@/lib/supabase/client';
 
@@ -53,7 +53,7 @@ export const Header: FC<IHeader> = ({ user }) => {
           <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
             <Image
               src="/icon.svg"
-              alt="Financy"
+              alt={siteConfig.name}
               width={32}
               height={32}
               className="h-8 w-8"
@@ -61,9 +61,9 @@ export const Header: FC<IHeader> = ({ user }) => {
             />
             <span
               className="font-semibold"
-              style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
+              style={{ color: siteConfig.accentColor, fontSize: siteConfig.logoFontSize, fontWeight: siteConfig.logoFontWeight }}
             >
-              Financy
+              {siteConfig.name}
             </span>
           </Link>
         </div>

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { siteConfig } from '@/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 
 export default async function SettingsPage() {
@@ -52,7 +53,7 @@ export default async function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Application</label>
-              <p className="text-sm font-medium">Financy v1.0</p>
+              <p className="text-sm font-medium">{siteConfig.name} {siteConfig.version}</p>
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Description</label>

@@ -1,9 +1,10 @@
 import LoginPage from '@/components/pages/auth/LoginPage';
+import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Login — Financy',
-  description: 'Sign in to your Financy account',
+  title: `Login — ${siteConfig.name}`,
+  description: `Sign in to your ${siteConfig.name} account`,
 };
 
 export default LoginPage;

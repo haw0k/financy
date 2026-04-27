@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button, Input, Label } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
-import { routes } from '@/config';
+import { routes, siteConfig } from '@/config';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -41,9 +41,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
-            <Image src="/icon.svg" alt="Financy" width={48} height={48} loading="eager" />
-            <h1 className="text-2xl font-bold" style={{ color: '#00A541' }}>
-              Financy
+            <Image src="/icon.svg" alt={siteConfig.name} width={48} height={48} loading="eager" />
+            <h1 className="text-2xl font-bold" style={{ color: siteConfig.accentColor }}>
+              {siteConfig.name}
             </h1>
           </div>
           <div className="border rounded-lg p-8 bg-card text-card-foreground shadow">

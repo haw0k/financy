@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Moon, Sun } from 'lucide-react';
 import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { navItems, routes } from '@/config';
+import { navItems, routes, siteConfig } from '@/config';
 import { cn } from '@/lib/utils';
 import { type FC } from 'react';
 
@@ -34,7 +34,7 @@ export const MobileNav: FC = () => {
           >
             <Image
               src="/icon.svg"
-              alt="Financy"
+              alt={siteConfig.name}
               width={32}
               height={32}
               className="h-8 w-8"
@@ -42,9 +42,9 @@ export const MobileNav: FC = () => {
             />
             <span
               className="font-semibold"
-              style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
+              style={{ color: siteConfig.accentColor, fontSize: siteConfig.logoFontSize, fontWeight: siteConfig.logoFontWeight }}
             >
-              Financy
+              {siteConfig.name}
             </span>
           </Link>
         </div>

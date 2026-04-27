@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { navItems, routes } from '@/config';
+import { navItems, routes, siteConfig } from '@/config';
 
 export const DashboardNav: FC = () => {
   const pathname = usePathname();
@@ -17,7 +17,7 @@ export const DashboardNav: FC = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
             <Image
               src="/icon.svg"
-              alt="Financy"
+              alt={siteConfig.name}
               width={32}
               height={32}
               className="h-8 w-8"
@@ -26,9 +26,9 @@ export const DashboardNav: FC = () => {
           </div>
           <span
             className="inline-block font-semibold"
-            style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}
+            style={{ color: siteConfig.accentColor, fontSize: siteConfig.logoFontSize, fontWeight: siteConfig.logoFontWeight }}
           >
-            Financy
+            {siteConfig.name}
           </span>
         </Link>
       </div>

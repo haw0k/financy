@@ -2,6 +2,7 @@ import Script from 'next/script';
 import { Geist, Geist_Mono, Roboto } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from '@/components/providers';
+import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 import './globals.css';
 
@@ -11,8 +12,8 @@ const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'] });
 const robotoHeading = Roboto({ subsets: ['latin', 'cyrillic'], variable: '--font-heading' });
 
 export const metadata: Metadata = {
-  title: 'Finance Tracker',
-  description: 'Track your income and expenses with ease',
+  title: siteConfig.name,
+  description: siteConfig.description,
 };
 
 export default function RootLayout({
