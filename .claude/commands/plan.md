@@ -85,7 +85,7 @@ Do not add technical implementation details such as code examples.
 
 Append a line to `_plans/_description.md` (create the file if it doesn't exist):
 
-- [ ] [<feature_type>: <feature_title>](<date>-<feature_slug>.md) — `<date>`
+- [ ] <feature_type>: feature_title - { <date>-<feature_slug>.md }
 
 ## Step 5. Final output to the user
 
@@ -95,3 +95,7 @@ Plan file: \_plans/<date>-<feature_slug>.md
 Title: <feature_type>: <feature_title>
 
 Do not repeat the full plan in the chat output unless the user explicitly asks to see it.
+
+## Step 6. After plan implementation
+Launch the command
+`pnpm run format:fix`

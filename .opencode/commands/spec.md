@@ -67,7 +67,7 @@ Template:
 
 Append a line to `_specs/_description.md`:
 
-- [ ] [<feature_type>: <feature_title>](<date>-<feature_slug>.md) — `<date>`
+- [ ] <feature_type>: feature_title - { <date>-<feature_slug>.md }
 
 ## Step 6. Final output
 
