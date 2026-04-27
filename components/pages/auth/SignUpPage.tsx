@@ -16,7 +16,7 @@ import {
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
-import { routes } from '@/config';
+import { routes, env } from '@/config';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -45,8 +45,7 @@ export default function SignUpPage() {
         password,
         options: {
           emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ??
-            `${window.location.origin}${routes.authCallback}`,
+            env.devSupabaseRedirectUrl ?? `${window.location.origin}${routes.authCallback}`,
           data: {
             role,
           },

@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { routes } from '@/config';
+import { routes, env } from '@/config';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -8,8 +8,8 @@ export async function updateSession(request: NextRequest) {
   });
 
   // Check if Supabase env vars are configured
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = env.supabaseUrl;
+  const supabaseAnonKey = env.supabaseAnonKey;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     // If Supabase is not configured, allow request to proceed

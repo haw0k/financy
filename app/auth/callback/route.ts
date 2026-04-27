@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
-    console.error('[v0] Auth callback error:', error.message);
+    console.error('Auth callback error:', error.message);
   }
 
   return NextResponse.redirect(`${origin}${routes.authError}`);

@@ -16,4 +16,5 @@
 - [x] fix: Fix DashboardNav Border, Brand Visibility, and Mobile Logo Position - { 2026-04-26-nav-header-border-brand-visibility.md } - 2026-04-26
 - [x] fix: Fix Horizontal Scroll On Small Screens - { 2026-04-26-small-screen-overflow.md } — 2026-04-26
 - [x] refactor: Extract Shared Navigation Config - { 2026-04-26-extract-shared-navigation-config.md } — 2026-04-26
-- [ ] refactor: Extract Route Constants - { 2026-04-26-extract-route-constants.md } — 2026-04-26
+- [x] refactor: Extract Route Constants - { 2026-04-26-extract-route-constants.md } — 2026-04-26
+- [x] refactor: Extract Environment Variables - { 2026-04-27-extract-environment-variables.md } — 2026-04-27
