@@ -16,6 +16,7 @@ import {
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
+import { routes } from '@/config';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -45,14 +46,14 @@ export default function SignUpPage() {
         options: {
           emailRedirectTo:
             process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ??
-            `${window.location.origin}/auth/callback`,
+            `${window.location.origin}${routes.authCallback}`,
           data: {
             role,
           },
         },
       });
       if (error) throw error;
-      router.push('/auth/sign-up-success');
+      router.push(routes.signUpSuccess);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred');
     } finally {
@@ -132,7 +133,7 @@ export default function SignUpPage() {
                 </div>
                 <div className="mt-4 text-center text-sm">
                   Already have an account?{' '}
-                  <Link href="/auth/login" className="underline underline-offset-4">
+                  <Link href={routes.login} className="underline underline-offset-4">
                     Login
                   </Link>
                 </div>

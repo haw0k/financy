@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button, Input, Label } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
+import { routes } from '@/config';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ export default function LoginPage() {
         password,
       });
       if (authError) throw authError;
-      router.push('/dashboard');
+      router.push(routes.dashboard);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -78,7 +79,7 @@ export default function LoginPage() {
             </form>
             <p className="text-center text-sm mt-4">
               Don&apos;t have an account?{' '}
-              <Link href="/auth/sign-up" className="text-blue-600 hover:underline">
+              <Link href={routes.signUp} className="text-blue-600 hover:underline">
                 Sign up
               </Link>
             </p>

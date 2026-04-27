@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { routes } from '@/config';
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -8,8 +9,8 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   if (user) {
-    redirect('/dashboard');
+    redirect(routes.dashboard);
   } else {
-    redirect('/auth/login');
+    redirect(routes.login);
   }
 }

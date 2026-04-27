@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { routes } from '@/config';
 
 export default function SignUpSuccessPage() {
   return (
@@ -10,7 +11,7 @@ export default function SignUpSuccessPage() {
           We sent you a confirmation link. Please check your email and click the link to verify your
           account.
         </p>
-        <Link href="/auth/login" className="text-primary hover:underline">
+        <Link href={routes.login} className="text-primary hover:underline">
           Back to login
         </Link>
       </div>

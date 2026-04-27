@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Moon, Sun } from 'lucide-react';
 import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { navItems } from '@/config';
+import { navItems, routes } from '@/config';
 import { cn } from '@/lib/utils';
 import { type FC } from 'react';
 
@@ -26,13 +26,20 @@ export const MobileNav: FC = () => {
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <div className="flex h-[57px] items-center border-b border-border px-4">
           <Link
-            href="/dashboard"
+            href={routes.dashboard}
             className="flex items-center gap-4 font-semibold"
             onClick={() => {
               setIsOpen(false);
             }}
           >
-            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" loading="eager" />
+            <Image
+              src="/icon.svg"
+              alt="Financy"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+              loading="eager"
+            />
             <span
               className="font-semibold"
               style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { navItems } from '@/config';
+import { navItems, routes } from '@/config';
 
 export const DashboardNav: FC = () => {
   const pathname = usePathname();
@@ -13,9 +13,16 @@ export const DashboardNav: FC = () => {
   return (
     <nav className="hidden bg-card md:block md:w-64">
       <div className="flex h-[57px] items-center border-b border-border px-4">
-        <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
+        <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
           <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
-            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" loading="eager" />
+            <Image
+              src="/icon.svg"
+              alt="Financy"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+              loading="eager"
+            />
           </div>
           <span
             className="inline-block font-semibold"

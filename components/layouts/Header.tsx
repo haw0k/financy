@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
+import { routes } from '@/config';
 import { useMobileNav } from '@/components/providers';
 import { createClient } from '@/lib/supabase/client';
 
@@ -30,7 +31,7 @@ export const Header: FC<IHeader> = ({ user }) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/auth/login');
+    router.push(routes.login);
   };
 
   const handleToggleTheme = () => {
@@ -49,8 +50,15 @@ export const Header: FC<IHeader> = ({ user }) => {
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <Link href="/dashboard" className="flex items-center gap-4 font-semibold">
-            <Image src="/icon.svg" alt="Financy" width={32} height={32} className="h-8 w-8" loading="eager" />
+          <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
+            <Image
+              src="/icon.svg"
+              alt="Financy"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+              loading="eager"
+            />
             <span
               className="font-semibold"
               style={{ color: '#00A541', fontSize: '26px', fontWeight: 700 }}

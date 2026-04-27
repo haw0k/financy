@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { routes } from '@/config';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -47,12 +48,12 @@ export async function updateSession(request: NextRequest) {
 
   if (
     // if the user is not logged in and the dashboard is accessed, redirect to the login page
-    request.nextUrl.pathname.startsWith('/dashboard') &&
+    request.nextUrl.pathname.startsWith(routes.dashboard) &&
     !user
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
+    url.pathname = routes.login;
     return NextResponse.redirect(url);
   }
 
