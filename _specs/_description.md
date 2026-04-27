@@ -18,4 +18,4 @@
 - [x] refactor: Extract Shared Navigation Config - { 2026-04-26-extract-shared-navigation-config.md } — 2026-04-26
 - [x] refactor: Extract Route Constants - { 2026-04-26-extract-route-constants.md } — 2026-04-26
 - [x] refactor: Extract Environment Variables - { 2026-04-27-extract-environment-variables.md } — 2026-04-27
-- [ ] refactor: Migrate All Selects To Shadcn Select — 2026-04-27
+- [x] refactor: Migrate All selects To Shadcn Select — { 2026-04-27-migrate-all-selects-to-shadcn.md} — 2026-04-27
