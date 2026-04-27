@@ -14,6 +14,7 @@ Five documentation files need updating to reflect recent project changes: new di
 **Fix stale path:** `components/layout/` → `components/layouts/` everywhere.
 
 **Add new directories** to project structure listings:
+
 - `components/providers/` — React context providers (ThemeProvider, MobileNavContext)
 - `components/ui/` — Reusable UI components (PasswordField, DatePicker)
 - `config/` — Centralized config (env, routes, site, navigation)
@@ -23,10 +24,12 @@ Five documentation files need updating to reflect recent project changes: new di
 ### File-specific changes
 
 #### AGENTS.md
+
 - Fix path in Structure section
 - Add new directories to Structure list
 
 #### CLAUDE.md
+
 - Fix path in Key Directories
 - Add new directories
 - Update Data Flow diagram to include `config/` layer
@@ -34,18 +37,21 @@ Five documentation files need updating to reflect recent project changes: new di
 - Document `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` env var
 
 #### PROJECT_SUMMARY.md
+
 - Fix path in project tree and tech stack
 - Add new directories to project structure tree
 - Remove `proxy.ts` from tree (no longer exists)
 - Fix `Finance Tracker` title → `Financy`
 
 #### README.md
+
 - Fix path in Project Structure
 - Add new directories to project structure tree
 - Add `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` to Environment Variables section
 - Add `_specs/` and `_plans/` references to development workflow
 
 #### SETUP_GUIDE.md
+
 - Fix path in Tech Stack and Project Structure
 - Add new directories to Tech Stack and Project Structure
 - Add `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` to env var setup section

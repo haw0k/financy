@@ -122,11 +122,11 @@ Visit `http://localhost:3000` and create your account!
 
 Three main tables with Row Level Security:
 
-| Table            | Purpose                   | RLS                                      |
-| ---------------- | ------------------------- | ---------------------------------------- |
-| `profiles`       | User profiles with role   | ✓ Users see own profile                  |
-| `category_types` | Global category types     | ✓ All authenticated users                |
-| `categories`     | Income/expense categories | ✓ All authenticated users                |
+| Table            | Purpose                   | RLS                                            |
+| ---------------- | ------------------------- | ---------------------------------------------- |
+| `profiles`       | User profiles with role   | ✓ Users see own profile                        |
+| `category_types` | Global category types     | ✓ All authenticated users                      |
+| `categories`     | Income/expense categories | ✓ All authenticated users                      |
 | `transactions`   | Financial transactions    | ✓ Users see own transactions (sender/receiver) |
 
 See [DATABASE.md](./scripts/001_init_database.sql) for full schema.

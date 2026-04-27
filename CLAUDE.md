@@ -58,7 +58,7 @@ The optional `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` env var provides a local de
 - `components/layouts/` - Dashboard layout components (DashboardNav, Header)
 - `components/providers/` - React context providers (ThemeProvider, MobileNavContext)
 - `components/ui/` - Reusable UI components (PasswordField, DatePicker)
-- `components/pages/` - Page components (HomePage, auth/*, dashboard/*)
+- `components/pages/` - Page components (HomePage, auth/_, dashboard/_)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase client singleton pattern
 - `config/` - Centralized configuration (env, routes, site, navigation)
