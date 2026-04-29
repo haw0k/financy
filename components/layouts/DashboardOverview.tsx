@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useEffect, useState } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
@@ -29,6 +29,11 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
   const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    console.log(intervalRef.current);
+  }, [isLoading]);
 
   const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
@@ -98,7 +103,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6" ref={intervalRef}>
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
