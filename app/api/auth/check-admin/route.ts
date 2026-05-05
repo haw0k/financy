@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { ERole, EProfileStatus } from '@/enums';
 
 export async function GET() {
   try {
@@ -8,8 +9,8 @@ export async function GET() {
     const { data, error } = await adminClient
       .from('profiles')
       .select('id')
-      .eq('role', 'admin')
-      .eq('status', 'approved')
+      .eq('role', ERole.Admin)
+      .eq('status', EProfileStatus.Approved)
       .limit(1);
 
     if (error) {

@@ -125,8 +125,8 @@ export default function SignUpPage() {
                         <SelectValue placeholder="Select account type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="sender">Sender (Send Money)</SelectItem>
-                        <SelectItem value="receiver">Receiver (Receive Money)</SelectItem>
+                        <SelectItem value={ERole.Sender}>Sender (Send Money)</SelectItem>
+                        <SelectItem value={ERole.Receiver}>Receiver (Receive Money)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
