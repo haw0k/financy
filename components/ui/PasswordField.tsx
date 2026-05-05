@@ -25,7 +25,11 @@ export const PasswordField: FC<IPasswordField> = ({ className, label = 'Password
     <div className={className}>
       <Label htmlFor={props.id}>{label}</Label>
       <InputGroup className="mt-1">
-        <InputGroupInput type={isShowPassword ? 'text' : 'password'} {...props} />
+        <InputGroupInput
+          suppressHydrationWarning
+          type={isShowPassword ? 'text' : 'password'}
+          {...props}
+        />
         <InputGroupAddon align="inline-end">
           <InputGroupButton
             size="icon-xs"

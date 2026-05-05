@@ -22,4 +22,5 @@
 - [x] feat: Add DatePicker With Shadcn Calendar And Popover — { 2026-04-27-add-datepicker.md } - 2026-04-27
 - [x] refactor: Extract Site Config — { 2026-04-27-extract-site-config.md } - 2026-04-27
 - [x] docs: Update Project Documentation — { 2026-04-27-update-project-documentation.md } — 2026-04-27
+- [x] feat: Environment-Aware Supabase Redirect URL — { 2026-05-05-env-aware-supabase-redirect-url.md }
 - [ ] feat: Admin Role and Registration Approval — { 2026-05-05-admin-role-registration-approval.md }
