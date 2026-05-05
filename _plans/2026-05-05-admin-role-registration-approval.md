@@ -27,17 +27,21 @@ Link: [Admin Role and Registration Approval](_specs/2026-05-05-admin-role-regist
 ### Phase 1 — Database migration
 
 - [ ] Modify `scripts/001_init_database.sql`:
-  - Alter `profiles.role` check constraint: add `'admin'`
+  - Add `drop table if exists public.profiles cascade;` at the top (for idempotent re-run)
+  - Change `profiles.role` check constraint: `role in ('sender', 'receiver', 'admin')`
   - Add `profiles.status text not null default 'pending'` with check `status in ('pending', 'approved')`
   - Add RLS policies: `profiles_select_admin`, `profiles_update_admin` (admin sees/updates all profiles)
-  - Add `handle_new_user()` trigger function (currently missing from script): auto-creates profile on `auth.users` insert with `status = case when role = 'admin' then 'approved' else 'pending' end`
-- [ ] Recreate database from updated script
+  - Update `handle_new_user()` trigger to include status: `status = case when role = 'admin' then 'approved' else 'pending' end`
 
 ### Phase 2 — Config and env
 
 - [ ] Add `SUPABASE_SERVICE_ROLE_KEY` to `.env.example` and `.env.local`
 - [ ] Add `supabaseServiceRoleKey` to `config/env.config.ts`
 - [ ] Add `admin: '/admin'`, `adminAuth: '/auth/admin'`, `pending: '/auth/pending'` to `config/routes.config.ts`
+- [ ] Update `SETUP_GUIDE.md`:
+  - Step 1.1: add "Copy your **Service Role Key**" (not the anon key — the secret `service_role` key below it)
+  - Step 1.2: add `SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here` to the `.env.local` example
+  - Deployment section: add `SUPABASE_SERVICE_ROLE_KEY` to the Vercel env vars list
 
 ### Phase 3 — Enums
 
@@ -141,6 +145,7 @@ Link: [Admin Role and Registration Approval](_specs/2026-05-05-admin-role-regist
 | Modify | `config/env.config.ts`                         |
 | Modify | `config/routes.config.ts`                      |
 | Modify | `.env.example`                                 |
+| Modify | `SETUP_GUIDE.md`                               |
 | Modify | `components/pages/auth/SignUpPage.tsx`         |
 | Modify | `components/pages/auth/SignUpSuccessPage.tsx`  |
 
