@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { routes, env } from '@/config';
+import { ERole, EProfileStatus } from '@/enums';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -46,14 +47,38 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (
-    // if the user is not logged in and the dashboard is accessed, redirect to the login page
-    request.nextUrl.pathname.startsWith(routes.dashboard) &&
-    !user
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const isAdminPath = request.nextUrl.pathname.startsWith(routes.admin);
+  const isDashboardPath = request.nextUrl.pathname.startsWith(routes.dashboard);
+
+  if (isAdminPath) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = routes.login;
+      return NextResponse.redirect(url);
+    }
+
+    if (!user.email_confirmed_at) {
+      const url = request.nextUrl.clone();
+      url.pathname = routes.pending;
+      return NextResponse.redirect(url);
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || profile.role !== ERole.Admin || profile.status !== EProfileStatus.Approved) {
+      const url = request.nextUrl.clone();
+      url.pathname = routes.dashboard;
+      return NextResponse.redirect(url);
+    }
+  }
+
+  if (isDashboardPath && user && !user.email_confirmed_at) {
     const url = request.nextUrl.clone();
-    url.pathname = routes.login;
+    url.pathname = routes.pending;
     return NextResponse.redirect(url);
   }
 

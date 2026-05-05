@@ -8,4 +8,7 @@ export const routes = {
   signUpSuccess: '/auth/sign-up-success',
   authCallback: '/auth/callback',
   authError: '/auth/error',
+  admin: '/admin',
+  adminAuth: '/auth/admin',
+  pending: '/auth/pending',
 } as const;

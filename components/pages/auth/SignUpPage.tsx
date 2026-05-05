@@ -21,13 +21,14 @@ import {
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
-import { routes, getSupabaseRedirectUrl, siteConfig } from '@/config';
+import { routes, siteConfig } from '@/config';
+import { ERole } from '@/enums';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
-  const [role, setRole] = useState<'sender' | 'receiver'>('sender');
+  const [role, setRole] = useState<ERole>(ERole.Sender);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -49,11 +50,7 @@ export default function SignUpPage() {
         email,
         password,
         options: {
-          emailRedirectTo:
-            getSupabaseRedirectUrl() ?? `${window.location.origin}${routes.authCallback}`,
-          data: {
-            role,
-          },
+          data: { role },
         },
       });
       if (error) throw error;
@@ -121,7 +118,7 @@ export default function SignUpPage() {
                     <Select
                       value={role}
                       onValueChange={(v) => {
-                        setRole(v as 'sender' | 'receiver');
+                        setRole(v as ERole);
                       }}
                     >
                       <SelectTrigger className="w-full" id="role">

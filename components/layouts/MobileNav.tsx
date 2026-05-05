@@ -10,11 +10,17 @@ import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
 import { navItems, routes, siteConfig } from '@/config';
 import { cn } from '@/lib/utils';
 import { type FC } from 'react';
+import { useRole } from '@/hooks';
+import { ERole, EProfileStatus } from '@/enums';
+import { ShieldCheckIcon } from 'lucide-react';
 
 export const MobileNav: FC = () => {
   const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const { role, status } = useRole();
+
+  const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
 
   const handleToggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -76,6 +82,21 @@ export const MobileNav: FC = () => {
               </Link>
             );
           })}
+          {isAdmin && (
+            <Link
+              href={routes.admin}
+              onClick={() => setIsOpen(false)}
+              className={cn(
+                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                pathname === routes.admin
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+              )}
+            >
+              <ShieldCheckIcon className="h-4 w-4" />
+              Admin
+            </Link>
+          )}
         </div>
         <div className="mt-auto border-t border-border p-2">
           <Button variant="ghost" size="icon" onClick={handleToggleTheme} className="mx-auto flex">

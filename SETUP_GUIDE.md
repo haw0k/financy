@@ -11,7 +11,7 @@
 
 1. Go to [supabase.com](https://supabase.com) and create a free account
 2. Create a new project (choose a region close to you)
-3. Copy your **Project URL** and **Anon Key** from the API settings
+3. Copy your **Project URL**, **Anon Key**, and **Service Role Key** from the API settings
 
 ### 1.2 Set Environment Variables
 
@@ -20,6 +20,7 @@ Create or update `.env.local` in your project root:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 ```
 
 For local development, you can optionally set a redirect URL override:
@@ -203,6 +204,7 @@ scripts/                 # Database migrations
 3. Add environment variables in Vercel Settings:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
    - `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` (optional, for custom redirect)
 4. Deploy
 

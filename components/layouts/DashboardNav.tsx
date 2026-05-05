@@ -6,9 +6,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { navItems, routes, siteConfig } from '@/config';
+import { useRole } from '@/hooks';
+import { ERole, EProfileStatus } from '@/enums';
+import { ShieldCheckIcon } from 'lucide-react';
 
 export const DashboardNav: FC = () => {
   const pathname = usePathname();
+  const { role, status } = useRole();
+
+  const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
 
   return (
     <nav className="hidden bg-card md:flex md:flex-col md:w-64">
@@ -57,6 +63,20 @@ export const DashboardNav: FC = () => {
             </Link>
           );
         })}
+        {isAdmin && (
+          <Link
+            href={routes.admin}
+            className={cn(
+              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+              pathname === routes.admin
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+            )}
+          >
+            <ShieldCheckIcon className="h-4 w-4" />
+            Admin
+          </Link>
+        )}
       </div>
     </nav>
   );

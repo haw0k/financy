@@ -2,12 +2,14 @@
 drop table if exists public.transactions;
 drop table if exists public.categories;
 drop table if exists public.category_types;
+drop table if exists public.profiles cascade;
 
 -- Create profiles table with role support
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
-  role text not null default 'sender' check (role in ('sender', 'receiver')),
+  role text not null default 'sender' check (role in ('sender', 'receiver', 'admin')),
+  status text not null default 'pending' check (status in ('pending', 'approved')),
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
@@ -21,6 +23,22 @@ drop policy if exists "profiles_insert_own" on public.profiles;
 create policy "profiles_insert_own" on public.profiles for insert with check (auth.uid() = id);
 drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
+
+-- Admin RLS policies (admin sees/updates all profiles)
+drop policy if exists "profiles_select_admin" on public.profiles;
+create policy "profiles_select_admin" on public.profiles for select using (
+  exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin' and status = 'approved'
+  )
+);
+drop policy if exists "profiles_update_admin" on public.profiles;
+create policy "profiles_update_admin" on public.profiles for update using (
+  exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin' and status = 'approved'
+  )
+);
 
 -- Create category_types table (global reference, not user-specific)
 create table if not exists public.category_types (
@@ -117,11 +135,15 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, role)
+  insert into public.profiles (id, email, role, status)
   values (
     new.id,
     new.email,
-    coalesce(new.raw_user_meta_data ->> 'role', 'sender')
+    coalesce(new.raw_user_meta_data ->> 'role', 'sender'),
+    case
+      when new.raw_user_meta_data ->> 'role' = 'admin' then 'approved'
+      else 'pending'
+    end
   )
   on conflict (id) do nothing;
 
