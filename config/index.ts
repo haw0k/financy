@@ -1,4 +1,4 @@
-export { env } from './env.config';
+export { env, getSupabaseRedirectUrl } from './env.config';
 export { routes } from './routes.config';
 export { siteConfig } from './site.config';
 export { navItems } from './navigation.config';
