@@ -172,8 +172,11 @@ finance-tracker/
 | **Testing**        | Vitest (+ React Testing Library) |
 | **Database**       | Supabase (PostgreSQL)            |
 | **Authentication** | Supabase Auth                    |
+| **Icons**          | lucide-react                     |
 | **Date Library**   | date-fns                         |
 | **Deployment**     | Vercel                           |
+
+Icons are from [Lucide](https://lucide.dev) — an open-source icon library with 1000+ SVG icons. Use the [icon search](https://lucide.dev/icons/) to visually browse and find icons by name.
 
 ## Database Schema
 
