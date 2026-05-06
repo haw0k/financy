@@ -23,6 +23,7 @@ import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -57,6 +58,7 @@ export default function SignUpPage() {
       router.push(routes.signUpSuccess);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred');
+      handleSupabaseError(error);
     } finally {
       setIsLoading(false);
     }

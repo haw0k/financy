@@ -2,6 +2,7 @@
 
 import { type FC, useEffect, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import type { ITransaction, IStats, ICategoryData } from '@/interfaces';
@@ -76,7 +77,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
           );
         }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        handleSupabaseError(error);
       } finally {
         setIsLoading(false);
       }

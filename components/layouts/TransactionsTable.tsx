@@ -2,6 +2,7 @@
 
 import { type FC, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 import {
   Card,
   CardContent,
@@ -47,7 +48,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setTransactions(data || []);
     } catch (error) {
-      console.error('Error fetching transactions:', error);
+      handleSupabaseError(error);
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +61,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      handleSupabaseError(error);
     }
   };
 
@@ -71,7 +72,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setCategoryTypes(data || []);
     } catch (error) {
-      console.error('Error fetching category types:', error);
+      handleSupabaseError(error);
     }
   };
 
@@ -100,7 +101,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setTransactions(transactions.filter((t) => t.id !== id));
     } catch (error) {
-      console.error('Error deleting transaction:', error);
+      handleSupabaseError(error);
     }
   };
 

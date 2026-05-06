@@ -2,6 +2,7 @@
 
 import { type FC, useState, useEffect, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 import { DatePicker } from '@/components/ui';
 import {
   Button,
@@ -54,7 +55,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
         if (error) throw error;
         setUsers(data || []);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        handleSupabaseError(error);
       }
     };
 
@@ -90,7 +91,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
 
       onSuccess();
     } catch (error) {
-      console.error('Error submitting transaction:', error);
+      handleSupabaseError(error);
     } finally {
       setIsLoading(false);
     }

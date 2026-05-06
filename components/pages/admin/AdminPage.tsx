@@ -25,7 +25,7 @@ import {
 import { useRole } from '@/hooks';
 import { ERole, EProfileStatus } from '@/enums';
 import { routes } from '@/config';
-import { toast } from 'sonner';
+import { showError, showSuccess } from '@/components/ui/ToastNotification';
 
 interface IPendingUser {
   id: string;
@@ -49,7 +49,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/pending-users');
       if (isCancelled) return;
       if (!res.ok) {
-        toast.error('Failed to fetch pending users');
+        showError('Failed to fetch pending users');
         if (!isCancelled) setIsLoading(false);
         return;
       }
@@ -86,9 +86,9 @@ export default function AdminPage() {
         throw new Error(error);
       }
       setUsers((prev) => prev.filter((u) => u.id !== userId));
-      toast.success('User approved');
+      showSuccess('User approved');
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Failed to approve user');
+      showError(err instanceof Error ? err.message : 'Failed to approve user');
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
@@ -112,9 +112,9 @@ export default function AdminPage() {
         throw new Error(error);
       }
       setUsers((prev) => prev.filter((u) => u.id !== userId));
-      toast.success('User rejected');
+      showSuccess('User rejected');
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Failed to reject user');
+      showError(err instanceof Error ? err.message : 'Failed to reject user');
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);

@@ -48,8 +48,6 @@ export * from './Switch';
 export * from './Table';
 export * from './Tabs';
 export * from './Textarea';
-export * from './Toast';
-export * from './Toaster';
 export * from './ToggleGroup';
 export * from './Toggle';
 export * from './Tooltip';

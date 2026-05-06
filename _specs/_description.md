@@ -24,3 +24,4 @@
 - [x] docs: Update Project Documentation — { 2026-04-27-update-project-documentation.md } — 2026-04-27
 - [x] feat: Environment-Aware Supabase Redirect URL — { 2026-05-05-env-aware-supabase-redirect-url.md }
 - [x] feat: Admin Role and Registration Approval — { 2026-05-05-admin-role-registration-approval.md }
+- [ ] feat: Toast Notification System — { 2026-05-06-toast-notification-system.md }

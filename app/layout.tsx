@@ -2,6 +2,7 @@ import Script from 'next/script';
 import { Geist, Geist_Mono, Roboto } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from '@/components/providers';
+import { SonnerToaster } from '@/lib/shadcn';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -39,6 +40,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           {children}
+          <SonnerToaster richColors position="bottom-right" expand closeButton />
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

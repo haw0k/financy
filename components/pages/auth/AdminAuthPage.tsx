@@ -17,6 +17,7 @@ import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 import { routes, getSupabaseRedirectUrl, siteConfig } from '@/config';
 import { ERole } from '@/enums';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 
 export default function AdminAuthPage() {
   const [email, setEmail] = useState('');
@@ -55,6 +56,7 @@ export default function AdminAuthPage() {
       setSignUpSuccess(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      handleSupabaseError(err);
     } finally {
       setIsLoading(false);
     }
@@ -76,6 +78,7 @@ export default function AdminAuthPage() {
       router.push(routes.admin);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      handleSupabaseError(err);
     } finally {
       setIsLoading(false);
     }

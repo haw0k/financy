@@ -2,6 +2,7 @@
 
 import { type FC, useEffect, useState, type SubmitEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 import {
   Card,
   CardContent,
@@ -59,7 +60,7 @@ export const CategoriesTable: FC = () => {
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      handleSupabaseError(error);
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +73,7 @@ export const CategoriesTable: FC = () => {
       if (error) throw error;
       setCategoryTypes(data || []);
     } catch (error) {
-      console.error('Error fetching category types:', error);
+      handleSupabaseError(error);
     }
   };
 
@@ -98,7 +99,7 @@ export const CategoriesTable: FC = () => {
       setCtIsShowForm(false);
       fetchCategoryTypes();
     } catch (error) {
-      console.error('Error submitting category type:', error);
+      handleSupabaseError(error);
     }
   };
 
@@ -116,7 +117,7 @@ export const CategoriesTable: FC = () => {
       setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
       setCtDeleteId(null);
     } catch (error) {
-      console.error('Error deleting category type:', error);
+      handleSupabaseError(error);
     }
   };
 
@@ -161,7 +162,7 @@ export const CategoriesTable: FC = () => {
       setIsShowForm(false);
       fetchCategories();
     } catch (error) {
-      console.error('Error submitting category:', error);
+      handleSupabaseError(error);
     }
   };
 
@@ -172,7 +173,7 @@ export const CategoriesTable: FC = () => {
       if (error) throw error;
       setCategories(categories.filter((c) => c.id !== id));
     } catch (error) {
-      console.error('Error deleting category:', error);
+      handleSupabaseError(error);
     }
   };
 

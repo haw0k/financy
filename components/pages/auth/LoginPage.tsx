@@ -8,6 +8,7 @@ import { Button, Input, Label } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { createClient } from '@/lib/supabase/client';
 import { routes, siteConfig } from '@/config';
+import { handleSupabaseError } from '@/lib/handle-supabase-error';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -31,6 +32,7 @@ export default function LoginPage() {
       router.push(routes.dashboard);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      handleSupabaseError(err);
     } finally {
       setIsLoading(false);
     }
