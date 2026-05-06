@@ -145,7 +145,7 @@ finance-tracker/
 
 - Responsive layout (works on mobile, tablet, desktop)
 - Dark/light mode with system preference detection
-- Clean, professional UI using shadcn/ui components
+- Clean, professional UI using shadcn/ui components and sonner toast notifications
 - Tailwind CSS for styling
 - Accessible forms and navigation
 
@@ -173,6 +173,7 @@ finance-tracker/
 | **Database**       | Supabase (PostgreSQL)            |
 | **Authentication** | Supabase Auth                    |
 | **Icons**          | lucide-react                     |
+| **Toast**          | sonner                           |
 | **Date Library**   | date-fns                         |
 | **Deployment**     | Vercel                           |
 

@@ -28,7 +28,7 @@ function isPostgrestError(error: unknown): error is IPostgrestErrorLike {
 
 function formatPostgrestError(error: IPostgrestErrorLike): string {
   const code = error.code ?? '';
-  return PG_ERROR_MAP[code] ?? error.message ?? 'Ошибка базы данных';
+  return PG_ERROR_MAP[code] ?? error.message ?? 'Database error';
 }
 
 function handleSupabaseError(error: unknown) {

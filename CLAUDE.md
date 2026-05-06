@@ -63,7 +63,7 @@ The optional `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` env var provides a local de
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase clients (client, server, middleware, admin)
 - `config/` - Centralized configuration (env, routes, site, navigation)
-- `hooks/` - Custom hooks (useRole, useToast, useMobile, useHandler)
+- `hooks/` - Custom hooks (useRole, useMobile, useHandler)
 - `enums/` - TypeScript enums (ERole, EProfileStatus)
 - `interfaces/` - TypeScript interfaces (transactions, categories, stats)
 - `scripts/001_init_database.sql` - Database schema + RLS policies
