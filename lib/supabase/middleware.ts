@@ -76,10 +76,18 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  if (isDashboardPath && user && !user.email_confirmed_at) {
-    const url = request.nextUrl.clone();
-    url.pathname = routes.pending;
-    return NextResponse.redirect(url);
+  if (isDashboardPath && user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('status')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || profile.status !== EProfileStatus.Approved) {
+      const url = request.nextUrl.clone();
+      url.pathname = routes.pending;
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

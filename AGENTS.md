@@ -74,6 +74,36 @@ Mock module-level hooks with mutable state objects, use dynamic imports after se
 - Commit Message Convention: [Commit Message Convention](docs/commit-message-convention.md)
 - Naming Conventions: [Naming Conventions](docs/naming-conventions.md)
 
+## Registration & Approval Flow
+
+Supabase has **"Enable email confirmations" ON**. Confirmation emails are sent on every signup.
+
+### Admin (`/auth/admin`)
+1. First admin signs up with `emailRedirectTo` → DB trigger `handle_new_user()` sets `status = 'approved'`
+2. Confirmation email sent → click link → `/auth/callback` exchanges code → checks profile (admin + approved) → redirects to `/admin`
+3. Subsequent logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, `email_confirmed_at`, profile role/status → `/admin`
+
+### Regular user — Sender/Receiver (`/auth/sign-up`)
+1. Signs up WITHOUT `emailRedirectTo` → trigger sets `status = 'pending'`
+2. Confirmation email sent (Supabase setting) → click link → callback → not admin → `/dashboard`
+3. Middleware checks `profile.status` → `'pending'` → redirects to `/auth/pending`
+4. Admin approves → API calls `adminClient.auth.admin.updateUserById(userId, { email_confirm: true })` + sets `profile.status = 'approved'`
+5. User accesses `/dashboard` → middleware sees `status = 'approved'` → OK
+
+### Reject flow
+- `adminClient.auth.admin.deleteUser(userId)` — cascade deletes profile row
+
+### Self-protection
+- Admin cannot approve/reject their own account (API + UI check)
+
+### Middleware redirects summary
+| Path | Condition | Redirect |
+|------|-----------|----------|
+| `/admin/*` | no user | `/auth/login` |
+| `/admin/*` | email not confirmed | `/auth/pending` |
+| `/admin/*` | role != Admin or status != Approved | `/dashboard` |
+| `/dashboard/*` | user exists, status != Approved | `/auth/pending` |
+
 ## Spec-Driven Development
 
 - All features must have a spec in `_specs/<feature-name>.md` before implementation

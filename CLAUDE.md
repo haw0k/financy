@@ -90,12 +90,34 @@ The app uses Next.js proxy mode: `proxy.ts` exports a `proxy` function (invoked 
 
 Middleware checks:
 
-- `/admin/*`: no user → `/auth/login`; email not confirmed → `/auth/pending`; not approved admin → `/dashboard`
-- `/dashboard/*`: email not confirmed → `/auth/pending`
+- `/admin/*`: no user → `/auth/login`; email not confirmed → `/auth/pending`; profile role != Admin or status != Approved → `/dashboard`
+- `/dashboard/*`: user exists + profile status != Approved → `/auth/pending`
 
 ### Authentication Strategy
 
 Middleware handles session refresh via `supabase.auth.getUser()`. Protected routes use server-side client with cookie-based session. Client-side uses `createBrowserClient` with public anon key.
+
+### Registration & Approval Flow
+
+Supabase project has **"Enable email confirmations" ON** (default). Confirmation emails are sent on every signup.
+
+**Admin registration** (`/auth/admin`):
+1. First admin signs up with `emailRedirectTo` → DB trigger auto-sets `status = 'approved'`
+2. Supabase sends confirmation email → admin clicks link → callback exchanges code → checks profile (admin + approved) → redirects to `/admin`
+3. Subsequent admin logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
+
+**Regular user registration** (`/auth/sign-up`):
+1. User signs up WITHOUT `emailRedirectTo` → DB trigger sets `status = 'pending'`
+2. Supabase sends confirmation email (project setting, not `emailRedirectTo`)
+3. User clicks email link → callback exchanges code → not admin → redirects to `/dashboard`
+4. Middleware at `/dashboard` checks `profile.status` → `'pending'` → redirects to `/auth/pending`
+5. Admin approves via `/admin` → API calls `adminClient.auth.admin.updateUserById(userId, { email_confirm: true })` (re-confirms email) + sets `profile.status = 'approved'`
+6. User refreshes `/dashboard` → middleware sees `status = 'approved'` → access granted
+
+**Reject flow** (`/api/admin/pending-users/reject`):
+- Calls `adminClient.auth.admin.deleteUser(userId)` — cascade deletes the profile row
+
+**Self-protection**: admin cannot approve/reject their own account (checked both in API routes and UI).
 
 ### Role System
 
