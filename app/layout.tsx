@@ -24,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <body
+        className={`${geist.className} ${geistMono.className} ${robotoHeading.variable} bg-background font-sans antialiased`}
+      >
         <Script id="theme-init" strategy="beforeInteractive">
           {`
             (function() {
@@ -34,10 +36,6 @@ export default function RootLayout({
             })();
           `}
         </Script>
-      </head>
-      <body
-        className={`${geist.className} ${geistMono.className} ${robotoHeading.variable} bg-background font-sans antialiased`}
-      >
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           {children}
           <SonnerToaster richColors position="bottom-right" />
