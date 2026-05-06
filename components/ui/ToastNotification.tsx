@@ -3,6 +3,8 @@
 import { TriangleAlert, CircleCheck, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
+const iconClass = 'size-4 shrink-0';
+
 function showError(title: string, description: string) {
   toast(title, {
     description,
@@ -46,7 +48,5 @@ function showNotification(title: string, description: string) {
     duration: 4000,
   });
 }
-
-const iconClass = "size-4 shrink-0";
 
 export { showError, showWarning, showSuccess, showNotification };
