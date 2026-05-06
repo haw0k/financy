@@ -2,7 +2,7 @@
 
 ## What Was Built
 
-Complete full-stack financial management application with authentication, role-based access, and comprehensive transaction/expense tracking.
+Complete full-stack financial management application with authentication, role-based access (sender/receiver/admin), registration approval, and comprehensive transaction/expense tracking.
 
 ## Project Structure
 
@@ -12,8 +12,20 @@ finance-tracker/
 │   ├── auth/
 │   │   ├── login/               # Login page (email/password)
 │   │   ├── sign-up/             # Sign up with role selection
+│   │   ├── sign-up-success/     # Post-signup pending approval page
+│   │   ├── admin/               # Admin signup/login page
+│   │   ├── pending/             # Pending approval status page
 │   │   ├── callback/            # OAuth callback handler
 │   │   └── error/               # Auth error page
+│   ├── admin/
+│   │   ├── page.tsx             # Admin dashboard (user management)
+│   │   └── layout.tsx           # Server-side admin authorization
+│   ├── api/
+│   │   └── admin/
+│   │       ├── pending-users/           # GET pending users
+│   │       ├── pending-users/approve/   # POST approve user
+│   │       ├── pending-users/reject/    # POST reject user
+│   │       └── auth/check-admin/       # GET check admin exists
 │   ├── dashboard/
 │   │   ├── page.tsx             # Dashboard overview
 │   │   ├── transactions/        # Transactions management
@@ -22,11 +34,12 @@ finance-tracker/
 │   │   └── layout.tsx           # Dashboard layout (nav + header)
 │   ├── layout.tsx               # Root layout with theme provider
 │   ├── page.tsx                 # Home page (redirects to auth)
+│   ├── robots.ts                # Robots.txt (disallows /auth/admin)
 │   └── globals.css              # Global styles & design tokens
 │
 ├── components/
-│   ├── pages/                   # Page components (HomePage, auth/*, dashboard/*)
-│   ├── layouts/                 # Layout components (DashboardNav, Header)
+│   ├── pages/                   # Page components (HomePage, auth/*, dashboard/*, admin/*)
+│   ├── layouts/                 # Layout components (DashboardNav, Header, MobileNav)
 │   ├── providers/               # React context providers (ThemeProvider, MobileNavContext)
 │   └── ui/                      # Reusable UI components (PasswordField, DatePicker)
 │
@@ -36,12 +49,28 @@ finance-tracker/
 │   ├── site.config.ts           # Site metadata
 │   └── navigation.config.ts     # Navigation item definitions
 │
+├── enums/                       # TypeScript enums
+│   ├── role.enum.ts             # ERole (Sender, Receiver, Admin)
+│   └── profile-status.enum.ts   # EProfileStatus (Pending, Approved)
+│
+├── interfaces/                  # TypeScript interfaces
+│   ├── transactions.interface.ts
+│   ├── categories.interface.ts
+│   └── stats.interface.ts
+│
+├── hooks/                       # Custom hooks
+│   ├── useRole.ts               # Fetch current user role and status
+│   ├── useToast.ts
+│   ├── useMobile.ts
+│   └── useHandler.ts
+│
 ├── lib/
 │   ├── shadcn/                  # shadcn/ui component library
 │   └── supabase/
 │       ├── client.ts            # Browser client
 │       ├── server.ts            # Server client
-│       └── middleware.ts        # Session management
+│       ├── middleware.ts        # Session + role middleware
+│       └── admin.ts             # Service-role admin client
 │
 ├── _specs/                      # Feature specification documents
 ├── _plans/                      # Implementation plans
@@ -61,17 +90,29 @@ finance-tracker/
 
 - Email/Password registration and login
 - Google OAuth (optional, can be configured)
-- Email confirmation flow
-- Automatic profile creation on signup
+- Email confirmation flow (Supabase built-in emails)
+- Automatic profile creation on signup (database trigger)
 - Session management with secure HTTP-only cookies
-- Protected routes (dashboard requires authentication)
+- Protected routes (dashboard and admin require authentication)
+- Registration approval flow (admin must approve new users)
 
 ### Role System
 
 - **Sender**: Can create transactions (send money) and track expenses
 - **Receiver**: Can receive money and track income
+- **Admin**: Manages user registrations (approve/reject), auto-approved on first signup
 - Role selection during signup
+- Profile status tracking (pending/approved)
 - Role-specific data filtering (RLS policies)
+- Admin RLS: approved admins can view and update all profiles
+
+### Admin Features
+
+- **Admin Auth Page** (`/auth/admin`): Signup for first admin, login for subsequent
+- **Admin Dashboard** (`/admin`): View pending user registrations in a table
+- **Approve/Reject**: Approve sends Supabase confirmation email; reject deletes user
+- **Self-protection**: Admin cannot approve or reject their own account
+- **Middleware protection**: Unauthorized users redirected away from admin routes
 
 ### Dashboard Features
 
@@ -111,26 +152,28 @@ finance-tracker/
 ### Security Features
 
 - Row Level Security (RLS) - users can only access their own data
+- Admin RLS policies for authorized access
 - Secure password hashing by Supabase
-- Protected API routes
+- Protected API routes with auth and role checks
 - CSRF protection via Next.js middleware
-- Email verification requirement
+- Email verification and admin approval requirements
+- Server-side admin layout guard (defense-in-depth)
 
 ## Technology Stack
 
-| Layer              | Technology              |
-| ------------------ | ----------------------- |
-| **Frontend**       | Next.js 16 (App Router) |
-| **UI Framework**   | React 19                |
-| **Language**       | TypeScript              |
-| **Styling**        | Tailwind CSS v4         |
-| **UI Components**  | shadcn/ui               |
-| **Charts**         | Recharts                |
-| **Testing**        | Vitest                  |
-| **Database**       | Supabase (PostgreSQL)   |
-| **Authentication** | Supabase Auth           |
-| **Date Library**   | date-fns                |
-| **Deployment**     | Vercel                  |
+| Layer              | Technology                       |
+| ------------------ | -------------------------------- |
+| **Frontend**       | Next.js 16 (App Router)          |
+| **UI Framework**   | React 19                         |
+| **Language**       | TypeScript                       |
+| **Styling**        | Tailwind CSS v4                  |
+| **UI Components**  | shadcn/ui                        |
+| **Charts**         | Recharts                         |
+| **Testing**        | Vitest (+ React Testing Library) |
+| **Database**       | Supabase (PostgreSQL)            |
+| **Authentication** | Supabase Auth                    |
+| **Date Library**   | date-fns                         |
+| **Deployment**     | Vercel                           |
 
 ## Database Schema
 
@@ -139,7 +182,8 @@ finance-tracker/
 ```sql
 id (UUID) - references auth.users
 email (TEXT)
-role (sender | receiver)
+role (sender | receiver | admin)
+status (pending | approved)
 created_at (TIMESTAMPTZ)
 updated_at (TIMESTAMPTZ)
 ```
@@ -183,11 +227,11 @@ updated_at (TIMESTAMPTZ)
 
 1. **Setup Supabase**
    - Create project at supabase.com
-   - Copy URL and Anon Key to `.env.local`
+   - Copy URL, Anon Key, and Service Role Key to `.env.local`
 
 2. **Initialize Database**
    - Copy `scripts/001_init_database.sql` to Supabase SQL Editor
-   - Run the script to create tables and RLS policies
+   - Run the script to create tables, triggers, and RLS policies
 
 3. **Run Application**
 
@@ -207,8 +251,9 @@ updated_at (TIMESTAMPTZ)
    - Open http://localhost:3000
    - Sign up for an account
    - Choose your role (sender or receiver)
-   - Confirm email
-   - Access dashboard
+   - Wait for admin approval (no email on signup)
+   - Admin approves → receive confirmation email
+   - Confirm email → access dashboard
 
 ## Cost Estimation (Free Tier)
 

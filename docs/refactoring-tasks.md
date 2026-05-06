@@ -64,15 +64,15 @@ The following components exist in `lib/shadcn/` but are not used in the project.
 
 ### Unused packages in dependencies
 
-| Package                  | Status                 |
-| ------------------------ | ---------------------- |
-| `cmdk`                   | Not used               |
-| `embla-carousel-react`   | Not used               |
-| `input-otp`              | Not used               |
-| `react-resizable-panels` | Not used               |
-| `sonner`                 | Not used               |
-| `vaul`                   | Not used               |
-| `tw-animate-css`         | Verify (Sidebar used?) |
+| Package                  | Status                  |
+| ------------------------ | ----------------------- |
+| `cmdk`                   | Not used                |
+| `embla-carousel-react`   | Not used                |
+| `input-otp`              | Not used                |
+| `react-resizable-panels` | Not used                |
+| `sonner`                 | Used (AdminPage toasts) |
+| `vaul`                   | Not used                |
+| `tw-animate-css`         | Verify (Sidebar used?)  |
 
 ### Used components (do not remove)
 
