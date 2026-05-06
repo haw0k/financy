@@ -18,19 +18,27 @@
 ## Structure
 
 - `app/` – Next.js app router (thin page re-exports)
-  - `app/auth/` – Login, sign-up, OAuth callback, error pages
+  - `app/auth/` – Login, sign-up, admin auth, pending, OAuth callback, error pages
   - `app/dashboard/` – Protected routes (transactions, categories, settings)
+  - `app/admin/` – Admin dashboard (pending user management)
+  - `app/api/` – API routes (admin pending-users CRUD, check-admin)
   - `app/layout.tsx` – Root layout with ThemeProvider
-- `components/pages/` – Page components (HomePage, auth/_, dashboard/_)
-- `components/layouts/` – layout components (DashboardNav, Header, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `components/pages/` – Page components (HomePage, auth/_, dashboard/_, admin/\*)
+- `components/layouts/` – layout components (DashboardNav, Header, MobileNav, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
 - `components/providers/` – React context providers (ThemeProvider, MobileNavContext)
 - `components/ui/` – reusable UI components (PasswordField, DatePicker)
 - `config/` – centralized configuration (env, routes, site, navigation)
+- `enums/` – TypeScript enums (ERole, EProfileStatus)
+- `interfaces/` – TypeScript interfaces (transactions, categories, stats)
 - `_specs/` – feature specification documents
 - `_plans/` – implementation plans
 - `lib/shadcn/` – shadcn/ui component library (~50 components)
-- `lib/supabase/` – Supabase client singleton pattern
-- `hooks/` – custom hooks (useToast, useMobile)
+- `lib/supabase/` – Supabase clients:
+  - `client.ts` – browser client (anon key, for Client Components)
+  - `server.ts` – server client (anon key, for Server Components + API routes)
+  - `middleware.ts` – session refresh + role-based redirects
+  - `admin.ts` – service-role client (bypasses RLS, for admin operations)
+- `hooks/` – custom hooks (useRole, useToast, useMobile, useHandler)
 - `scripts/001_init_database.sql` – Database schema + RLS policies
 - `tests/` – Vitest test files
 
@@ -41,6 +49,25 @@
 - Supabase (PostgreSQL + Auth)
 - Tailwind CSS
 - pnpm as package manager
+
+## Key Conventions
+
+### Hungarian Notation (strict ESLint rules)
+
+| Construct        | Prefix                      | Example                        |
+| ---------------- | --------------------------- | ------------------------------ |
+| Enum             | `E` + PascalCase (singular) | `ERole`, `EProfileStatus`      |
+| Interface        | `I` + PascalCase            | `ITransaction`, `IPendingUser` |
+| Type alias       | `T` + PascalCase            | `TAPISearchParams`             |
+| Boolean variable | `is` + PascalCase           | `isLoading`, `isAdminExist`    |
+
+### Import order
+
+Enforced by `import/order`: react → externals → `@/lib/shadcn` → `@/components/*` → `@/hooks/*` → `@/lib/*`
+
+### Test patterns
+
+Mock module-level hooks with mutable state objects, use dynamic imports after setting mock state. Setup file at `tests/setup.ts` handles cleanup.
 
 ## Documentation
 

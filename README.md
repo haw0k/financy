@@ -5,7 +5,7 @@
 > This is a test project for validating spec-driven development workflows using AI coding assistants.
 > The project is designed to be fully compatible with both **Claude Code** and **OpenCode**, with dedicated support for spec-driven development patterns.
 
-A modern, full-stack financial management application built with Next.js 16, Supabase, and React 19. Track income and expenses with role-based access, secure authentication, and beautiful visualizations.
+A modern, full-stack financial management application built with Next.js 16, Supabase, and React 19. Track income and expenses with role-based access (sender/receiver/admin), registration approval, secure authentication, and beautiful visualizations.
 
 ## Quick Start
 
@@ -20,12 +20,13 @@ pnpm install
 
 1. Create a free account at [supabase.com](https://supabase.com)
 2. Create a new project
-3. Copy your **Project URL** and **Anon Key**
+3. Copy your **Project URL**, **Anon Key**, and **Service Role Key**
 4. Create `.env.local`:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
 ### 3. Initialize Database
@@ -50,12 +51,22 @@ Visit `http://localhost:3000` and create your account!
 - Google OAuth support
 - Email confirmation
 - Secure session management
+- Registration approval flow
 
 ✅ **Role-Based Access**
 
 - Sender (send money, track expenses)
 - Receiver (receive money, track income)
-- Role-specific dashboards
+- Admin (manage user registrations, approve/reject)
+- Role-specific dashboards and RLS policies
+
+✅ **Admin Panel**
+
+- Admin signup/login page (`/auth/admin`)
+- Pending user management table
+- Approve (triggers confirmation email) / Reject (deletes user)
+- Self-protection against self-approve/reject
+- Middleware-enforced access control
 
 ✅ **Financial Tracking**
 
@@ -77,6 +88,7 @@ Visit `http://localhost:3000` and create your account!
 - Password hashing
 - Protected routes
 - User data isolation
+- Server-side admin guards
 
 ## Tech Stack
 
@@ -85,7 +97,7 @@ Visit `http://localhost:3000` and create your account!
 - **Auth**: Supabase Auth
 - **UI**: shadcn/ui + Tailwind CSS
 - **Charts**: Recharts
-- **Testing**: Vitest
+- **Testing**: Vitest + React Testing Library
 - **Dates**: date-fns
 
 ## Documentation
@@ -99,18 +111,22 @@ Visit `http://localhost:3000` and create your account!
 
 ```
 ├── app/                  # Next.js pages (thin re-exports)
-│   ├── auth/             # Authentication pages
+│   ├── auth/             # Authentication pages (/login, /sign-up, /admin, /pending)
+│   ├── admin/            # Admin dashboard (/admin)
+│   ├── api/              # API routes (/api/admin/*, /api/auth/*)
 │   └── dashboard/        # Protected dashboard routes
 ├── components/
-│   ├── pages/            # Page components (HomePage, auth/*, dashboard/*)
-│   ├── layouts/          # Layout components (DashboardNav, Header)
+│   ├── pages/            # Page components (HomePage, auth/*, dashboard/*, admin/*)
+│   ├── layouts/          # Layout components (DashboardNav, Header, MobileNav)
 │   ├── providers/        # React context providers
 │   └── ui/               # Reusable UI components
 ├── config/               # Centralized configuration
+├── enums/                # TypeScript enums (ERole, EProfileStatus)
+├── interfaces/           # TypeScript interfaces
+├── hooks/                # Custom hooks (useRole, useToast, useMobile)
 ├── lib/
 │   ├── shadcn/           # shadcn/ui component library
-│   └── supabase/         # Supabase client & middleware
-├── hooks/                # Custom hooks
+│   └── supabase/         # Supabase clients (client, server, middleware, admin)
 ├── _specs/               # Feature specs
 ├── _plans/               # Implementation plans
 ├── scripts/              # SQL migration scripts
@@ -120,23 +136,25 @@ Visit `http://localhost:3000` and create your account!
 
 ## Database Schema
 
-Three main tables with Row Level Security:
+Four main tables with Row Level Security:
 
-| Table            | Purpose                   | RLS                                            |
-| ---------------- | ------------------------- | ---------------------------------------------- |
-| `profiles`       | User profiles with role   | ✓ Users see own profile                        |
-| `category_types` | Global category types     | ✓ All authenticated users                      |
-| `categories`     | Income/expense categories | ✓ All authenticated users                      |
-| `transactions`   | Financial transactions    | ✓ Users see own transactions (sender/receiver) |
+| Table            | Purpose                     | RLS                                          |
+| ---------------- | --------------------------- | -------------------------------------------- |
+| `profiles`       | User profiles, role, status | Users see own profile; admins see all        |
+| `category_types` | Global category types       | All authenticated users                      |
+| `categories`     | Income/expense categories   | All authenticated users                      |
+| `transactions`   | Financial transactions      | Users see own transactions (sender/receiver) |
 
-See [DATABASE.md](./scripts/001_init_database.sql) for full schema.
+See `scripts/001_init_database.sql` for full schema with triggers and policies.
 
 ## Environment Variables
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=              # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=         # Public anon key
-NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL= # Dev-only redirect override (optional)
+NEXT_PUBLIC_SUPABASE_URL=                # Supabase project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=           # Public anon key
+SUPABASE_SERVICE_ROLE_KEY=               # Secret service_role key (admin API)
+NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=   # Dev-only redirect override (optional)
+NEXT_PUBLIC_SUPABASE_REDIRECT_URL=       # Production redirect URL
 ```
 
 ## Development
@@ -168,7 +186,7 @@ Deploy to Vercel with one click:
 
 1. Push to GitHub
 2. Import in Vercel
-3. Add env variables
+3. Add env variables (including `SUPABASE_SERVICE_ROLE_KEY`)
 4. Deploy
 
 ## Cost
@@ -185,6 +203,7 @@ Deploy to Vercel with one click:
 | Missing tables        | Run the SQL migration script         |
 | Dark mode not working | Clear cookies and refresh            |
 | Email not confirmed   | Check Supabase Auth emails           |
+| Admin access denied   | Verify admin is approved in profiles |
 
 ## Features Roadmap
 
