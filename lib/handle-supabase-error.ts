@@ -31,18 +31,18 @@ function formatPostgrestError(error: IPostgrestErrorLike): string {
   return PG_ERROR_MAP[code] ?? error.message ?? 'Database error';
 }
 
-function handleSupabaseError(error: unknown) {
+function handleSupabaseError(error: unknown, title = 'Error') {
   if (isPostgrestError(error)) {
-    showError(formatPostgrestError(error));
+    showError(title, formatPostgrestError(error));
     return;
   }
 
   if (error instanceof Error) {
-    showError(error.message);
+    showError(title, error.message);
     return;
   }
 
-  showError('An error occurred');
+  showError(title, 'An error occurred');
 }
 
 export { handleSupabaseError };

@@ -60,7 +60,7 @@ export const CategoriesTable: FC = () => {
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Categories');
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +73,7 @@ export const CategoriesTable: FC = () => {
       if (error) throw error;
       setCategoryTypes(data || []);
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Categories');
     }
   };
 
@@ -99,7 +99,7 @@ export const CategoriesTable: FC = () => {
       setCtIsShowForm(false);
       fetchCategoryTypes();
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Categories');
     }
   };
 
@@ -117,7 +117,7 @@ export const CategoriesTable: FC = () => {
       setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
       setCtDeleteId(null);
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Categories');
     }
   };
 
@@ -162,7 +162,7 @@ export const CategoriesTable: FC = () => {
       setIsShowForm(false);
       fetchCategories();
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Categories');
     }
   };
 
@@ -173,7 +173,7 @@ export const CategoriesTable: FC = () => {
       if (error) throw error;
       setCategories(categories.filter((c) => c.id !== id));
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Categories');
     }
   };
 

@@ -49,7 +49,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/pending-users');
       if (isCancelled) return;
       if (!res.ok) {
-        showError('Failed to fetch pending users');
+        showError('Admin', 'Failed to fetch pending users');
         if (!isCancelled) setIsLoading(false);
         return;
       }
@@ -86,9 +86,9 @@ export default function AdminPage() {
         throw new Error(error);
       }
       setUsers((prev) => prev.filter((u) => u.id !== userId));
-      showSuccess('User approved');
+      showSuccess('Admin', 'User approved');
     } catch (err: unknown) {
-      showError(err instanceof Error ? err.message : 'Failed to approve user');
+      showError('Admin', err instanceof Error ? err.message : 'Failed to approve user');
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
@@ -112,9 +112,9 @@ export default function AdminPage() {
         throw new Error(error);
       }
       setUsers((prev) => prev.filter((u) => u.id !== userId));
-      showSuccess('User rejected');
+      showSuccess('Admin', 'User rejected');
     } catch (err: unknown) {
-      showError(err instanceof Error ? err.message : 'Failed to reject user');
+      showError('Admin', err instanceof Error ? err.message : 'Failed to reject user');
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);

@@ -22,7 +22,6 @@ import { handleSupabaseError } from '@/lib/handle-supabase-error';
 export default function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAdminExist, setAdminExists] = useState<boolean | null>(null);
   const [isSignUpSuccess, setSignUpSuccess] = useState(false);
@@ -38,7 +37,6 @@ export default function AdminAuthPage() {
   const handleSignUp = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const supabase = createClient();
@@ -55,8 +53,7 @@ export default function AdminAuthPage() {
       if (signUpError) throw signUpError;
       setSignUpSuccess(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      handleSupabaseError(err);
+      handleSupabaseError(err, 'Admin');
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +62,6 @@ export default function AdminAuthPage() {
   const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
 
     try {
       const supabase = createClient();
@@ -77,8 +73,7 @@ export default function AdminAuthPage() {
       if (loginError) throw loginError;
       router.push(routes.admin);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      handleSupabaseError(err);
+      handleSupabaseError(err, 'Admin');
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +137,6 @@ export default function AdminAuthPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    {error && <p className="text-sm text-red-500">{error}</p>}
                     <Button type="submit" className="w-full" disabled={isLoading}>
                       {isLoading ? 'Loading...' : isAdminExist ? 'Login' : 'Sign up'}
                     </Button>

@@ -40,7 +40,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           {children}
-          <SonnerToaster richColors position="bottom-right" expand closeButton />
+          <SonnerToaster richColors position="bottom-right" />
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

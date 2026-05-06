@@ -48,7 +48,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setTransactions(data || []);
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Transactions');
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +61,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setCategories(data || []);
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Transactions');
     }
   };
 
@@ -72,7 +72,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setCategoryTypes(data || []);
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Transactions');
     }
   };
 
@@ -101,7 +101,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       if (error) throw error;
       setTransactions(transactions.filter((t) => t.id !== id));
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Transactions');
     }
   };
 

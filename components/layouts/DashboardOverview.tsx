@@ -77,7 +77,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
           );
         }
       } catch (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Dashboard');
       } finally {
         setIsLoading(false);
       }

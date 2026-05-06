@@ -55,7 +55,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
         if (error) throw error;
         setUsers(data || []);
       } catch (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Transaction');
       }
     };
 
@@ -91,7 +91,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
 
       onSuccess();
     } catch (error) {
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Transaction');
     } finally {
       setIsLoading(false);
     }

@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
+import { showError } from '@/components/ui/ToastNotification';
 import { createClient } from '@/lib/supabase/client';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
@@ -30,7 +31,6 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [role, setRole] = useState<ERole>(ERole.Sender);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -38,10 +38,9 @@ export default function SignUpPage() {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
-    setError(null);
 
     if (password !== repeatPassword) {
-      setError('Passwords do not match');
+      showError('Sign up', 'Passwords do not match');
       setIsLoading(false);
       return;
     }
@@ -57,8 +56,7 @@ export default function SignUpPage() {
       if (error) throw error;
       router.push(routes.signUpSuccess);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
-      handleSupabaseError(error);
+      handleSupabaseError(error, 'Sign up');
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +130,6 @@ export default function SignUpPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {error && <p className="text-sm text-red-500">{error}</p>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Creating an account...' : 'Sign up'}
                   </Button>
