@@ -25,19 +25,27 @@ drop policy if exists "profiles_update_own" on public.profiles;
 create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
 
 -- Admin RLS policies (admin sees/updates all profiles)
-drop policy if exists "profiles_select_admin" on public.profiles;
-create policy "profiles_select_admin" on public.profiles for select using (
-  exists (
+-- Use a security definer function to avoid infinite recursion
+create or replace function public.is_approved_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
     select 1 from public.profiles
     where id = auth.uid() and role = 'admin' and status = 'approved'
-  )
+  );
+$$;
+
+drop policy if exists "profiles_select_admin" on public.profiles;
+create policy "profiles_select_admin" on public.profiles for select using (
+  public.is_approved_admin()
 );
 drop policy if exists "profiles_update_admin" on public.profiles;
 create policy "profiles_update_admin" on public.profiles for update using (
-  exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role = 'admin' and status = 'approved'
-  )
+  public.is_approved_admin()
 );
 
 -- Create category_types table (global reference, not user-specific)
