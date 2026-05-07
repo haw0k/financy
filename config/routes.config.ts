@@ -11,4 +11,7 @@ export const routes = {
   admin: '/admin',
   adminAuth: '/auth/admin',
   pending: '/auth/pending',
+  adminCategories: '/admin/categories',
+  adminDashboard: '/admin/dashboard',
+  adminSettings: '/admin/settings',
 } as const;

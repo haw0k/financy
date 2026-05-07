@@ -13,3 +13,9 @@ export const navItems: INavItem[] = [
   { href: routes.categories, label: 'Categories', icon: TrendingDown },
   { href: routes.settings, label: 'Settings', icon: Settings },
 ];
+
+export const adminNavItems: INavItem[] = [
+  { href: routes.adminDashboard, label: 'Dashboard', icon: LayoutDashboard },
+  { href: routes.adminCategories, label: 'Categories', icon: TrendingDown },
+  { href: routes.adminSettings, label: 'Settings', icon: Settings },
+];

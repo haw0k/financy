@@ -190,7 +190,9 @@ export default function AdminPage() {
                         <Button
                           size="sm"
                           disabled={processingIds.has(user.id)}
-                          onClick={() => handleApprove(user.id)}
+                          onClick={() => {
+                            handleApprove(user.id);
+                          }}
                         >
                           {processingIds.has(user.id) ? <Spinner className="size-3" /> : 'Approve'}
                         </Button>
@@ -198,7 +200,9 @@ export default function AdminPage() {
                           size="sm"
                           variant="destructive"
                           disabled={processingIds.has(user.id)}
-                          onClick={() => handleReject(user.id)}
+                          onClick={() => {
+                            handleReject(user.id);
+                          }}
                         >
                           {processingIds.has(user.id) ? <Spinner className="size-3" /> : 'Reject'}
                         </Button>

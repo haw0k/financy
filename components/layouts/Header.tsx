@@ -1,12 +1,12 @@
 'use client';
 
-import { type FC } from 'react';
+import { useMobileNav } from '@/components/providers';
+import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import Link from 'next/link';
 import { LogOut, Moon, Sun, Menu } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
 import {
   Button,
   DropdownMenu,
@@ -16,8 +16,8 @@ import {
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
 import { routes, siteConfig } from '@/config';
-import { useMobileNav } from '@/components/providers';
 import { createClient } from '@/lib/supabase/client';
+import { type FC } from 'react';
 
 interface IHeader {
   user: User;

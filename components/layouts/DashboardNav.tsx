@@ -1,20 +1,26 @@
 'use client';
 
-import { type FC } from 'react';
+import { usePathname } from 'next/navigation';
+import { useRole } from '@/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { navItems, routes, siteConfig } from '@/config';
-import { useRole } from '@/hooks';
+import { navItems, routes, siteConfig, type INavItem } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
 import { ShieldCheckIcon } from 'lucide-react';
+import { type FC } from 'react';
 
-export const DashboardNav: FC = () => {
+interface IDashboardNav {
+  items?: INavItem[];
+}
+
+export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
   const pathname = usePathname();
   const { role, status } = useRole();
 
   const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
+  const resolvedItems = items ?? navItems;
+  const isCustomItems = items !== undefined;
 
   return (
     <nav className="hidden bg-card md:flex md:flex-col md:w-64">
@@ -43,7 +49,7 @@ export const DashboardNav: FC = () => {
         </Link>
       </div>
       <div className="flex-1 space-y-1 p-4 border-r border-border">
-        {navItems.map((item) => {
+        {resolvedItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
 
@@ -63,7 +69,7 @@ export const DashboardNav: FC = () => {
             </Link>
           );
         })}
-        {isAdmin && (
+        {!isCustomItems && isAdmin && (
           <Link
             href={routes.admin}
             className={cn(

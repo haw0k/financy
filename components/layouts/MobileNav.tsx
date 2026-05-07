@@ -3,24 +3,30 @@
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useMobileNav } from '@/components/providers';
+import { useRole } from '@/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Moon, Sun } from 'lucide-react';
 import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { navItems, routes, siteConfig } from '@/config';
+import { navItems, routes, siteConfig, type INavItem } from '@/config';
 import { cn } from '@/lib/utils';
-import { type FC } from 'react';
-import { useRole } from '@/hooks';
 import { ERole, EProfileStatus } from '@/enums';
+import { type FC } from 'react';
 import { ShieldCheckIcon } from 'lucide-react';
 
-export const MobileNav: FC = () => {
+interface IMobileNav {
+  items?: INavItem[];
+}
+
+export const MobileNav: FC<IMobileNav> = ({ items }) => {
   const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { role, status } = useRole();
 
   const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
+  const resolvedItems = items ?? navItems;
+  const isCustomItems = items !== undefined;
 
   const handleToggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -59,7 +65,7 @@ export const MobileNav: FC = () => {
           </Link>
         </div>
         <div className="space-y-1 p-4">
-          {navItems.map((item) => {
+          {resolvedItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
@@ -82,7 +88,7 @@ export const MobileNav: FC = () => {
               </Link>
             );
           })}
-          {isAdmin && (
+          {!isCustomItems && isAdmin && (
             <Link
               href={routes.admin}
               onClick={() => setIsOpen(false)}

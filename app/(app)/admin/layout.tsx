@@ -2,8 +2,9 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { routes } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
+import type { PropsWithChildren } from 'react';
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: PropsWithChildren) {
   const supabase = await createClient();
 
   const {
@@ -24,9 +25,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect(routes.dashboard);
   }
 
-  return (
-    <div className="flex min-h-svh w-full justify-center p-6 md:p-10">
-      <div className="w-full max-w-5xl">{children}</div>
-    </div>
-  );
+  return <>{children}</>;
 }
