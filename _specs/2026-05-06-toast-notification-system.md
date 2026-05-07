@@ -41,7 +41,7 @@ Create a styled toast notification system with four variants (error, warning, su
 ## Open Questions
 
 - Should automatic interception cover all Supabase queries or opt-in (e.g., via a wrapper function)? You decide.
-- What is the ideal auto-dismiss duration per variant (error may need longer display)? Error should displays longer. 
+- What is the ideal auto-dismiss duration per variant (error may need longer display)? Error should displays longer.
 - Should the warning variant use yellow or orange as the background? Yellow
 - Should toast messages for `PostgresError` display the raw database message or a user-friendly translation? user-friendly translation is preferable.
 

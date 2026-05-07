@@ -102,11 +102,13 @@ Middleware handles session refresh via `supabase.auth.getUser()`. Protected rout
 Supabase project has **"Enable email confirmations" ON** (default). Confirmation emails are sent on every signup.
 
 **Admin registration** (`/auth/admin`):
+
 1. First admin signs up with `emailRedirectTo` → DB trigger auto-sets `status = 'approved'`
 2. Supabase sends confirmation email → admin clicks link → callback exchanges code → checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent admin logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
 
 **Regular user registration** (`/auth/sign-up`):
+
 1. User signs up WITHOUT `emailRedirectTo` → DB trigger sets `status = 'pending'`
 2. Supabase sends confirmation email (project setting, not `emailRedirectTo`)
 3. User clicks email link → callback exchanges code → not admin → redirects to `/dashboard`
@@ -115,6 +117,7 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 6. User refreshes `/dashboard` → middleware sees `status = 'approved'` → access granted
 
 **Reject flow** (`/api/admin/pending-users/reject`):
+
 - Calls `adminClient.auth.admin.deleteUser(userId)` — cascade deletes the profile row
 
 **Self-protection**: admin cannot approve/reject their own account (checked both in API routes and UI).

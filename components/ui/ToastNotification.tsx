@@ -20,7 +20,7 @@ function showError(title: string, description: string) {
 function showWarning(title: string, description: string) {
   toast(title, {
     description,
-    icon: <TriangleAlert className={iconClass} color="black"/>,
+    icon: <TriangleAlert className={iconClass} color="black" />,
     style: {
       background: 'yellow',
       color: 'black',
