@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { TransactionsTable } from '@/components/layouts';
 
-export default async function TransactionsPage() {
+export async function TransactionsPage() {
   const supabase = await createClient();
   const {
     data: { user },

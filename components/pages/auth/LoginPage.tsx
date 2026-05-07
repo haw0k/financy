@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client';
 import { routes, siteConfig } from '@/config';
 import { handleSupabaseError } from '@/lib/handle-supabase-error';
 
-export default function LoginPage() {
+export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

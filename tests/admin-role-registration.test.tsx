@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import SignUpSuccessPage from '@/components/pages/auth/SignUpSuccessPage';
+import { SignUpSuccessPage } from '@/components/pages/auth';
 import { ERole, EProfileStatus } from '@/enums';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
@@ -99,34 +99,34 @@ describe('Route constants', () => {
 describe('PendingPage', () => {
   it('should show loading state', async () => {
     useRoleReturn = { ...useRoleReturn, isLoading: true };
-    const { default: PendingPage } = await import('@/components/pages/auth/PendingPage');
+    const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText('Loading...')).toBeDefined();
   });
 
   it('should show admin pending message for admin role', async () => {
     useRoleReturn = { ...useRoleReturn, role: ERole.Admin, status: EProfileStatus.Pending };
-    const { default: PendingPage } = await import('@/components/pages/auth/PendingPage');
+    const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Check your email to confirm your admin account/)).toBeDefined();
   });
 
   it('should show approval pending message for sender role', async () => {
     useRoleReturn = { ...useRoleReturn, role: ERole.Sender, status: EProfileStatus.Pending };
-    const { default: PendingPage } = await import('@/components/pages/auth/PendingPage');
+    const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
   });
 
   it('should show approval pending message for receiver role', async () => {
     useRoleReturn = { ...useRoleReturn, role: ERole.Receiver, status: EProfileStatus.Pending };
-    const { default: PendingPage } = await import('@/components/pages/auth/PendingPage');
+    const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
   });
 
   it('should render logout button', async () => {
-    const { default: PendingPage } = await import('@/components/pages/auth/PendingPage');
+    const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText('Log out')).toBeDefined();
   });
@@ -145,7 +145,7 @@ describe('AdminPage', () => {
       ok: true,
       json: () => Promise.resolve({ data: [] }),
     });
-    const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+    const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
       expect(screen.getByText('No pending registrations')).toBeDefined();
@@ -169,7 +169,7 @@ describe('AdminPage', () => {
           ],
         }),
     });
-    const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+    const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
       expect(screen.getByText('a@test.com')).toBeDefined();
@@ -199,7 +199,7 @@ describe('AdminPage', () => {
         ok: true,
         json: () => Promise.resolve({}),
       });
-    const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+    const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
       expect(screen.getByText('a@test.com')).toBeDefined();
@@ -240,7 +240,7 @@ describe('AdminPage', () => {
         ok: true,
         json: () => Promise.resolve({}),
       });
-    const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+    const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
       expect(screen.getByText('b@test.com')).toBeDefined();
@@ -262,7 +262,7 @@ describe('AdminPage', () => {
       role: ERole.Sender,
       status: EProfileStatus.Approved,
     };
-    const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+    const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     expect(mockRouter.replace).toHaveBeenCalledWith('/dashboard');
   });
@@ -277,7 +277,7 @@ describe('AdminPage', () => {
       ok: false,
       json: () => Promise.resolve({}),
     });
-    const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+    const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
       expect(screen.getByText('No pending registrations')).toBeDefined();

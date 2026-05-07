@@ -7,7 +7,7 @@ import { useRole } from '@/hooks';
 import { ERole } from '@/enums';
 import { routes } from '@/config';
 
-export default function PendingPage() {
+export function PendingPage() {
   const { role, isLoading } = useRole();
   const router = useRouter();
 

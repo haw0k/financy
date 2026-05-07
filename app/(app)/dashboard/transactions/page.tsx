@@ -1,4 +1,4 @@
-import TransactionsPage from '@/components/pages/dashboard/TransactionsPage';
+import { TransactionsPage } from '@/components/pages/dashboard';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

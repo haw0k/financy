@@ -1,29 +1,29 @@
-- [x] feat: Automatic Theme Switching - { 2026-04-21-auto-light-dark-theme-switching.md } — 2025-04-21
-- [x] refactor: `export const Name:FC<IName>` - { 2026-04-22-tsx-components-refactoring.md } — 2025-04-22
-- [x] refactor: Extract common interfaces to `@/intefaces` { 2026-04-23-extract-shared-interfaces-layout.md } — 2025-04-23
-- [x] fix: Cross-Browser System Theme Detection - { 2026-04-23-cross-browser-system-theme-detection.md } — 2026-04-23
-- [x] fix: Fix Select Options Font in Firefox - { 2026-04-25-fix-select-options-font-firefox.md } — 2026-04-25
-- [x] feat: Add Category Types Table - { 2026-04-24-add-category-types-table.md } — 2026-04-24
-- [x] feat: Add Category Type Management - { 2026-04-25-add-category-type-management.md } — 2026-04-25
-- [x] fix: Remove User Id From Categories Table - { 2026-04-25-remove-user-id-from-categories-table.md } — 2026-04-25
-- [x] feat: Apply Shadcn Custom Theme - { 2026-04-25-apply-shadcn-custom-theme.md } — 2026-04-25
-- [x] feat: Password Visibility Toggle for Login and Signup Pages - { 2026-04-26-password-visibility-toggle.md } — 2026-04-26
-- [x] chore: Replace Public Assets with App Favicons - { 2026-04-26-replace-public-assets-with-favicons.md } — 2026-04-26
-- [x] feat: Add Logo and SEO Tags to Login and Signup Pages - { 2026-04-26-add-logo-and-seo-tags-to-auth-pages.md } — 2026-04-26-
-- [x] feat: Add Metadata to All Pages - { 2026-04-26-add-metadata-to-all-pages.md } — 2026-04-26
-- [x] fix: Fix DashboardNav Visibility On Mobile Breakpoint - { 2026-04-26-dashboardnav-mobile-visibility.md } — 2026-04-26
-- [x] refactor: Remove Email From Header And Adjust Avatar Spacing - { 2026-04-26-remove-header-email-fix-avatar-padding.md } — 2026-04-26
-- [x] fix: Fix DashboardNav Border, Brand Visibility, and Mobile Logo Position - { 2026-04-26-nav-header-border-brand-visibility.md } — 2026-04-26
-- [x] fix: Fix Horizontal Scroll On Small Screens - { 2026-04-26-small-screen-overflow.md } — 2026-04-26
-- [x] fix: Make Mobile Hamburger And Logo Scroll With Header - { 2026-04-26-mobile-nav-scroll-with-header.md } — 2026-04-26
-- [x] refactor: Extract Shared Navigation Config - { 2026-04-26-extract-shared-navigation-config.md } — 2026-04-26
-- [x] refactor: Extract Route Constants - { 2026-04-26-extract-route-constants.md } — 2026-04-26
-- [x] refactor: Extract Environment Variables - { 2026-04-27-extract-environment-variables.md } — 2026-04-27
-- [x] refactor: Migrate All selects To Shadcn Select — { 2026-04-27-migrate-all-selects-to-shadcn.md} — 2026-04-27
-- [x] feat: Add DatePicker With Shadcn Calendar And Popover — { 2026-04-27-add-datepicker.md } - 2026-04-27
-- [x] refactor: Extract Site Config — { 2026-04-27-extract-site-config.md } — 2026-04-27
-- [x] docs: Update Project Documentation — { 2026-04-27-update-project-documentation.md } — 2026-04-27
+- [x] feat: Automatic Theme Switching - { 2026-04-21-auto-light-dark-theme-switching.md }
+- [x] refactor: `export const Name:FC<IName>` - { 2026-04-22-tsx-components-refactoring.md }
+- [x] refactor: Extract common interfaces to `@/intefaces` { 2026-04-23-extract-shared-interfaces-layout.md }
+- [x] fix: Cross-Browser System Theme Detection - { 2026-04-23-cross-browser-system-theme-detection.md }
+- [x] fix: Fix Select Options Font in Firefox - { 2026-04-25-fix-select-options-font-firefox.md }
+- [x] feat: Add Category Types Table - { 2026-04-24-add-category-types-table.md }
+- [x] feat: Add Category Type Management - { 2026-04-25-add-category-type-management.md }
+- [x] fix: Remove User Id From Categories Table - { 2026-04-25-remove-user-id-from-categories-table.md }
+- [x] feat: Apply Shadcn Custom Theme - { 2026-04-25-apply-shadcn-custom-theme.md }
+- [x] feat: Password Visibility Toggle for Login and Signup Pages - { 2026-04-26-password-visibility-toggle.md }
+- [x] chore: Replace Public Assets with App Favicons - { 2026-04-26-replace-public-assets-with-favicons.md }
+- [x] feat: Add Logo and SEO Tags to Login and Signup Pages - { 2026-04-26-add-logo-and-seo-tags-to-auth-pages.md }
+- [x] feat: Add Metadata to All Pages - { 2026-04-26-add-metadata-to-all-pages.md }
+- [x] fix: Fix DashboardNav Visibility On Mobile Breakpoint - { 2026-04-26-dashboardnav-mobile-visibility.md }
+- [x] refactor: Remove Email From Header And Adjust Avatar Spacing - { 2026-04-26-remove-header-email-fix-avatar-padding.md }
+- [x] fix: Fix DashboardNav Border, Brand Visibility, and Mobile Logo Position - { 2026-04-26-nav-header-border-brand-visibility.md }
+- [x] fix: Fix Horizontal Scroll On Small Screens - { 2026-04-26-small-screen-overflow.md }
+- [x] fix: Make Mobile Hamburger And Logo Scroll With Header - { 2026-04-26-mobile-nav-scroll-with-header.md }
+- [x] refactor: Extract Shared Navigation Config - { 2026-04-26-extract-shared-navigation-config.md }
+- [x] refactor: Extract Route Constants - { 2026-04-26-extract-route-constants.md }
+- [x] refactor: Extract Environment Variables - { 2026-04-27-extract-environment-variables.md }
+- [x] refactor: Migrate All selects To Shadcn Select — { 2026-04-27-migrate-all-selects-to-shadcn.md }
+- [x] feat: Add DatePicker With Shadcn Calendar And Popover — { 2026-04-27-add-datepicker.md }
+- [x] refactor: Extract Site Config — { 2026-04-27-extract-site-config.md }
+- [x] docs: Update Project Documentation — { 2026-04-27-update-project-documentation.md }
 - [x] feat: Environment-Aware Supabase Redirect URL — { 2026-05-05-env-aware-supabase-redirect-url.md }
 - [x] feat: Admin Role and Registration Approval — { 2026-05-05-admin-role-registration-approval.md }
 - [x] feat: Toast Notification System — { 2026-05-06-toast-notification-system.md }
-- [ ] feat: Admin Dashboard Layout with Shared Navigation — { 2026-05-07-admin-dashboard-layout-shared-navigation.md }
+- [x] feat: Admin Dashboard Layout with Shared Navigation — { 2026-05-07-admin-dashboard-layout-shared-navigation.md }

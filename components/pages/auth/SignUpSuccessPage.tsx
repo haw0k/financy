@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { routes } from '@/config';
 
-export default function SignUpSuccessPage() {
+export function SignUpSuccessPage() {
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-6">
       <div className="w-full max-w-md text-center border rounded-lg p-8 bg-card text-card-foreground shadow">

@@ -1,4 +1,4 @@
-import SignUpPage from '@/components/pages/auth/SignUpPage';
+import { SignUpPage } from '@/components/pages/auth';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

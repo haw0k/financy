@@ -1,4 +1,4 @@
-import LoginPage from '@/components/pages/auth/LoginPage';
+import { LoginPage } from '@/components/pages/auth';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

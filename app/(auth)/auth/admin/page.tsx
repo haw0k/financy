@@ -1,4 +1,4 @@
-import AdminAuthPage from '@/components/pages/auth/AdminAuthPage';
+import { AdminAuthPage } from '@/components/pages/auth';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

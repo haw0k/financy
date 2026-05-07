@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { siteConfig } from '@/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 
-export default async function SettingsPage() {
+export async function SettingsPage() {
   const supabase = await createClient();
   const {
     data: { user },

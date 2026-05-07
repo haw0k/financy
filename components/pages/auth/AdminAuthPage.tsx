@@ -19,7 +19,7 @@ import { routes, getSupabaseRedirectUrl, siteConfig } from '@/config';
 import { ERole } from '@/enums';
 import { handleSupabaseError } from '@/lib/handle-supabase-error';
 
-export default function AdminAuthPage() {
+export function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

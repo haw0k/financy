@@ -1,4 +1,4 @@
-import ErrorPage from '@/components/pages/auth/ErrorPage';
+import { ErrorPage } from '@/components/pages/auth';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

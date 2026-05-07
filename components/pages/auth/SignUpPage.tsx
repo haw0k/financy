@@ -26,7 +26,7 @@ import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
 import { handleSupabaseError } from '@/lib/handle-supabase-error';
 
-export default function SignUpPage() {
+export function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');

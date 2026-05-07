@@ -1,4 +1,4 @@
-import CategoriesPage from '@/components/pages/dashboard/CategoriesPage';
+import { CategoriesPage } from '@/components/pages/dashboard';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

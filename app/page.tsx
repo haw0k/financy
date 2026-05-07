@@ -1,4 +1,4 @@
-import HomePage from '@/components/pages/HomePage';
+import { HomePage } from '@/components/pages/HomePage';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

@@ -1,4 +1,4 @@
-import SignUpSuccessPage from '@/components/pages/auth/SignUpSuccessPage';
+import { SignUpSuccessPage } from '@/components/pages/auth';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

@@ -1,6 +1,6 @@
 import { CategoriesTable } from '@/components/layouts';
 
-export default async function CategoriesPage() {
+export async function CategoriesPage() {
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">
       <div>

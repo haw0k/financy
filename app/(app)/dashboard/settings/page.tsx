@@ -1,4 +1,4 @@
-import SettingsPage from '@/components/pages/dashboard/SettingsPage';
+import { SettingsPage } from '@/components/pages/dashboard';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 

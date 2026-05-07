@@ -34,7 +34,7 @@ interface IPendingUser {
   created_at: string;
 }
 
-export default function AdminPage() {
+export function AdminPage() {
   const router = useRouter();
   const { role, status, isLoading: isRoleLoading } = useRole();
   const [users, setUsers] = useState<IPendingUser[]>([]);
