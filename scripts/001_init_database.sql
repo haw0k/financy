@@ -14,39 +14,7 @@ create table if not exists public.profiles (
   updated_at timestamp with time zone default now()
 );
 
-alter table public.profiles enable row level security;
-
--- RLS policies for profiles
-drop policy if exists "profiles_select_own" on public.profiles;
-create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
-drop policy if exists "profiles_insert_own" on public.profiles;
-create policy "profiles_insert_own" on public.profiles for insert with check (auth.uid() = id);
-drop policy if exists "profiles_update_own" on public.profiles;
-create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
-
--- Admin RLS policies (admin sees/updates all profiles)
--- Use a security definer function to avoid infinite recursion
-create or replace function public.is_approved_admin()
-returns boolean
-language sql
-security definer
-set search_path = public
-stable
-as $$
-  select exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role = 'admin' and status = 'approved'
-  );
-$$;
-
-drop policy if exists "profiles_select_admin" on public.profiles;
-create policy "profiles_select_admin" on public.profiles for select using (
-  public.is_approved_admin()
-);
-drop policy if exists "profiles_update_admin" on public.profiles;
-create policy "profiles_update_admin" on public.profiles for update using (
-  public.is_approved_admin()
-);
+alter table public.profiles disable row level security;
 
 -- Create category_types table (global reference, not user-specific)
 create table if not exists public.category_types (
@@ -55,20 +23,7 @@ create table if not exists public.category_types (
   created_at timestamp with time zone default now()
 );
 
-alter table public.category_types enable row level security;
-
--- RLS policies for category_types
-drop policy if exists "category_types_select_all" on public.category_types;
-create policy "category_types_select_all" on public.category_types for select using (auth.role() = 'authenticated');
-
-drop policy if exists "category_types_insert_all" on public.category_types;
-create policy "category_types_insert_all" on public.category_types for insert with check (auth.role() = 'authenticated');
-
-drop policy if exists "category_types_update_all" on public.category_types;
-create policy "category_types_update_all" on public.category_types for update using (auth.role() = 'authenticated');
-
-drop policy if exists "category_types_delete_all" on public.category_types;
-create policy "category_types_delete_all" on public.category_types for delete using (auth.role() = 'authenticated');
+alter table public.category_types disable row level security;
 
 -- Create categories table (global reference, not user-specific)
 create table if not exists public.categories (
@@ -81,22 +36,7 @@ create table if not exists public.categories (
   updated_at timestamp with time zone default now()
 );
 
-alter table public.categories enable row level security;
-
--- RLS policies for categories (global)
-drop policy if exists "categories_select_own" on public.categories;
-drop policy if exists "categories_insert_own" on public.categories;
-drop policy if exists "categories_update_own" on public.categories;
-drop policy if exists "categories_delete_own" on public.categories;
-
-drop policy if exists "categories_select_all" on public.categories;
-create policy "categories_select_all" on public.categories for select using (auth.role() = 'authenticated');
-drop policy if exists "categories_insert_all" on public.categories;
-create policy "categories_insert_all" on public.categories for insert with check (auth.role() = 'authenticated');
-drop policy if exists "categories_update_all" on public.categories;
-create policy "categories_update_all" on public.categories for update using (auth.role() = 'authenticated');
-drop policy if exists "categories_delete_all" on public.categories;
-create policy "categories_delete_all" on public.categories for delete using (auth.role() = 'authenticated');
+alter table public.categories disable row level security;
 
 -- Create transactions table
 create table if not exists public.transactions (
@@ -112,28 +52,7 @@ create table if not exists public.transactions (
   updated_at timestamp with time zone default now()
 );
 
-alter table public.transactions enable row level security;
-
--- RLS policies for transactions - users can see their own transactions
-drop policy if exists "transactions_select_own" on public.transactions;
-create policy "transactions_select_own" on public.transactions
-  for select
-  using (auth.uid() = sender_id or auth.uid() = receiver_id);
-
-drop policy if exists "transactions_insert_own" on public.transactions;
-create policy "transactions_insert_own" on public.transactions
-  for insert
-  with check (auth.uid() = sender_id);
-
-drop policy if exists "transactions_update_own" on public.transactions;
-create policy "transactions_update_own" on public.transactions
-  for update
-  using (auth.uid() = sender_id);
-
-drop policy if exists "transactions_delete_own" on public.transactions;
-create policy "transactions_delete_own" on public.transactions
-  for delete
-  using (auth.uid() = sender_id);
+alter table public.transactions disable row level security;
 
 -- Create trigger for auto-creating profile on signup
 create or replace function public.handle_new_user()
@@ -167,7 +86,7 @@ create trigger on_auth_user_created
   execute function public.handle_new_user();
 
 -- Create function to get user statistics
-create or replace function public.get_user_stats(user_id uuid)
+create or replace function public.get_user_stats()
 returns table (
   total_balance decimal,
   total_income decimal,
@@ -178,14 +97,13 @@ security definer
 set search_path = public
 as $$
   select
-    coalesce(sum(case 
-      when type = 'income' then amount 
-      else -amount 
+    coalesce(sum(case
+      when type = 'income' then amount
+      else -amount
     end), 0) as total_balance,
     coalesce(sum(case when type = 'income' then amount else 0 end), 0) as total_income,
     coalesce(sum(case when type = 'expense' then amount else 0 end), 0) as total_expense
-  from transactions
-  where sender_id = user_id or receiver_id = user_id;
+  from transactions;
 $$;
 
 -- Notify PostgREST to reload schema cache (run manually if needed)

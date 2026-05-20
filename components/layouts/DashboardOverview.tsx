@@ -20,11 +20,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-interface IDashboardOverview {
-  userId: string;
-}
-
-export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
+export const DashboardOverview: FC = () => {
   const [stats, setStats] = useState<IStats | null>(null);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
@@ -40,7 +36,6 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
         const { data: transData, error: transError } = await supabase
           .from('transactions')
           .select('*')
-          .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
           .order('date', { ascending: false })
           .limit(10);
 
@@ -48,9 +43,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
         setTransactions(transData || []);
 
         // Calculate stats
-        const { data: statsData, error: statsError } = await supabase.rpc('get_user_stats', {
-          user_id: userId,
-        });
+        const { data: statsData, error: statsError } = await supabase.rpc('get_user_stats');
 
         if (statsError) throw statsError;
         if (statsData && statsData.length > 0) {
@@ -78,10 +71,8 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ userId }) => {
       }
     };
 
-    if (userId) {
-      fetchData();
-    }
-  }, [userId, supabase]);
+    fetchData();
+  }, [supabase]);
 
   // Prepare data for line chart
   const chartData = transactions

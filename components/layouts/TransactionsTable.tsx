@@ -42,7 +42,6 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
       const { data, error } = await supabase
         .from('transactions')
         .select('*')
-        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -86,13 +85,12 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
   };
 
   useEffect(() => {
-    if (!userId) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTransactions();
     fetchCategories();
     fetchCategoryTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, []);
 
   const handleDelete = async (id: string) => {
     try {
