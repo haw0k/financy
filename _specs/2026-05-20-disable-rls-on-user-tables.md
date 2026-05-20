@@ -35,6 +35,7 @@ Disable Row Level Security (RLS) on all user-facing tables in Supabase so that a
 - Should RLS be disabled or simply altered to allow broader access? (Disabling is simpler and matches the requirement of shared data) disabled by default in scripts/001_init_database.sql
 - Should any table retain RLS for specific columns or operations? No
 - Should the database trigger that auto-approves the first admin be reviewed in light of this change? You decide.
+- Don't create a new sql script for DB migration . You need to update scripts/001_init_database.sql
 
 ## Testing Guidelines
 
