@@ -72,7 +72,8 @@ export const DashboardOverview: FC = () => {
     };
 
     fetchData();
-  }, [supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Prepare data for line chart
   const chartData = transactions
