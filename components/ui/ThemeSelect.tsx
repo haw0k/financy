@@ -3,10 +3,29 @@
 import { useTheme } from 'next-themes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/lib/shadcn';
 import { SunMoon, Sun, Moon } from 'lucide-react';
-import { type FC } from 'react';
+import { useState, useEffect, type FC } from 'react';
 
 export const ThemeSelect: FC = () => {
   const { theme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-muted-foreground">Theme</label>
+        <Select disabled>
+          <SelectTrigger className="w-full sm:max-w-xs">
+            <SelectValue placeholder="Loading..." />
+          </SelectTrigger>
+        </Select>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-2">
@@ -15,27 +34,27 @@ export const ThemeSelect: FC = () => {
         <SelectTrigger className="w-full sm:max-w-xs">
           <SelectValue placeholder="Select theme" />
         </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="system">
-          <span className="flex items-center gap-2">
-            <SunMoon className="h-4 w-4" />
-            System
-          </span>
-        </SelectItem>
-        <SelectItem value="light">
-          <span className="flex items-center gap-2">
-            <Sun className="h-4 w-4" />
-            Light
-          </span>
-        </SelectItem>
-        <SelectItem value="dark">
-          <span className="flex items-center gap-2">
-            <Moon className="h-4 w-4" />
-            Dark
-          </span>
-        </SelectItem>
-      </SelectContent>
-    </Select>
+        <SelectContent>
+          <SelectItem value="system">
+            <span className="flex items-center gap-2">
+              <SunMoon className="h-4 w-4" />
+              System
+            </span>
+          </SelectItem>
+          <SelectItem value="light">
+            <span className="flex items-center gap-2">
+              <Sun className="h-4 w-4" />
+              Light
+            </span>
+          </SelectItem>
+          <SelectItem value="dark">
+            <span className="flex items-center gap-2">
+              <Moon className="h-4 w-4" />
+              Dark
+            </span>
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   );
 };
