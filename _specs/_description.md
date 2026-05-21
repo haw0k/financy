@@ -27,3 +27,4 @@
 - [x] feat: Toast Notification System — { 2026-05-06-toast-notification-system.md }
 - [x] feat: Admin Dashboard Layout with Shared Navigation — { 2026-05-07-admin-dashboard-layout-shared-navigation.md }
 - [x] chore: Disable Row Level Security on User Tables — { 2026-05-20-disable-rls-on-user-tables.md }
+- [ ] feat: Move Theme Toggle to Settings Page — { 2026-05-21-move-theme-toggle-to-settings.md }
