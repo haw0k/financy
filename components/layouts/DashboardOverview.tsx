@@ -46,8 +46,8 @@ export const DashboardOverview: FC = () => {
         const { data: statsData, error: statsError } = await supabase.rpc('get_user_stats');
 
         if (statsError) throw statsError;
-        if (statsData && statsData.length > 0) {
-          setStats(statsData[0]);
+        if (statsData) {
+          setStats(Array.isArray(statsData) ? statsData[0] : statsData);
         }
 
         // Prepare category data for pie chart
