@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { siteConfig } from '@/config';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
+import { ThemeSelect } from '@/components/ui/ThemeSelect';
 
 export async function SettingsPage() {
   const supabase = await createClient();
@@ -22,6 +23,15 @@ export async function SettingsPage() {
       </div>
 
       <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>System</CardTitle>
+            <CardDescription>Application preferences</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ThemeSelect />
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>Account Information</CardTitle>

@@ -1,13 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { useMobileNav } from '@/components/providers';
 import { useRole } from '@/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Moon, Sun } from 'lucide-react';
-import { Button, Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
+import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
 import { navItems, routes, siteConfig, type INavItem } from '@/config';
 import { cn } from '@/lib/utils';
 import { ERole, EProfileStatus } from '@/enums';
@@ -21,16 +19,11 @@ interface IMobileNav {
 export const MobileNav: FC<IMobileNav> = ({ items }) => {
   const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
   const { role, status } = useRole();
 
   const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
   const resolvedItems = items ?? navItems;
   const isCustomItems = items !== undefined;
-
-  const handleToggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -103,13 +96,6 @@ export const MobileNav: FC<IMobileNav> = ({ items }) => {
               Admin
             </Link>
           )}
-        </div>
-        <div className="mt-auto border-t border-border p-2">
-          <Button variant="ghost" size="icon" onClick={handleToggleTheme} className="mx-auto flex">
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
         </div>
       </SheetContent>
     </Sheet>
