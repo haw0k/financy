@@ -30,12 +30,12 @@ export function useRole() {
         .from('profiles')
         .select('role, status')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profileError) throw profileError;
 
-      setRole(profile.role as ERole);
-      setStatus(profile.status as EProfileStatus);
+      setRole((profile?.role as ERole) ?? null);
+      setStatus((profile?.status as EProfileStatus) ?? null);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to fetch user role');
     } finally {
@@ -68,14 +68,14 @@ export function useRole() {
           .from('profiles')
           .select('role, status')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (isCancelled) return;
 
         if (profileError) throw profileError;
 
-        setRole(profile.role as ERole);
-        setStatus(profile.status as EProfileStatus);
+        setRole((profile?.role as ERole) ?? null);
+        setStatus((profile?.status as EProfileStatus) ?? null);
       } catch (err: unknown) {
         if (!isCancelled) {
           setError(err instanceof Error ? err.message : 'Failed to fetch user role');

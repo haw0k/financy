@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       .from('profiles')
       .select('role, status')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError || !adminProfile) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

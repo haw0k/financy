@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
     .from('profiles')
     .select('role, status')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (!profile || profile.role !== ERole.Admin || profile.status !== EProfileStatus.Approved) {
     redirect(routes.dashboard);

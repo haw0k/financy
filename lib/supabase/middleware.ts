@@ -67,7 +67,7 @@ export async function updateSession(request: NextRequest) {
       .from('profiles')
       .select('role, status')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || profile.role !== ERole.Admin || profile.status !== EProfileStatus.Approved) {
       const url = request.nextUrl.clone();
@@ -81,7 +81,7 @@ export async function updateSession(request: NextRequest) {
       .from('profiles')
       .select('status')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     if (!profile || profile.status !== EProfileStatus.Approved) {
       const url = request.nextUrl.clone();

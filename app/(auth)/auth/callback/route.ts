@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
           .from('profiles')
           .select('role, status')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
         if (profile?.role === ERole.Admin && profile?.status === EProfileStatus.Approved) {
           return NextResponse.redirect(`${origin}${routes.admin}`);
         }

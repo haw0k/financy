@@ -106,5 +106,19 @@ as $$
   from transactions;
 $$;
 
+-- Backfill profiles for existing auth users who don't have one yet
+insert into public.profiles (id, email, role, status)
+select
+  au.id,
+  au.email,
+  coalesce(au.raw_user_meta_data ->> 'role', 'sender'),
+  case
+    when au.raw_user_meta_data ->> 'role' = 'admin' then 'approved'
+    else 'pending'
+  end
+from auth.users au
+left join public.profiles p on p.id = au.id
+where p.id is null;
+
 -- Notify PostgREST to reload schema cache (run manually if needed)
 -- NOTIFY pgrst, 'reload schema';
