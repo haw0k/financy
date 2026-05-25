@@ -1,11 +1,10 @@
-# Finance Tracker
+# Financy — Personal Finance Tracker
 
-> **Test Project for Spec-Driven Development**
->
-> This is a test project for validating spec-driven development workflows using AI coding assistants.
-> The project is designed to be fully compatible with both **Claude Code** and **OpenCode**, with dedicated support for spec-driven development patterns.
+**Financy** is a personal and small-team finance tracker for managing income, expenses, and transactions. It supports role-based workflows — senders log expenses, receivers track income, and admins approve new registrations — so it works for individual budgeting, family accounting, or small groups that need to split and track money flows.
 
-A modern, full-stack financial management application built with Next.js 16, Supabase, and React 19. Track income and expenses with role-based access (sender/receiver/admin), registration approval, secure authentication, and beautiful visualizations.
+Built with Next.js 16, Supabase (PostgreSQL + Auth), and React 19. Features secure email/OAuth authentication, category management, interactive charts, and a dark/light theme.
+
+> This project also serves as a testbed for spec-driven development workflows with AI coding assistants (Claude Code and OpenCode). See [_specs/](./_specs/) for feature specifications and implementation plans.
 
 ## Quick Start
 
