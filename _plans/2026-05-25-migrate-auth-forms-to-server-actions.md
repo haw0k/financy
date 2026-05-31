@@ -30,7 +30,7 @@ Auth forms (Login, SignUp, AdminAuth) currently call Supabase browser client dir
 
 ### Phase 1 — Create server actions
 
-- [ ] Create `app/actions/auth.ts` with four exported functions:
+- [x] Create `app/actions/auth.ts` with four exported functions:
   - `loginAction({ email, password })` — calls `signInWithPassword`, on success `redirect(routes.dashboard)`, on error returns `{ success: false, error }`
   - `signUpAction({ email, password, role })` — calls `signUp` with `options.data.role`, on success `redirect(routes.signUpSuccess)`, on error returns `{ success: false, error }`
   - `adminLoginAction({ email, password })` — calls `signInWithPassword`, on success `redirect(routes.admin)`, on error returns `{ success: false, error }`
@@ -40,40 +40,40 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 
 ### Phase 2 — Refactor LoginPage
 
-- [ ] Replace `useState(isLoading)` with `useTransition()` → `isPending`, `startTransition`
-- [ ] Remove `useRouter`, `createClient` (browser), `handleSupabaseError` imports
-- [ ] Add `loginAction` from `@/app/actions/auth`, `showError` from `@/components/ui/ToastNotification`, `withTimeout` from `@/lib/with-timeout`
-- [ ] Rewrite `handleLogin`: `e.preventDefault()`, wrap in `startTransition(async () => { ... })`, call `withTimeout(loginAction({ email, password }))`, on error call `showError('Login', result.error)`
-- [ ] Replace `isLoading` → `isPending` in button text/disabled
+- [x] Replace `useState(isLoading)` with `useTransition()` → `isPending`, `startTransition`
+- [x] Remove `useRouter`, `createClient` (browser), `handleSupabaseError` imports
+- [x] Add `loginAction` from `@/app/actions/auth`, `showError` from `@/components/ui/ToastNotification`, `withTimeout` from `@/lib/with-timeout`
+- [x] Rewrite `handleLogin`: `e.preventDefault()`, wrap in `startTransition(async () => { ... })`, call `withTimeout(loginAction({ email, password }))`, on error call `showError('Login', result.error)`
+- [x] Replace `isLoading` → `isPending` in button text/disabled
 
 ### Phase 3 — Refactor SignUpPage
 
-- [ ] Same `useTransition` replacement as LoginPage
-- [ ] Keep client-side password match check (runs before `startTransition`)
-- [ ] Rewrite `handleSignUp`: password check → `startTransition` → `withTimeout(signUpAction({ email, password, role }))` → error handling via `showError`
-- [ ] Replace `isLoading` → `isPending` in button text/disabled
+- [x] Same `useTransition` replacement as LoginPage
+- [x] Keep client-side password match check (runs before `startTransition`)
+- [x] Rewrite `handleSignUp`: password check → `startTransition` → `withTimeout(signUpAction({ email, password, role }))` → error handling via `showError`
+- [x] Replace `isLoading` → `isPending` in button text/disabled
 
 ### Phase 4 — Refactor AdminAuthPage
 
-- [ ] Same `useTransition` replacement
-- [ ] Keep `isAdminExist` state + `useEffect` with `/api/auth/check-admin` fetch (remains client-side)
-- [ ] Keep `isSignUpSuccess` state for inline confirmation message
-- [ ] Rewrite `handleLogin`: `startTransition` → `withTimeout(adminLoginAction({ email, password }))` → error handling
-- [ ] Rewrite `handleSignUp`: `startTransition` → `withTimeout(adminSignUpAction({ email, password }))` → on success set `isSignUpSuccess = true`, on error show toast
-- [ ] Replace `isLoading` → `isPending`
-- [ ] Remove `getSupabaseRedirectUrl` import (now used server-side only)
+- [x] Same `useTransition` replacement
+- [x] Keep `isAdminExist` state + `useEffect` with `/api/auth/check-admin` fetch (remains client-side)
+- [x] Keep `isSignUpSuccess` state for inline confirmation message
+- [x] Rewrite `handleLogin`: `startTransition` → `withTimeout(adminLoginAction({ email, password }))` → error handling
+- [x] Rewrite `handleSignUp`: `startTransition` → `withTimeout(adminSignUpAction({ email, password }))` → on success set `isSignUpSuccess = true`, on error show toast
+- [x] Replace `isLoading` → `isPending`
+- [x] Remove `getSupabaseRedirectUrl` import (now used server-side only)
 
 ### Phase 5 — Tests
 
-- [ ] Create `tests/auth-server-actions.test.tsx`
-- [ ] Server action unit tests: mock `@/lib/supabase/server` → verify correct params passed, error path returns `{ success: false, error }`, success path calls `redirect()` or returns `{ success: true }`
-- [ ] Form component tests: LoginPage shows error on failure, SignUpPage validates password mismatch without calling server action, AdminAuthPage renders correct form based on admin existence
+- [x] Create `tests/auth-server-actions.test.tsx`
+- [x] Server action unit tests: mock `@/lib/supabase/server` → verify correct params passed, error path returns `{ success: false, error }`, success path calls `redirect()` or returns `{ success: true }`
+- [x] Form component tests: LoginPage shows error on failure, SignUpPage validates password mismatch without calling server action, AdminAuthPage renders correct form based on admin existence
 
 ### Phase 6 — Verification
 
-- [ ] Run `pnpm test:run` — existing tests pass, new tests pass
-- [ ] Run `pnpm lint && pnpm type-check && pnpm build` — no errors
-- [ ] Manual smoke test: login success/error, signup success/password mismatch/duplicate email, admin login/signup
+- [x] Run `pnpm test:run` — existing tests pass, new tests pass
+- [x] Run `pnpm lint && pnpm type-check && pnpm build` — no errors
+- [x] Manual smoke test: login success/error, signup success/password mismatch/duplicate email, admin login/signup
 
 ## Files Summary
 
@@ -81,25 +81,34 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 |--------|------|
 | CREATE | `app/actions/auth.ts` |
 | CREATE | `lib/with-timeout.ts` |
+| CREATE | `schemas/auth.schema.ts` |
+| CREATE | `schemas/index.ts` |
+| CREATE | `messages/auth.msg.ts` |
+| CREATE | `messages/index.ts` |
+| CREATE | `types/auth-result.type.ts` |
+| CREATE | `types/index.ts` |
+| CREATE | `config/auth.config.ts` |
+| MODIFY | `config/index.ts` |
 | MODIFY | `components/pages/auth/LoginPage.tsx` |
 | MODIFY | `components/pages/auth/SignUpPage.tsx` |
 | MODIFY | `components/pages/auth/AdminAuthPage.tsx` |
 | CREATE | `tests/auth-server-actions.test.tsx` |
-| NO CHANGE | `lib/supabase/server.ts`, `lib/supabase/client.ts`, `lib/handle-supabase-error.ts`, `lib/supabase/middleware.ts`, `proxy.ts`, `config/`, `components/layouts/*` |
+| NO CHANGE | `lib/supabase/server.ts`, `lib/supabase/client.ts`, `lib/handle-supabase-error.ts`, `lib/supabase/middleware.ts`, `proxy.ts`, `config/env.config.ts`, `config/routes.config.ts`, `config/site.config.ts`, `config/navigation.config.ts`, `components/layouts/*` |
 
 ## Risks & Notes
 
 - `redirect()` throws `NEXT_REDIRECT` internally — server action `try/catch` must not intercept it. The `redirect()` call is placed in the success path, outside any error handling, so this is safe.
 - `adminSignUpAction` cannot use `window.location.origin` fallback for `emailRedirectTo` — uses `getSupabaseRedirectUrl()` only. If neither env var is set, Supabase uses its configured default redirect URL.
 - `useTransition` with async functions is supported in React 19.2.5. `isPending` prevents double submission identically to manual `isLoading`. The timeout wrapper guarantees `isPending` resets even if the server action never resolves — without it, a hung action would leave the form permanently disabled.
+- **TODO**: Auth server actions have no rate limiting (see `docs/TODO.md`).
 
 ## Definition of Done
 
-- [ ] Login form submits via server action, redirects to dashboard on success
-- [ ] Sign-up form submits via server action, redirects to success page on success
-- [ ] Admin auth page works for both login (redirect to /admin) and sign-up (inline success message)
-- [ ] Password mismatch on sign-up shows error without calling server action
-- [ ] Auth errors (invalid credentials, email taken) shown as toast notifications
-- [ ] Loading state correctly shown and cleared in all cases
-- [ ] `pnpm test:run` passes
-- [ ] `pnpm lint && pnpm type-check && pnpm build` passes
+- [x] Login form submits via server action, redirects to dashboard on success
+- [x] Sign-up form submits via server action, redirects to success page on success
+- [x] Admin auth page works for both login (redirect to /admin) and sign-up (inline success message)
+- [x] Password mismatch on sign-up shows error without calling server action
+- [x] Auth errors (invalid credentials, email taken) shown as toast notifications
+- [x] Loading state correctly shown and cleared in all cases
+- [x] `pnpm test:run` passes
+- [x] `pnpm lint && pnpm type-check && pnpm build` passes

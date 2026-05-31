@@ -1,7 +1,7 @@
 const DEFAULT_TIMEOUT_MS = 15_000;
 
 export async function withTimeout<T>(promise: Promise<T>, ms = DEFAULT_TIMEOUT_MS): Promise<T> {
-  let timer: ReturnType<typeof setTimeout>;
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(() => reject(new Error('Request timed out')), ms);
@@ -10,6 +10,6 @@ export async function withTimeout<T>(promise: Promise<T>, ms = DEFAULT_TIMEOUT_M
   try {
     return await Promise.race([promise, timeout]);
   } finally {
-    clearTimeout(timer!);
+    clearTimeout(timer);
   }
 }

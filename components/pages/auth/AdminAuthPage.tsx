@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, type SubmitEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useTransition, type SubmitEvent } from 'react';
 import Image from 'next/image';
 import {
   Button,
@@ -14,18 +13,17 @@ import {
   Label,
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
-import { createClient } from '@/lib/supabase/client';
-import { routes, getSupabaseRedirectUrl, siteConfig } from '@/config';
-import { ERole } from '@/enums';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { showError } from '@/components/ui/ToastNotification';
+import { siteConfig } from '@/config';
+import { adminLoginAction, adminSignUpAction } from '@/app/actions/auth';
+import { withTimeout } from '@/lib/with-timeout';
 
 export function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [isAdminExist, setAdminExists] = useState<boolean | null>(null);
   const [isSignUpSuccess, setSignUpSuccess] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     fetch('/api/auth/check-admin')
@@ -34,49 +32,28 @@ export function AdminAuthPage() {
       .catch(() => setAdminExists(true));
   }, []);
 
-  const handleSignUp = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSignUp = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const supabase = createClient();
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo:
-            getSupabaseRedirectUrl() ?? `${window.location.origin}${routes.authCallback}`,
-          data: { role: ERole.Admin },
-        },
-      });
-
-      if (signUpError) throw signUpError;
-      setSignUpSuccess(true);
-    } catch (err: unknown) {
-      handleSupabaseError(err, 'Admin');
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      const result = await withTimeout(adminSignUpAction({ email, password }));
+      if (result.isSuccess) {
+        setSignUpSuccess(true);
+      } else if (result.error) {
+        showError('Admin', result.error);
+      }
+    });
   };
 
-  const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleLogin = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const supabase = createClient();
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (loginError) throw loginError;
-      router.push(routes.admin);
-    } catch (err: unknown) {
-      handleSupabaseError(err, 'Admin');
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      const result = await withTimeout(adminLoginAction({ email, password }));
+      if (!result.isSuccess && result.error) {
+        showError('Admin', result.error);
+      }
+    });
   };
 
   if (isAdminExist === null) {
@@ -137,8 +114,8 @@ export function AdminAuthPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? 'Loading...' : isAdminExist ? 'Login' : 'Sign up'}
+                    <Button type="submit" className="w-full" disabled={isPending}>
+                      {isPending ? 'Loading...' : isAdminExist ? 'Login' : 'Sign up'}
                     </Button>
                   </div>
                 </form>

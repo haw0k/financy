@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, type SubmitEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useTransition, type SubmitEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -21,45 +20,32 @@ import {
 } from '@/lib/shadcn';
 import { PasswordField } from '@/components/ui';
 import { showError } from '@/components/ui/ToastNotification';
-import { createClient } from '@/lib/supabase/client';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { signUpAction } from '@/app/actions/auth';
+import { withTimeout } from '@/lib/with-timeout';
 
 export function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [role, setRole] = useState<ERole>(ERole.Sender);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  const handleSignUp = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSignUp = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
 
     if (password !== repeatPassword) {
       showError('Sign up', 'Passwords do not match');
-      setIsLoading(false);
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { role },
-        },
-      });
-      if (error) throw error;
-      router.push(routes.signUpSuccess);
-    } catch (error: unknown) {
-      handleSupabaseError(error, 'Sign up');
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      const result = await withTimeout(signUpAction({ email, password, role }));
+      if (!result.isSuccess && result.error) {
+        showError('Sign up', result.error);
+      }
+    });
   };
 
   return (
@@ -130,8 +116,8 @@ export function SignUpPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Creating an account...' : 'Sign up'}
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    {isPending ? 'Creating an account...' : 'Sign up'}
                   </Button>
                 </div>
                 <div className="mt-4 text-center text-sm">
