@@ -18,8 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/shadcn';
-import { PasswordField } from '@/components/ui';
-import { showError } from '@/components/ui/ToastNotification';
+import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
 import { signUpAction } from '@/app/actions/auth';

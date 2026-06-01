@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
 import { routes, siteConfig } from '@/config';
-import { createClient } from '@/lib/supabase/client';
+import { signOutAction } from '@/app/actions/auth';
 import { type FC } from 'react';
 
 interface IHeader {
@@ -24,12 +24,13 @@ interface IHeader {
 
 export const Header: FC<IHeader> = ({ user }) => {
   const router = useRouter();
-  const supabase = createClient();
   const { setIsOpen } = useMobileNav();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push(routes.login);
+    const result = await signOutAction();
+    if (result.isSuccess) {
+      router.push(routes.login);
+    }
   };
 
   return (

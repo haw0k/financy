@@ -1,9 +1,8 @@
 'use client';
 
-import { type FC, useState, useEffect, type SubmitEvent } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
-import { DatePicker } from '@/components/ui';
+import { type FC, useState, useEffect, type SubmitEvent, useTransition } from 'react';
+import { getReceiversAction, createTransactionAction, updateTransactionAction } from '@/app/actions/transactions';
+import { DatePicker, showError } from '@/components/ui';
 import {
   Button,
   Input,
@@ -40,61 +39,48 @@ export const TransactionForm: FC<ITransactionForm> = ({
     receiverId: '',
   });
   const [users, setUsers] = useState<Array<{ id: string; email: string }>>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    // Fetch other users
-    const fetchUsers = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, email')
-          .neq('id', userId);
+    let isCancelled = false;
 
-        if (error) throw error;
-        setUsers(data || []);
-      } catch (error) {
-        handleSupabaseError(error, 'Transaction');
+    (async () => {
+      const result = await getReceiversAction({ userId });
+      if (isCancelled) return;
+      if (result.isSuccess) {
+        setUsers(result.data as Array<{ id: string; email: string }>);
+      } else if (result.error) {
+        showError('Transaction', result.error);
       }
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [userId]);
+
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const input = {
+      amount: parseFloat(formData.amount),
+      type: formData.type,
+      description: formData.description || null,
+      date: formData.date,
+      receiverId: formData.receiverId || undefined,
     };
 
-    fetchUsers();
-  }, [userId, supabase]);
+    startTransition(async () => {
+      const result = editingId
+        ? await updateTransactionAction({ id: editingId, input })
+        : await createTransactionAction(input);
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const transactionData = {
-        sender_id: userId,
-        receiver_id: formData.receiverId || userId,
-        amount: parseFloat(formData.amount),
-        type: formData.type,
-        description: formData.description || null,
-        date: formData.date,
-      };
-
-      if (editingId) {
-        const { error } = await supabase
-          .from('transactions')
-          .update(transactionData)
-          .eq('id', editingId);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('transactions').insert([transactionData]);
-
-        if (error) throw error;
+      if (result.isSuccess) {
+        onSuccess();
+      } else if (result.error) {
+        showError('Transaction', result.error);
       }
-
-      onSuccess();
-    } catch (error) {
-      handleSupabaseError(error, 'Transaction');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
@@ -186,8 +172,8 @@ export const TransactionForm: FC<ITransactionForm> = ({
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" disabled={isLoading || !formData.amount}>
-              {isLoading ? 'Saving...' : editingId ? 'Update' : 'Add'} Transaction
+            <Button type="submit" disabled={isPending || !formData.amount}>
+              {isPending ? 'Saving...' : editingId ? 'Update' : 'Add'} Transaction
             </Button>
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel

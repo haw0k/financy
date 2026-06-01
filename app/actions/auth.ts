@@ -2,11 +2,13 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/require-auth';
 import { routes, getSupabaseRedirectUrl } from '@/config';
-import { ERole } from '@/enums';
+import { ERole, EProfileStatus } from '@/enums';
 import { loginSchema, signUpSchema } from '@/schemas';
 import type { TLoginInput, TSignUpInput } from '@/schemas';
-import type { TAuthResult } from '@/types';
+import type { TAuthResult, TActionResult } from '@/types';
+import { mapSupabaseError } from '@/lib/db-errors';
 import { AUTH_MSGS } from '@/messages';
 
 export async function loginAction({
@@ -81,6 +83,20 @@ export async function adminSignUpAction({
   }
 
   const supabase = await createClient();
+
+  // Check if an approved admin already exists (only one admin allowed)
+  const { data: existingAdmin } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('role', ERole.Admin)
+    .eq('status', EProfileStatus.Approved)
+    .limit(1)
+    .maybeSingle();
+
+  if (existingAdmin) {
+    return { isSuccess: false, error: 'An admin account already exists' };
+  }
+
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
@@ -95,4 +111,53 @@ export async function adminSignUpAction({
   }
 
   return { isSuccess: true };
+}
+
+export async function signOutAction(): Promise<TAuthResult> {
+  const authResult = await requireAuth();
+  if ('error' in authResult) {
+    return { isSuccess: false, error: authResult.error };
+  }
+
+  const { error } = await authResult.supabase.auth.signOut();
+
+  if (error) {
+    return { isSuccess: false, error: error.message || AUTH_MSGS.AUTH_FAILED };
+  }
+
+  return { isSuccess: true };
+}
+
+/**
+ * Retrieves the current user's role and profile status from the server session.
+ *
+ * @returns `isSuccess: true` with the user's role/status, or with `{ role: null, status: null }` if the user is not authenticated.
+ */
+export async function getRoleAction(): Promise<TActionResult<{ role: ERole | null; status: EProfileStatus | null }>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { isSuccess: true, data: { role: null, status: null } };
+  }
+
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+
+  return {
+    isSuccess: true,
+    data: {
+      role: (profile?.role as ERole) ?? null,
+      status: (profile?.status as EProfileStatus) ?? null,
+    },
+  };
 }

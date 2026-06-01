@@ -83,11 +83,63 @@ Visit `http://localhost:3000` and create your account!
 
 ✅ **Security**
 
-- Row Level Security (RLS)
-- Password hashing
-- Protected routes
-- User data isolation
+- Password hashing by Supabase
+- Protected routes with auth checks
+- CSRF protection via Next.js middleware
+- Email verification and admin approval
 - Server-side admin guards
+
+### Server Actions Architecture
+
+All database operations go through **Next.js Server Actions** in `app/actions/`:
+
+- `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut, getRole
+- `categories.ts` — CRUD for categories and category types
+- `transactions.ts` — CRUD for transactions, get receivers list
+- `dashboard.ts` — get transactions + stats for dashboard overview
+
+**Benefits of Server Actions:**
+
+| Benefit | Description |
+|---------|-------------|
+| **No API boilerplate** | No need for separate API routes — actions are called directly from components |
+| **Automatic request context** | Server actions have access to cookies, headers, and session without passing props |
+| **Type safety end-to-end** | Input/output types are inferred; no manual serialization |
+| **Progressive enhancement** | Forms work without JavaScript; actions degrade gracefully |
+| **Security by default** | Actions run on server; sensitive logic never exposed to client |
+| **Simplified data flow** | No need for `useEffect` + `useState` for data fetching — call action directly |
+
+**Pattern:**
+```typescript
+// Client component
+'use client'
+import { createTransactionAction } from '@/app/actions/transactions'
+
+async function handleSubmit(formData: FormData) {
+  const result = await createTransactionAction({ amount: 100, type: 'expense' })
+  if (!result.isSuccess) {
+    showError('Error', result.error)
+  }
+}
+```
+
+```typescript
+// Server Action
+'use server'
+import { requireAuth } from '@/lib/require-auth'
+
+export async function createTransactionAction(input: TInput): Promise<TAuthResult> {
+  const authResult = await requireAuth() // Single DB connection, returns supabase + userId
+  if ('error' in authResult) {
+    return { isSuccess: false, error: authResult.error }
+  }
+
+  const { error } = await authResult.supabase.from('transactions').insert({...})
+  // ...
+}
+```
+
+**Note on RLS:** Row Level Security is intentionally disabled for this pet project. All authenticated users share the same data pool without ownership checks. See _Security & Permissions Model_ in [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md).
 
 ## Tech Stack
 

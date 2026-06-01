@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/lib/shadcn';
-import { createClient } from '@/lib/supabase/client';
+import { signOutAction } from '@/app/actions/auth';
 import { useRole } from '@/hooks';
 import { ERole } from '@/enums';
 import { routes } from '@/config';
@@ -12,9 +12,10 @@ export function PendingPage() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push(routes.login);
+    const result = await signOutAction();
+    if (result.isSuccess) {
+      router.push(routes.login);
+    }
   };
 
   if (isLoading) {

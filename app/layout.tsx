@@ -1,8 +1,10 @@
 import Script from 'next/script';
 import { Geist, Geist_Mono, Roboto } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import { ThemeProvider } from '@/components/providers';
+import { ThemeProvider, RoleProvider } from '@/components/providers';
 import { SonnerToaster } from '@/lib/shadcn';
+import { createClient } from '@/lib/supabase/server';
+import { ERole, EProfileStatus } from '@/enums';
 import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -17,11 +19,39 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 };
 
-export default function RootLayout({
+async function getProfile() {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { role: null, status: null };
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    return {
+      role: (profile?.role as ERole) ?? null,
+      status: (profile?.status as EProfileStatus) ?? null,
+    };
+  } catch {
+    return { role: null, status: null };
+  }
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { role, status } = await getProfile();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -37,7 +67,9 @@ export default function RootLayout({
           `}
         </Script>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          {children}
+          <RoleProvider role={role} status={status}>
+            {children}
+          </RoleProvider>
           <SonnerToaster richColors position="bottom-right" />
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}

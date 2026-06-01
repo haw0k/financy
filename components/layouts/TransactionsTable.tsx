@@ -1,8 +1,9 @@
 'use client';
 
-import { type FC, useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { type FC, useEffect, useState, useTransition } from 'react';
+import { showError } from '@/components/ui';
+import { getTransactionsAction, deleteTransactionAction } from '@/app/actions/transactions';
+import { getCategoriesAction, getCategoryTypesAction } from '@/app/actions/categories';
 import {
   Card,
   CardContent,
@@ -35,45 +36,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const supabase = createClient();
-
-  const fetchTransactions = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setTransactions(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase.from('categories').select('*');
-
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    }
-  };
-
-  const fetchCategoryTypes = async () => {
-    try {
-      const { data, error } = await supabase.from('category_types').select('*');
-
-      if (error) throw error;
-      setCategoryTypes(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    }
-  };
+  const [, startTransition] = useTransition();
 
   const getCategoryDisplayName = (categoryId: string | null) => {
     if (!categoryId) return '-';
@@ -85,22 +48,44 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchTransactions();
-    fetchCategories();
-    fetchCategoryTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let isCancelled = false;
+
+    (async () => {
+      setIsLoading(true);
+      const [transResult, catResult, catTypeResult] = await Promise.all([
+        getTransactionsAction(),
+        getCategoriesAction(),
+        getCategoryTypesAction(),
+      ]);
+
+      if (isCancelled) return;
+
+      if (transResult.isSuccess) setTransactions(transResult.data as ITransaction[]);
+      else showError('Transactions', transResult.error);
+
+      if (catResult.isSuccess) setCategories(catResult.data as ICategory[]);
+      else showError('Transactions', catResult.error);
+
+      if (catTypeResult.isSuccess) setCategoryTypes(catTypeResult.data as ICategoryType[]);
+      else showError('Transactions', catTypeResult.error);
+
+      setIsLoading(false);
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase.from('transactions').delete().eq('id', id);
-
-      if (error) throw error;
-      setTransactions(transactions.filter((t) => t.id !== id));
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    }
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      const result = await deleteTransactionAction({ id });
+      if (result.isSuccess) {
+        setTransactions(transactions.filter((t) => t.id !== id));
+      } else if (result.error) {
+        showError('Transactions', result.error);
+      }
+    });
   };
 
   const filteredTransactions = transactions.filter((trans) => {
@@ -136,10 +121,26 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
           {isShowForm && (
             <TransactionForm
               userId={userId}
-              onSuccess={() => {
+              onSuccess={async () => {
                 setIsShowForm(false);
                 setEditingId(null);
-                fetchTransactions();
+                setIsLoading(true);
+                const [transResult, catResult, catTypeResult] = await Promise.all([
+                  getTransactionsAction(),
+                  getCategoriesAction(),
+                  getCategoryTypesAction(),
+                ]);
+
+                if (transResult.isSuccess) setTransactions(transResult.data as ITransaction[]);
+                else showError('Transactions', transResult.error);
+
+                if (catResult.isSuccess) setCategories(catResult.data as ICategory[]);
+                else showError('Transactions', catResult.error);
+
+                if (catTypeResult.isSuccess) setCategoryTypes(catTypeResult.data as ICategoryType[]);
+                else showError('Transactions', catTypeResult.error);
+
+                setIsLoading(false);
               }}
               onCancel={() => {
                 setIsShowForm(false);

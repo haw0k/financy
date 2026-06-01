@@ -4,10 +4,54 @@
 
 Complete full-stack financial management application with authentication, role-based access (sender/receiver/admin), registration approval, and comprehensive transaction/expense tracking.
 
+## Server Actions Architecture
+
+All database operations are performed through **Next.js Server Actions** in `app/actions/`:
+
+| File | Actions |
+|------|---------|
+| `auth.ts` | login, signUp, adminLogin, adminSignUp, signOut, getRole |
+| `categories.ts` | getCategories, getCategoryTypes, createCategory, updateCategory, deleteCategory, + category types CRUD |
+| `transactions.ts` | getTransactions, getReceivers, createTransaction, updateTransaction, deleteTransaction |
+| `dashboard.ts` | getDashboardData (transactions + stats) |
+
+All actions use `requireAuth()` from `@/lib/require-auth` which returns `{ supabase, userId }` — a single DB connection used for both authentication check and subsequent queries.
+
+**Benefits of this architecture:**
+
+| Benefit | Description |
+|---------|-------------|
+| **No API boilerplate** | No separate API routes needed — actions called directly from components |
+| **Automatic request context** | Actions have access to cookies, headers, session without prop drilling |
+| **Type safety end-to-end** | Input/output types inferred; no manual serialization |
+| **Progressive enhancement** | Forms work without JavaScript |
+| **Security by default** | Actions run on server; sensitive logic never exposed to client |
+| **Single DB connection** | `requireAuth()` returns supabase client + userId, avoiding redundant connections |
+| **Simplified data flow** | No `useEffect` + `useState` for data fetching — call action directly |
+
+**Example pattern:**
+```typescript
+// Server Action
+'use server'
+import { requireAuth } from '@/lib/require-auth'
+
+export async function createTransactionAction(input: TInput): Promise<TAuthResult> {
+  const authResult = await requireAuth() // Single DB connection
+  if ('error' in authResult) {
+    return { isSuccess: false, error: authResult.error }
+  }
+
+  const { error } = await authResult.supabase.from('transactions').insert({...})
+  // ...
+}
+```
+
+**Note:** Browser Supabase client was removed — all mutations go through Server Actions. The server client (`lib/supabase/server.ts`) is used exclusively.
+
 ## Project Structure
 
 ```
-finance-tracker/
+financy/
 ├── app/
 │   ├── auth/
 │   │   ├── login/               # Login page (email/password)
@@ -98,13 +142,12 @@ finance-tracker/
 
 ### Role System
 
-- **Sender**: Can create transactions (send money) and track expenses
-- **Receiver**: Can receive money and track income
-- **Admin**: Manages user registrations (approve/reject), auto-approved on first signup
+- **Admin**: Exists **solely** to approve or reject pending user registrations. Auto-approved on first signup. **Only one admin is allowed** — enforced server-side by `adminSignUpAction`.
+- **Sender**: Can create transactions and track expenses. Can fully manage (CRUD) categories, category types, and transactions. No data ownership restrictions.
+- **Receiver**: Can receive transactions and track income. Can fully manage (CRUD) categories, category types, and transactions. No data ownership restrictions.
 - Role selection during signup
 - Profile status tracking (pending/approved)
-- Role-specific data filtering (RLS policies)
-- Admin RLS: approved admins can view and update all profiles
+- No data ownership checks — all authenticated users share the same data pool
 
 ### Admin Features
 
@@ -149,12 +192,15 @@ finance-tracker/
 - Tailwind CSS for styling
 - Accessible forms and navigation
 
-### Security Features
+### Security & Permissions Model (Pet Project Simplification)
 
-- Row Level Security (RLS) - users can only access their own data
-- Admin RLS policies for authorized access
+**Row Level Security (RLS) is intentionally disabled** for simplicity. This is a pet project where data ownership checks are not implemented at the database level.
+
+- **Single Admin Policy**: Only **one admin** is allowed. The `adminSignUpAction` server action validates that no approved admin exists before allowing signup.
+- **Admin role**: Exists **solely** for approving or rejecting user registrations.
+- **Sender/Receiver roles**: All authenticated users (regardless of role) can **create, read, update, and delete** categories, category types, and transactions. There are **no ownership checks** — any user can modify any record.
 - Secure password hashing by Supabase
-- Protected API routes with auth and role checks
+- Protected API routes with auth and role checks (admin vs non-admin for route access only)
 - CSRF protection via Next.js middleware
 - Email verification and admin approval requirements
 - Server-side admin layout guard (defense-in-depth)
@@ -278,6 +324,6 @@ updated_at (TIMESTAMPTZ)
 
 - All data is encrypted at rest and in transit
 - No credit card required for free tier
-- All transactions are user-owned (RLS policies ensure privacy)
-- Application is production-ready but designed as educational project
-- Can be easily extended with additional features
+- **RLS is disabled** — all authenticated users share the same data pool without ownership checks
+- Application is designed as a pet project / educational project
+- Can be easily extended with additional features (e.g., enable RLS, add ownership checks)

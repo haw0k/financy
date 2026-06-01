@@ -46,7 +46,7 @@ Application configuration is centralized in `config/` and re-exported from `@/co
 - `site.config.ts` - Site metadata (name, description, accent color, version)
 - `navigation.config.ts` - Navigation item definitions with icons
 
-The optional `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` env var provides a local development redirect override for the sign-up flow. Use `getSupabaseRedirectUrl()` from `@/config` — it selects `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` in development, or `NEXT_PUBLIC_SUPABASE_REDIRECT_URL` in production.
+The optional `DEV_SUPABASE_REDIRECT_URL` env var provides a local development redirect override for the sign-up flow. Use `getSupabaseRedirectUrl()` from `@/config` — it selects `DEV_SUPABASE_REDIRECT_URL` in development, or `SUPABASE_REDIRECT_URL` in production.
 
 ### Key Directories
 
@@ -73,16 +73,15 @@ The optional `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` env var provides a local de
 
 ### Supabase Client Types
 
-There are 4 different Supabase clients — use the right one for each context:
+There are **3** Supabase clients — the browser client was removed in favor of Server Actions:
 
 | Client     | File                                   | Key          | When to use                                         |
 | ---------- | -------------------------------------- | ------------ | --------------------------------------------------- |
-| Browser    | `lib/supabase/client.ts`               | Anon key     | Client Components (`'use client'`)                  |
-| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, API routes (with cookies)        |
+| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, Server Actions, API routes        |
 | Middleware | Inline in `lib/supabase/middleware.ts` | Anon key     | Session refresh, redirects                          |
-| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users, bypass RLS) |
+| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users)             |
 
-The admin client uses `@supabase/supabase-js` directly (not `@supabase/ssr`) with `autoRefreshToken: false, persistSession: false`. It bypasses RLS — always validate caller authorization before using it.
+The admin client uses `@supabase/supabase-js` directly (not `@supabase/ssr`) with `autoRefreshToken: false, persistSession: false`. Always validate caller authorization before using it.
 
 ### Middleware / Proxy Pattern
 
@@ -103,9 +102,11 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 
 **Admin registration** (`/auth/admin`):
 
-1. First admin signs up with `emailRedirectTo` → DB trigger auto-sets `status = 'approved'`
+1. **First admin only**: Signs up via `/auth/admin` → server action checks no approved admin exists → DB trigger auto-sets `status = 'approved'`
 2. Supabase sends confirmation email → admin clicks link → callback exchanges code → checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent admin logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
+
+**Important**: Only **one admin** is allowed in the system. The `adminSignUpAction` server action checks for an existing approved admin before allowing signup. If an approved admin already exists, the signup fails with an error.
 
 **Regular user registration** (`/auth/sign-up`):
 
@@ -122,20 +123,26 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 
 **Self-protection**: admin cannot approve/reject their own account (checked both in API routes and UI).
 
-### Role System
+### Role System & Permissions
 
 Users have `sender`, `receiver`, or `admin` role (set at signup). Each profile has a `status` field (`pending` | `approved`). First admin is auto-approved by a database trigger; regular users require admin approval before accessing the dashboard.
 
-RLS policies enforce:
+**Single Admin Policy**: Only **one admin** is allowed in the system. The `adminSignUpAction` server action validates that no approved admin exists before allowing a new admin signup. This is enforced server-side to prevent bypassing the UI.
 
-- `profiles`: Users see only their own profile; admins with approved status see all profiles
-- `categories`: All authenticated users can manage categories
-- `transactions`: Users see transactions where they are sender OR receiver
+**Important**: RLS is **intentionally disabled** in the database for simplicity. This is a pet project with no data ownership checks.
+
+| Role      | Can do in `/admin`            | Can do in `/dashboard`                              |
+| --------- | ----------------------------- | ----------------------------------------------------- |
+| `admin`   | Approve/reject registrations  | **Nothing** — admin does not access financial data    |
+| `sender`  | No access (redirected)        | Full CRUD on categories, category types, transactions |
+| `receiver`| No access (redirected)        | Full CRUD on categories, category types, transactions |
+
+All authenticated users (sender/receiver) share the same data pool. Any user can create, edit, or delete any category, category type, or transaction. There are **no ownership checks** at the application or database level.
 
 Admin-specific flows:
 
 - `/auth/admin` — admin signup (if no admin exists) or login
-- `/admin` — manage pending user registrations (approve/reject)
+- `/admin` — manage pending user registrations (approve/reject) — **this is the admin's only function**
 - `/auth/pending` — shown to users awaiting admin approval or email confirmation
 
 ## Code Style

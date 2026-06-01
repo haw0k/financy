@@ -1,98 +1,63 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { ERole, EProfileStatus } from '@/enums';
+import { useRoleContext } from '@/components/providers';
+import { getRoleAction } from '@/app/actions/auth';
 
 export function useRole() {
-  const [role, setRole] = useState<ERole | null>(null);
-  const [status, setStatus] = useState<EProfileStatus | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { role: ctxRole, status: ctxStatus, isLoaded: isCtxLoaded, refetch: ctxRefetch } =
+    useRoleContext();
+
+  const [role, setRole] = useState<ERole | null>(ctxRole);
+  const [status, setStatus] = useState<EProfileStatus | null>(ctxStatus);
+  const [isLoading, setIsLoading] = useState(!isCtxLoaded);
   const [error, setError] = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
+    if (isCtxLoaded) {
+      // Triggers a server round-trip via router.refresh(); local state updates
+      // asynchronously when the new RoleProvider props hydrate.
+      ctxRefetch();
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
-    try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setRole(null);
-        setStatus(null);
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, status')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-
-      setRole((profile?.role as ERole) ?? null);
-      setStatus((profile?.status as EProfileStatus) ?? null);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch user role');
-    } finally {
-      setIsLoading(false);
+    const result = await getRoleAction();
+    if (result.isSuccess) {
+      setRole(result.data.role);
+      setStatus(result.data.status);
+    } else {
+      setError(result.error);
     }
-  }, []);
+    setIsLoading(false);
+  }, [isCtxLoaded, ctxRefetch]);
 
   useEffect(() => {
+    if (isCtxLoaded) return;
+
     let isCancelled = false;
 
-    const loadProfile = async () => {
-      setIsLoading(true);
-      setError(null);
+    (async () => {
+      const result = await getRoleAction();
 
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+      if (isCancelled) return;
 
-        if (isCancelled) return;
-
-        if (!user) {
-          setRole(null);
-          setStatus(null);
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role, status')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (isCancelled) return;
-
-        if (profileError) throw profileError;
-
-        setRole((profile?.role as ERole) ?? null);
-        setStatus((profile?.status as EProfileStatus) ?? null);
-      } catch (err: unknown) {
-        if (!isCancelled) {
-          setError(err instanceof Error ? err.message : 'Failed to fetch user role');
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
+      if (result.isSuccess) {
+        setRole(result.data.role);
+        setStatus(result.data.status);
+      } else {
+        setError(result.error);
       }
-    };
-
-    loadProfile();
+      setIsLoading(false);
+    })();
 
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [isCtxLoaded]);
 
   return { role, status, isLoading, error, refetch: fetch };
 }

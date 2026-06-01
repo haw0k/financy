@@ -6,16 +6,13 @@ import { ERole, EProfileStatus } from '@/enums';
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
 const mockRouter = { push: vi.fn(), replace: vi.fn(), refresh: vi.fn() };
-const mockSignOut = vi.fn();
 
 vi.mock('next/navigation', () => ({
   useRouter: () => mockRouter,
 }));
 
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    auth: { signOut: mockSignOut },
-  }),
+vi.mock('@/app/actions/auth', () => ({
+  signOutAction: vi.fn(() => Promise.resolve({ isSuccess: true })),
 }));
 
 let useRoleReturn: Record<string, unknown> = {

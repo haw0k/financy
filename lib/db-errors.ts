@@ -1,5 +1,3 @@
-import { showError } from '@/components/ui/ToastNotification';
-
 interface IPostgrestErrorLike {
   code?: string;
   message?: string;
@@ -31,18 +29,14 @@ function formatPostgrestError(error: IPostgrestErrorLike): string {
   return PG_ERROR_MAP[code] ?? error.message ?? 'Database error';
 }
 
-function handleSupabaseError(error: unknown, title = 'Error') {
+export function mapSupabaseError(error: unknown): string {
   if (isPostgrestError(error)) {
-    showError(title, formatPostgrestError(error));
-    return;
+    return formatPostgrestError(error);
   }
 
   if (error instanceof Error) {
-    showError(title, error.message);
-    return;
+    return error.message;
   }
 
-  showError(title, 'An error occurred');
+  return 'An error occurred';
 }
-
-export { handleSupabaseError };

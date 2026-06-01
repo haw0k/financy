@@ -6,6 +6,7 @@ import { ERole } from '@/enums';
 
 const mockSignInWithPassword = vi.fn();
 const mockSignUp = vi.fn();
+const mockFrom = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () =>
@@ -14,6 +15,7 @@ vi.mock('@/lib/supabase/server', () => ({
         signInWithPassword: mockSignInWithPassword,
         signUp: mockSignUp,
       },
+      from: mockFrom,
     }),
 }));
 
@@ -187,7 +189,20 @@ describe('adminLoginAction', () => {
 });
 
 describe('adminSignUpAction', () => {
+  const mockAdminCheck = {
+    select: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          limit: vi.fn(() => ({
+            maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+          })),
+        })),
+      })),
+    })),
+  };
+
   it('should return { isSuccess: true } on success without redirect', async () => {
+    mockFrom.mockReturnValueOnce(mockAdminCheck);
     mockSignUp.mockResolvedValueOnce({ error: null });
     const { adminSignUpAction } = await import('@/app/actions/auth');
     const result = await adminSignUpAction({
@@ -198,7 +213,29 @@ describe('adminSignUpAction', () => {
     expect(mockRedirect).not.toHaveBeenCalled();
   });
 
+  it('should return error when admin already exists', async () => {
+    mockFrom.mockReturnValueOnce({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            limit: vi.fn(() => ({
+              maybeSingle: vi.fn(() => Promise.resolve({ data: { id: 'existing-admin' }, error: null })),
+            })),
+          })),
+        })),
+      })),
+    });
+    const { adminSignUpAction } = await import('@/app/actions/auth');
+    const result = await adminSignUpAction({
+      email: 'newadmin@test.com',
+      password: 'adminpass123',
+    });
+    expect(result.isSuccess).toBe(false);
+    expect(result.error).toBe('An admin account already exists');
+  });
+
   it('should return error on signUp failure', async () => {
+    mockFrom.mockReturnValueOnce(mockAdminCheck);
     mockSignUp.mockResolvedValueOnce({ error: { message: 'Signup failed' } });
     const { adminSignUpAction } = await import('@/app/actions/auth');
     const result = await adminSignUpAction({
@@ -359,6 +396,17 @@ describe('AdminAuthPage', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ exists: false }),
+    });
+    mockFrom.mockReturnValueOnce({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            limit: vi.fn(() => ({
+              maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+            })),
+          })),
+        })),
+      })),
     });
     mockSignUp.mockResolvedValueOnce({ error: null });
     const { AdminAuthPage } = await import('@/components/pages/auth/AdminAuthPage');

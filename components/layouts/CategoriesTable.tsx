@@ -1,8 +1,17 @@
 'use client';
 
-import { type FC, useEffect, useState, type SubmitEvent } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { type FC, useEffect, useState, type SubmitEvent, useTransition } from 'react';
+import { showError } from '@/components/ui';
+import {
+  getCategoriesAction,
+  getCategoryTypesAction,
+  createCategoryAction,
+  updateCategoryAction,
+  deleteCategoryAction,
+  createCategoryTypeAction,
+  updateCategoryTypeAction,
+  deleteCategoryTypeAction,
+} from '@/app/actions/categories';
 import {
   Card,
   CardContent,
@@ -51,56 +60,26 @@ export const CategoriesTable: FC = () => {
   const [ctEditingId, setCtEditingId] = useState<string | null>(null);
   const [isCtShowForm, setCtIsShowForm] = useState(false);
   const [ctDeleteId, setCtDeleteId] = useState<string | null>(null);
-  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
 
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase.from('categories').select('*').order('name');
-
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCategoryTypes = async () => {
-    try {
-      const { data, error } = await supabase.from('category_types').select('*').order('name');
-
-      if (error) throw error;
-      setCategoryTypes(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
-  };
-
-  const handleCtSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleCtSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      if (ctEditingId) {
-        const { error } = await supabase
-          .from('category_types')
-          .update({ name: ctFormData.name })
-          .eq('id', ctEditingId);
+    startTransition(async () => {
+      const result = ctEditingId
+        ? await updateCategoryTypeAction({ id: ctEditingId, input: { name: ctFormData.name } })
+        : await createCategoryTypeAction({ name: ctFormData.name });
 
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('category_types').insert([{ name: ctFormData.name }]);
-
-        if (error) throw error;
+      if (result.isSuccess) {
+        setCtFormData({ name: '' });
+        setCtEditingId(null);
+        setCtIsShowForm(false);
+        const ctResult = await getCategoryTypesAction();
+        if (ctResult.isSuccess) setCategoryTypes(ctResult.data as ICategoryType[]);
+      } else if (result.error) {
+        showError('Categories', result.error);
       }
-
-      setCtFormData({ name: '' });
-      setCtEditingId(null);
-      setCtIsShowForm(false);
-      fetchCategoryTypes();
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+    });
   };
 
   const handleCtEdit = (ct: ICategoryType) => {
@@ -109,72 +88,70 @@ export const CategoriesTable: FC = () => {
     setCtIsShowForm(true);
   };
 
-  const handleCtDelete = async (id: string) => {
-    try {
-      const { error } = await supabase.from('category_types').delete().eq('id', id);
-
-      if (error) throw error;
-      setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
-      setCtDeleteId(null);
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+  const handleCtDelete = (id: string) => {
+    startTransition(async () => {
+      const result = await deleteCategoryTypeAction({ id });
+      if (result.isSuccess) {
+        setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
+        setCtDeleteId(null);
+      } else if (result.error) {
+        showError('Categories', result.error);
+      }
+    });
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCategories();
-    fetchCategoryTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let isCancelled = false;
+
+    (async () => {
+      const [catResult, ctResult] = await Promise.all([getCategoriesAction(), getCategoryTypesAction()]);
+      if (isCancelled) return;
+      if (catResult.isSuccess) setCategories(catResult.data as ICategory[]);
+      if (ctResult.isSuccess) setCategoryTypes(ctResult.data as ICategoryType[]);
+      setIsLoading(false);
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      if (editingId) {
-        const { error } = await supabase
-          .from('categories')
-          .update({
-            name: formData.name,
-            type: formData.type,
-            color: formData.color,
-            type_id: formData.type_id || null,
-          })
-          .eq('id', editingId);
+    const input = {
+      name: formData.name,
+      type: formData.type,
+      color: formData.color,
+      type_id: formData.type_id || undefined,
+    };
 
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('categories').insert([
-          {
-            name: formData.name,
-            type: formData.type,
-            color: formData.color,
-            type_id: formData.type_id || null,
-          },
-        ]);
+    startTransition(async () => {
+      const result = editingId
+        ? await updateCategoryAction({ id: editingId, input })
+        : await createCategoryAction(input);
 
-        if (error) throw error;
+      if (result.isSuccess) {
+        setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
+        setEditingId(null);
+        setIsShowForm(false);
+        const catResult = await getCategoriesAction();
+        if (catResult.isSuccess) setCategories(catResult.data as ICategory[]);
+      } else if (result.error) {
+        showError('Categories', result.error);
       }
-
-      setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
-      setEditingId(null);
-      setIsShowForm(false);
-      fetchCategories();
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+    });
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase.from('categories').delete().eq('id', id);
-
-      if (error) throw error;
-      setCategories(categories.filter((c) => c.id !== id));
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      const result = await deleteCategoryAction({ id });
+      if (result.isSuccess) {
+        setCategories(categories.filter((c) => c.id !== id));
+      } else if (result.error) {
+        showError('Categories', result.error);
+      }
+    });
   };
 
   return (
@@ -286,12 +263,13 @@ export const CategoriesTable: FC = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button type="submit" disabled={!formData.name}>
-                      {editingId ? 'Update' : 'Add'} Category
+                    <Button type="submit" disabled={isPending || !formData.name}>
+                      {isPending ? 'Saving...' : editingId ? 'Update' : 'Add'} Category
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
+                      disabled={isPending}
                       onClick={() => {
                         setIsShowForm(false);
                         setEditingId(null);
@@ -437,12 +415,13 @@ export const CategoriesTable: FC = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button type="submit" disabled={!ctFormData.name}>
-                      {ctEditingId ? 'Update' : 'Add'} Type
+                    <Button type="submit" disabled={isPending || !ctFormData.name}>
+                      {isPending ? 'Saving...' : ctEditingId ? 'Update' : 'Add'} Type
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
+                      disabled={isPending}
                       onClick={() => {
                         setCtIsShowForm(false);
                         setCtEditingId(null);

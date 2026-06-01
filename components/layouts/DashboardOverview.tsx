@@ -1,8 +1,8 @@
 'use client';
 
 import { type FC, useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { showError } from '@/components/ui';
+import { getDashboardDataAction } from '@/app/actions/dashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import type { ITransaction, IStats, ICategoryData } from '@/interfaces';
@@ -25,54 +25,45 @@ export const DashboardOverview: FC = () => {
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
 
   const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch transactions
-        const { data: transData, error: transError } = await supabase
-          .from('transactions')
-          .select('*')
-          .order('date', { ascending: false })
-          .limit(10);
+    let isCancelled = false;
 
-        if (transError) throw transError;
-        setTransactions(transData || []);
+    (async () => {
+      const result = await getDashboardDataAction();
 
-        // Calculate stats
-        const { data: statsData, error: statsError } = await supabase.rpc('get_user_stats');
+      if (isCancelled) return;
 
-        if (statsError) throw statsError;
-        if (statsData) {
-          setStats(Array.isArray(statsData) ? statsData[0] : statsData);
-        }
-
-        // Prepare category data for pie chart
-        if (transData) {
-          const categoryMap = new Map<string, number>();
-          transData.forEach((trans) => {
-            const type = trans.type === 'income' ? 'Income' : 'Expense';
-            categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
-          });
-          setCategoryData(
-            Array.from(categoryMap, ([name, value]) => ({
-              name,
-              value: Number(value.toFixed(2)),
-            }))
-          );
-        }
-      } catch (error) {
-        handleSupabaseError(error, 'Dashboard');
-      } finally {
+      if (!result.isSuccess) {
+        showError('Dashboard', result.error);
         setIsLoading(false);
+        return;
       }
-    };
 
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      setTransactions(result.data.transactions as ITransaction[]);
+      setStats(result.data.stats as IStats);
+
+      // Prepare category data for pie chart
+      const categoryMap = new Map<string, number>();
+      result.data.transactions.forEach((trans) => {
+        const type = trans.type === 'income' ? 'Income' : 'Expense';
+        categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
+      });
+      setCategoryData(
+        Array.from(categoryMap, ([name, value]) => ({
+          name,
+          value: Number(value.toFixed(2)),
+        }))
+      );
+
+      setIsLoading(false);
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   // Prepare data for line chart

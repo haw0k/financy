@@ -12,8 +12,7 @@ import {
   Input,
   Label,
 } from '@/lib/shadcn';
-import { PasswordField } from '@/components/ui';
-import { showError } from '@/components/ui/ToastNotification';
+import { showError, PasswordField } from '@/components/ui';
 import { siteConfig } from '@/config';
 import { adminLoginAction, adminSignUpAction } from '@/app/actions/auth';
 import { withTimeout } from '@/lib/with-timeout';
