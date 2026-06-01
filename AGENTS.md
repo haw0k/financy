@@ -121,9 +121,11 @@ Admin-specific flows:
 
 Supabase project has **"Enable email confirmations" ON** (default). Confirmation emails are sent on every signup.
 
+**JWT App Metadata**: Database triggers (`handle_new_user` and `handle_profile_update`) automatically populate `app_metadata` with `role` and `status` on signup and profile updates. This allows reading role/status directly from the JWT token without an extra database query.
+
 **Admin registration** (`/auth/admin`):
 
-1. **First admin only**: Signs up → server action checks no approved admin exists → DB trigger auto-sets `status = 'approved'`
+1. **First admin only**: Signs up → server action checks no approved admin exists → DB trigger auto-sets `status = 'approved'` + updates `app_metadata`
 2. Supabase sends confirmation email → admin clicks link → callback exchanges code → checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
 
@@ -131,12 +133,12 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 
 **Regular user registration** (`/auth/sign-up`):
 
-1. User signs up WITHOUT `emailRedirectTo` → DB trigger sets `status = 'pending'`
+1. User signs up WITHOUT `emailRedirectTo` → DB trigger sets `status = 'pending'` + updates `app_metadata`
 2. Supabase sends confirmation email (project setting, not `emailRedirectTo`)
 3. User clicks email link → callback exchanges code → not admin → redirects to `/dashboard`
 4. Middleware at `/dashboard` checks `profile.status` → `'pending'` → redirects to `/auth/pending`
-5. Admin approves via `/admin` → API calls `adminClient.auth.admin.updateUserById(userId, { email_confirm: true })` (re-confirms email) + sets `profile.status = 'approved'`
-6. User accesses `/dashboard` → middleware sees `status = 'approved'` → access granted
+5. Admin approves via `/admin` → API sets `profile.status = 'approved'` → DB trigger updates `app_metadata` → email confirmation refreshes JWT
+6. User accesses `/dashboard` → middleware sees `status = 'approved'` (from JWT or profiles) → access granted
 
 **Reject flow** (`/api/admin/pending-users/reject`):
 

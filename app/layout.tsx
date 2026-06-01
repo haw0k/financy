@@ -30,6 +30,16 @@ async function getProfile() {
       return { role: null, status: null };
     }
 
+    // Try to get role/status from JWT app_metadata first (set by database trigger)
+    const appMetadata = user.app_metadata as { role?: string; status?: string } | undefined;
+    if (appMetadata?.role && appMetadata?.status) {
+      return {
+        role: appMetadata.role as ERole,
+        status: appMetadata.status as EProfileStatus,
+      };
+    }
+
+    // Fallback: fetch from profiles table (for existing users before trigger update)
     const { data: profile } = await supabase
       .from('profiles')
       .select('role, status')

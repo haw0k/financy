@@ -42,14 +42,7 @@ export async function POST(request: NextRequest) {
 
     const adminClient = createAdminClient();
 
-    const { error: updateError } = await adminClient.auth.admin.updateUserById(userId, {
-      email_confirm: true,
-    });
-
-    if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
-    }
-
+    // Update profile status first (trigger will update app_metadata)
     const { error: statusError } = await supabase
       .from('profiles')
       .update({ status: EProfileStatus.Approved })
@@ -57,6 +50,15 @@ export async function POST(request: NextRequest) {
 
     if (statusError) {
       return NextResponse.json({ error: 'Failed to update profile status' }, { status: 500 });
+    }
+
+    // Confirm email (this also refreshes the JWT with updated app_metadata)
+    const { error: updateError } = await adminClient.auth.admin.updateUserById(userId, {
+      email_confirm: true,
+    });
+
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
