@@ -58,6 +58,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (updateError) {
+      // Rollback: set status back to pending if email confirmation fails
+      await supabase
+        .from('profiles')
+        .update({ status: EProfileStatus.Pending })
+        .eq('id', userId);
+
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 

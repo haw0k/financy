@@ -1,8 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMobileNav } from '@/components/providers';
-import { useRole } from '@/hooks';
+import { useMobileNav, useRoleContext } from '@/components/providers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
@@ -19,7 +18,7 @@ interface IMobileNav {
 export const MobileNav: FC<IMobileNav> = ({ items }) => {
   const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
-  const { role, status } = useRole();
+  const { role, status } = useRoleContext();
 
   const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
   const resolvedItems = items ?? navItems;

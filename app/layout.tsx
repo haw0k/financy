@@ -11,7 +11,6 @@ import './globals.css';
 
 const geist = Geist({ subsets: ['latin', 'cyrillic'] });
 const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'] });
-
 const robotoHeading = Roboto({ subsets: ['latin', 'cyrillic'], variable: '--font-heading' });
 
 export const metadata: Metadata = {
@@ -30,25 +29,11 @@ async function getProfile() {
       return { role: null, status: null };
     }
 
-    // Try to get role/status from JWT app_metadata first (set by database trigger)
+    // Get role/status from JWT app_metadata (populated by database trigger on signup)
     const appMetadata = user.app_metadata as { role?: string; status?: string } | undefined;
-    if (appMetadata?.role && appMetadata?.status) {
-      return {
-        role: appMetadata.role as ERole,
-        status: appMetadata.status as EProfileStatus,
-      };
-    }
-
-    // Fallback: fetch from profiles table (for existing users before trigger update)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, status')
-      .eq('id', user.id)
-      .maybeSingle();
-
     return {
-      role: (profile?.role as ERole) ?? null,
-      status: (profile?.status as EProfileStatus) ?? null,
+      role: (appMetadata?.role as ERole) ?? null,
+      status: (appMetadata?.status as EProfileStatus) ?? null,
     };
   } catch {
     return { role: null, status: null };

@@ -43,6 +43,38 @@ export async function getTransactionsAction(): Promise<
   return { isSuccess: true, data: data ?? [] };
 }
 
+export async function getTransactionsDataAction(): Promise<{
+  transactions: {
+    id: string;
+    amount: number;
+    type: 'income' | 'expense';
+    date: string;
+    description: string | null;
+    category_id: string | null;
+    sender_id: string;
+    receiver_id: string;
+  }[];
+  categories: { id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[];
+  categoryTypes: { id: string; name: string }[];
+}> {
+  const authResult = await requireAuth();
+  if ('error' in authResult) {
+    throw new Error(authResult.error);
+  }
+
+  const [transResult, catResult, catTypeResult] = await Promise.all([
+    authResult.supabase.from('transactions').select('*').order('date', { ascending: false }),
+    authResult.supabase.from('categories').select('*').order('name'),
+    authResult.supabase.from('category_types').select('*').order('name'),
+  ]);
+
+  return {
+    transactions: transResult.data ?? [],
+    categories: catResult.data ?? [],
+    categoryTypes: catTypeResult.data ?? [],
+  };
+}
+
 export async function getReceiversAction({
   userId,
 }: {

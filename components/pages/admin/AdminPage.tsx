@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
-import { useRole } from '@/hooks';
+import { useRoleContext } from '@/components/providers';
 import { ERole, EProfileStatus } from '@/enums';
 import { routes } from '@/config';
 import { showError, showSuccess } from '@/components/ui/ToastNotification';
@@ -36,7 +36,7 @@ interface IPendingUser {
 
 export function AdminPage() {
   const router = useRouter();
-  const { role, status, isLoading: isRoleLoading } = useRole();
+  const { role, status, isLoaded } = useRoleContext();
   const [users, setUsers] = useState<IPendingUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
@@ -60,9 +60,9 @@ export function AdminPage() {
       }
     };
 
-    if (!isRoleLoading && role === ERole.Admin && status === EProfileStatus.Approved) {
+    if (isLoaded && role === ERole.Admin && status === EProfileStatus.Approved) {
       loadUsers();
-    } else if (!isRoleLoading) {
+    } else if (isLoaded) {
       setIsLoading(false);
     }
 
@@ -70,7 +70,7 @@ export function AdminPage() {
       isCancelled = true;
     };
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [isRoleLoading, role, status]);
+  }, [isLoaded, role, status]);
 
   const handleApprove = async (userId: string) => {
     setProcessingIds((prev) => new Set(prev).add(userId));
@@ -85,6 +85,7 @@ export function AdminPage() {
         const { error } = await res.json();
         throw new Error(error);
       }
+      router.refresh(); // Re-render layout to refresh JWT with updated app_metadata
       setUsers((prev) => prev.filter((u) => u.id !== userId));
       showSuccess('Admin', 'User approved');
     } catch (err: unknown) {
@@ -111,6 +112,7 @@ export function AdminPage() {
         const { error } = await res.json();
         throw new Error(error);
       }
+      router.refresh(); // Re-render layout to refresh JWT with updated app_metadata
       setUsers((prev) => prev.filter((u) => u.id !== userId));
       showSuccess('Admin', 'User rejected');
     } catch (err: unknown) {
@@ -132,7 +134,7 @@ export function AdminPage() {
     });
   };
 
-  if (isRoleLoading || isLoading) {
+  if (!isLoaded || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <Spinner className="size-8" />
@@ -140,7 +142,7 @@ export function AdminPage() {
     );
   }
 
-  if (!isRoleLoading && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
+  if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
     router.replace(routes.dashboard);
     return null;
   }

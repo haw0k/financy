@@ -94,7 +94,7 @@ export async function adminSignUpAction({
     .maybeSingle();
 
   if (existingAdmin) {
-    return { isSuccess: false, error: 'An admin account already exists' };
+    return { isSuccess: false, error: AUTH_MSGS.ADMIN_ACCOUNT_EXISTS };
   }
 
   const { error } = await supabase.auth.signUp({
@@ -131,7 +131,7 @@ export async function signOutAction(): Promise<TAuthResult> {
 /**
  * Retrieves the current user's role and profile status from the server session.
  *
- * @returns `isSuccess: true` with the user's role/status, or with `{ role: null, status: null }` if the user is not authenticated.
+ * @returns `isSuccess: true` with the user's role/status, or `isSuccess: false` if not authenticated.
  */
 export async function getRoleAction(): Promise<TActionResult<{ role: ERole | null; status: EProfileStatus | null }>> {
   const supabase = await createClient();
@@ -140,7 +140,7 @@ export async function getRoleAction(): Promise<TActionResult<{ role: ERole | nul
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { isSuccess: true, data: { role: null, status: null } };
+    return { isSuccess: false, error: AUTH_MSGS.NOT_AUTHENTICATED };
   }
 
   const { data: profile, error } = await supabase

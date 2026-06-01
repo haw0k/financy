@@ -15,28 +15,30 @@ vi.mock('@/app/actions/auth', () => ({
   signOutAction: vi.fn(() => Promise.resolve({ isSuccess: true })),
 }));
 
-let useRoleReturn: Record<string, unknown> = {
+let useRoleContextReturn: Record<string, unknown> = {
   role: ERole.Sender,
   status: EProfileStatus.Pending,
-  isLoading: false,
-  error: null,
+  isLoaded: true,
   refetch: vi.fn(),
 };
 
-vi.mock('@/hooks', () => ({
-  useRole: () => useRoleReturn,
-}));
+vi.mock('@/components/providers', async () => {
+  const actual = await vi.importActual<typeof import('@/components/providers')>('@/components/providers');
+  return {
+    ...actual,
+    useRoleContext: () => useRoleContextReturn,
+  };
+});
 
 const mockFetch = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
   globalThis.fetch = mockFetch;
-  useRoleReturn = {
+  useRoleContextReturn = {
     role: ERole.Sender,
     status: EProfileStatus.Pending,
-    isLoading: false,
-    error: null,
+    isLoaded: true,
     refetch: vi.fn(),
   };
 });
@@ -95,28 +97,28 @@ describe('Route constants', () => {
 
 describe('PendingPage', () => {
   it('should show loading state', async () => {
-    useRoleReturn = { ...useRoleReturn, isLoading: true };
+    useRoleContextReturn = { ...useRoleContextReturn, isLoaded: false };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText('Loading...')).toBeDefined();
   });
 
   it('should show admin pending message for admin role', async () => {
-    useRoleReturn = { ...useRoleReturn, role: ERole.Admin, status: EProfileStatus.Pending };
+    useRoleContextReturn = { ...useRoleContextReturn, role: ERole.Admin, status: EProfileStatus.Pending };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Check your email to confirm your admin account/)).toBeDefined();
   });
 
   it('should show approval pending message for sender role', async () => {
-    useRoleReturn = { ...useRoleReturn, role: ERole.Sender, status: EProfileStatus.Pending };
+    useRoleContextReturn = { ...useRoleContextReturn, role: ERole.Sender, status: EProfileStatus.Pending };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
   });
 
   it('should show approval pending message for receiver role', async () => {
-    useRoleReturn = { ...useRoleReturn, role: ERole.Receiver, status: EProfileStatus.Pending };
+    useRoleContextReturn = { ...useRoleContextReturn, role: ERole.Receiver, status: EProfileStatus.Pending };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
@@ -133,8 +135,8 @@ describe('PendingPage', () => {
 
 describe('AdminPage', () => {
   it('should show empty state when no pending users', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
@@ -151,8 +153,8 @@ describe('AdminPage', () => {
   });
 
   it('should render table with pending users', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
@@ -177,8 +179,8 @@ describe('AdminPage', () => {
   });
 
   it('should call approve API on approve button click', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
@@ -213,8 +215,8 @@ describe('AdminPage', () => {
   });
 
   it('should call reject API on reject button click', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
@@ -254,8 +256,8 @@ describe('AdminPage', () => {
   });
 
   it('should redirect non-admin to dashboard', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Sender,
       status: EProfileStatus.Approved,
     };
@@ -265,8 +267,8 @@ describe('AdminPage', () => {
   });
 
   it('should show empty state on fetch error', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
@@ -301,12 +303,3 @@ describe('Admin client', () => {
   });
 });
 
-/* ── useRole hook exports ──────────────────────────────────────── */
-
-describe('useRole hook', () => {
-  it('should be exported from hooks barrel', async () => {
-    const hooks = await import('@/hooks');
-    expect(hooks.useRole).toBeDefined();
-    expect(typeof hooks.useRole).toBe('function');
-  });
-});

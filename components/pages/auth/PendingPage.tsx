@@ -3,12 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/lib/shadcn';
 import { signOutAction } from '@/app/actions/auth';
-import { useRole } from '@/hooks';
+import { useRoleContext } from '@/components/providers';
 import { ERole } from '@/enums';
 import { routes } from '@/config';
 
 export function PendingPage() {
-  const { role, isLoading } = useRole();
+  const { role, isLoaded } = useRoleContext();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -18,7 +18,7 @@ export function PendingPage() {
     }
   };
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center p-6">
         <p className="text-muted-foreground">Loading...</p>

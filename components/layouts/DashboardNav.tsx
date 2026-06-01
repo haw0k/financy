@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useRole } from '@/hooks';
+import { useRoleContext } from '@/components/providers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ interface IDashboardNav {
 
 export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
   const pathname = usePathname();
-  const { role, status } = useRole();
+  const { role, status } = useRoleContext();
 
   const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
   const resolvedItems = items ?? navItems;

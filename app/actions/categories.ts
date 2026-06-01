@@ -190,3 +190,23 @@ export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<
 
   return { isSuccess: true };
 }
+
+export async function getCategoriesDataAction(): Promise<{
+  categories: { id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[];
+  categoryTypes: { id: string; name: string }[];
+}> {
+  const authResult = await requireAuth();
+  if ('error' in authResult) {
+    throw new Error(authResult.error);
+  }
+
+  const [catResult, ctResult] = await Promise.all([
+    authResult.supabase.from('categories').select('*').order('name'),
+    authResult.supabase.from('category_types').select('*').order('name'),
+  ]);
+
+  return {
+    categories: catResult.data ?? [],
+    categoryTypes: ctResult.data ?? [],
+  };
+}
