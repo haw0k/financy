@@ -35,7 +35,9 @@ describe('RLS disabled on user tables', () => {
   });
 
   it('get_user_stats has no sender_id/receiver_id WHERE clause', () => {
-    const fnMatch = sql.match(/create or replace function public\.get_user_stats\(\)([\s\S]*?)\$\$/);
+    const fnMatch = sql.match(
+      /create or replace function public\.get_user_stats\(\)([\s\S]*?)\$\$/
+    );
     expect(fnMatch).not.toBeNull();
     if (fnMatch) {
       expect(fnMatch[1]).not.toMatch(/sender_id|receiver_id/);

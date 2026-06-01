@@ -19,7 +19,9 @@ const categoryTypeSchema = z.object({
 });
 
 export async function getCategoriesAction(): Promise<
-  TActionResult<{ id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[]>
+  TActionResult<
+    { id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[]
+  >
 > {
   const authResult = await requireAuth();
   if ('error' in authResult) {
@@ -43,7 +45,10 @@ export async function getCategoryTypesAction(): Promise<
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { data, error } = await authResult.supabase.from('category_types').select('*').order('name');
+  const { data, error } = await authResult.supabase
+    .from('category_types')
+    .select('*')
+    .order('name');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
@@ -52,7 +57,9 @@ export async function getCategoryTypesAction(): Promise<
   return { isSuccess: true, data: data ?? [] };
 }
 
-export async function createCategoryAction(input: z.infer<typeof categorySchema>): Promise<TAuthResult> {
+export async function createCategoryAction(
+  input: z.infer<typeof categorySchema>
+): Promise<TAuthResult> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -129,7 +136,7 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAut
 }
 
 export async function createCategoryTypeAction(
-  input: z.infer<typeof categoryTypeSchema>,
+  input: z.infer<typeof categoryTypeSchema>
 ): Promise<TAuthResult> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
@@ -141,7 +148,9 @@ export async function createCategoryTypeAction(
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase.from('category_types').insert([{ name: parsed.data.name }]);
+  const { error } = await authResult.supabase
+    .from('category_types')
+    .insert([{ name: parsed.data.name }]);
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
@@ -167,7 +176,10 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase.from('category_types').update({ name: parsed.data.name }).eq('id', id);
+  const { error } = await authResult.supabase
+    .from('category_types')
+    .update({ name: parsed.data.name })
+    .eq('id', id);
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
@@ -192,7 +204,13 @@ export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<
 }
 
 export async function getCategoriesDataAction(): Promise<{
-  categories: { id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[];
+  categories: {
+    id: string;
+    name: string;
+    type: 'income' | 'expense';
+    color: string;
+    type_id?: string;
+  }[];
   categoryTypes: { id: string; name: string }[];
 }> {
   const authResult = await requireAuth();

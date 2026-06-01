@@ -12,4 +12,3 @@ export function getSupabaseRedirectUrl(): string | undefined {
   }
   return env.supabaseRedirectUrl ?? undefined;
 }
-

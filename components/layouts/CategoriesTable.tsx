@@ -104,7 +104,10 @@ export const CategoriesTable: FC = () => {
     let isCancelled = false;
 
     (async () => {
-      const [catResult, ctResult] = await Promise.all([getCategoriesAction(), getCategoryTypesAction()]);
+      const [catResult, ctResult] = await Promise.all([
+        getCategoriesAction(),
+        getCategoryTypesAction(),
+      ]);
       if (isCancelled) return;
       if (catResult.isSuccess) setCategories(catResult.data as ICategory[]);
       if (ctResult.isSuccess) setCategoryTypes(ctResult.data as ICategoryType[]);

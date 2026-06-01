@@ -34,7 +34,10 @@ export async function getTransactionsAction(): Promise<
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { data, error } = await authResult.supabase.from('transactions').select('*').order('date', { ascending: false });
+  const { data, error } = await authResult.supabase
+    .from('transactions')
+    .select('*')
+    .order('date', { ascending: false });
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
@@ -54,7 +57,13 @@ export async function getTransactionsDataAction(): Promise<{
     sender_id: string;
     receiver_id: string;
   }[];
-  categories: { id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[];
+  categories: {
+    id: string;
+    name: string;
+    type: 'income' | 'expense';
+    color: string;
+    type_id?: string;
+  }[];
   categoryTypes: { id: string; name: string }[];
 }> {
   const authResult = await requireAuth();
@@ -85,7 +94,10 @@ export async function getReceiversAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { data, error } = await authResult.supabase.from('profiles').select('id, email').neq('id', userId);
+  const { data, error } = await authResult.supabase
+    .from('profiles')
+    .select('id, email')
+    .neq('id', userId);
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
@@ -95,7 +107,7 @@ export async function getReceiversAction({
 }
 
 export async function createTransactionAction(
-  input: z.infer<typeof transactionSchema>,
+  input: z.infer<typeof transactionSchema>
 ): Promise<TAuthResult> {
   const parsed = transactionSchema.safeParse(input);
   if (!parsed.success) {

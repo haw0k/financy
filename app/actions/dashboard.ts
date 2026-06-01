@@ -17,7 +17,11 @@ export async function getDashboardDataAction(): Promise<
   }
 
   const [transactionsResult, statsResult] = await Promise.all([
-    authResult.supabase.from('transactions').select('*').order('date', { ascending: false }).limit(10),
+    authResult.supabase
+      .from('transactions')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(10),
     authResult.supabase.rpc('get_user_stats'),
   ]);
 
@@ -29,7 +33,11 @@ export async function getDashboardDataAction(): Promise<
     console.warn('[getDashboardDataAction] Stats RPC failed:', statsResult.error.message);
   }
 
-  const stats = statsResult.error ? null : Array.isArray(statsResult.data) ? statsResult.data[0] : statsResult.data;
+  const stats = statsResult.error
+    ? null
+    : Array.isArray(statsResult.data)
+      ? statsResult.data[0]
+      : statsResult.data;
 
   return {
     isSuccess: true,

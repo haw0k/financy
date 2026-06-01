@@ -68,17 +68,18 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*, a
 
 There are **3** Supabase clients — the browser client was removed in favor of Server Actions:
 
-| Client     | File                                   | Key          | When to use                                         |
-| ---------- | -------------------------------------- | ------------ | --------------------------------------------------- |
-| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, Server Actions, API routes       |
-| Middleware | Inline in `lib/supabase/middleware.ts` | Anon key     | Session refresh, redirects                          |
-| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users)             |
+| Client     | File                                   | Key          | When to use                                   |
+| ---------- | -------------------------------------- | ------------ | --------------------------------------------- |
+| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, Server Actions, API routes |
+| Middleware | Inline in `lib/supabase/middleware.ts` | Anon key     | Session refresh, redirects                    |
+| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users)       |
 
 The admin client uses `@supabase/supabase-js` directly (not `@supabase/ssr`) with `autoRefreshToken: false, persistSession: false`. Always validate caller authorization before using it.
 
 ### Server Actions Pattern
 
 All data mutations go through Server Actions in `app/actions/`:
+
 - `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut, getRole
 - `categories.ts` — CRUD for categories and category types
 - `transactions.ts` — CRUD for transactions, get receivers list
@@ -103,11 +104,11 @@ Users have `sender`, `receiver`, or `admin` role (set at signup). Each profile h
 
 **RLS is intentionally disabled** for simplicity. This is a pet project with no data ownership checks.
 
-| Role      | Can do in `/admin`            | Can do in `/dashboard`                              |
-| --------- | ----------------------------- | ----------------------------------------------------- |
-| `admin`   | Approve/reject registrations  | **Nothing** — admin does not access financial data    |
-| `sender`  | No access (redirected)        | Full CRUD on categories, category types, transactions |
-| `receiver`| No access (redirected)        | Full CRUD on categories, category types, transactions |
+| Role       | Can do in `/admin`           | Can do in `/dashboard`                                |
+| ---------- | ---------------------------- | ----------------------------------------------------- |
+| `admin`    | Approve/reject registrations | **Nothing** — admin does not access financial data    |
+| `sender`   | No access (redirected)       | Full CRUD on categories, category types, transactions |
+| `receiver` | No access (redirected)       | Full CRUD on categories, category types, transactions |
 
 All authenticated users (sender/receiver) share the same data pool. Any user can create, edit, or delete any category, category type, or transaction.
 

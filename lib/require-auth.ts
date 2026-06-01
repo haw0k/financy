@@ -9,8 +9,7 @@ import { AUTH_MSGS } from '@/messages';
  * @returns `{ supabase, userId }` if authenticated, or `{ error: string }` if not.
  */
 export async function requireAuth(): Promise<
-  | { supabase: Awaited<ReturnType<typeof createClient>>; userId: string }
-  | { error: string }
+  { supabase: Awaited<ReturnType<typeof createClient>>; userId: string } | { error: string }
 > {
   const supabase = await createClient();
   const {

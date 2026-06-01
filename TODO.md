@@ -7,6 +7,3 @@ After deploying production to Vercel:
 - [ ] Check application support for Supabase `Rate limit for sign-ups and sign-ins` (360 requests per hour)
 - [ ] Add to proxy.ts redirect to `/auth/login` for unauthorized users
 - [ ] Add to proxy.ts redirect to `/` or `/dashboard` for authorized users for `/auth/*` routes
-
-
- 

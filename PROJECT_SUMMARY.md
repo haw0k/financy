@@ -8,28 +8,29 @@ Complete full-stack financial management application with authentication, role-b
 
 All database operations are performed through **Next.js Server Actions** in `app/actions/`:
 
-| File | Actions |
-|------|---------|
-| `auth.ts` | login, signUp, adminLogin, adminSignUp, signOut, getRole |
-| `categories.ts` | getCategories, getCategoryTypes, createCategory, updateCategory, deleteCategory, + category types CRUD |
-| `transactions.ts` | getTransactions, getReceivers, createTransaction, updateTransaction, deleteTransaction |
-| `dashboard.ts` | getDashboardData (transactions + stats) |
+| File              | Actions                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------ |
+| `auth.ts`         | login, signUp, adminLogin, adminSignUp, signOut, getRole                                               |
+| `categories.ts`   | getCategories, getCategoryTypes, createCategory, updateCategory, deleteCategory, + category types CRUD |
+| `transactions.ts` | getTransactions, getReceivers, createTransaction, updateTransaction, deleteTransaction                 |
+| `dashboard.ts`    | getDashboardData (transactions + stats)                                                                |
 
 All actions use `requireAuth()` from `@/lib/require-auth` which returns `{ supabase, userId }` — a single DB connection used for both authentication check and subsequent queries.
 
 **Benefits of this architecture:**
 
-| Benefit | Description |
-|---------|-------------|
-| **No API boilerplate** | No separate API routes needed — actions called directly from components |
-| **Automatic request context** | Actions have access to cookies, headers, session without prop drilling |
-| **Type safety end-to-end** | Input/output types inferred; no manual serialization |
-| **Progressive enhancement** | Forms work without JavaScript |
-| **Security by default** | Actions run on server; sensitive logic never exposed to client |
-| **Single DB connection** | `requireAuth()` returns supabase client + userId, avoiding redundant connections |
-| **Simplified data flow** | No `useEffect` + `useState` for data fetching — call action directly |
+| Benefit                       | Description                                                                      |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| **No API boilerplate**        | No separate API routes needed — actions called directly from components          |
+| **Automatic request context** | Actions have access to cookies, headers, session without prop drilling           |
+| **Type safety end-to-end**    | Input/output types inferred; no manual serialization                             |
+| **Progressive enhancement**   | Forms work without JavaScript                                                    |
+| **Security by default**       | Actions run on server; sensitive logic never exposed to client                   |
+| **Single DB connection**      | `requireAuth()` returns supabase client + userId, avoiding redundant connections |
+| **Simplified data flow**      | No `useEffect` + `useState` for data fetching — call action directly             |
 
 **Example pattern:**
+
 ```typescript
 // Server Action
 'use server'

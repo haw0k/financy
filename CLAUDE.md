@@ -75,11 +75,11 @@ The optional `DEV_SUPABASE_REDIRECT_URL` env var provides a local development re
 
 There are **3** Supabase clients — the browser client was removed in favor of Server Actions:
 
-| Client     | File                                   | Key          | When to use                                         |
-| ---------- | -------------------------------------- | ------------ | --------------------------------------------------- |
-| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, Server Actions, API routes        |
-| Middleware | Inline in `lib/supabase/middleware.ts` | Anon key     | Session refresh, redirects                          |
-| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users)             |
+| Client     | File                                   | Key          | When to use                                   |
+| ---------- | -------------------------------------- | ------------ | --------------------------------------------- |
+| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, Server Actions, API routes |
+| Middleware | Inline in `lib/supabase/middleware.ts` | Anon key     | Session refresh, redirects                    |
+| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users)       |
 
 The admin client uses `@supabase/supabase-js` directly (not `@supabase/ssr`) with `autoRefreshToken: false, persistSession: false`. Always validate caller authorization before using it.
 
@@ -133,11 +133,11 @@ Users have `sender`, `receiver`, or `admin` role (set at signup). Each profile h
 
 **Important**: RLS is **intentionally disabled** in the database for simplicity. This is a pet project with no data ownership checks.
 
-| Role      | Can do in `/admin`            | Can do in `/dashboard`                              |
-| --------- | ----------------------------- | ----------------------------------------------------- |
-| `admin`   | Approve/reject registrations  | **Nothing** — admin does not access financial data    |
-| `sender`  | No access (redirected)        | Full CRUD on categories, category types, transactions |
-| `receiver`| No access (redirected)        | Full CRUD on categories, category types, transactions |
+| Role       | Can do in `/admin`           | Can do in `/dashboard`                                |
+| ---------- | ---------------------------- | ----------------------------------------------------- |
+| `admin`    | Approve/reject registrations | **Nothing** — admin does not access financial data    |
+| `sender`   | No access (redirected)       | Full CRUD on categories, category types, transactions |
+| `receiver` | No access (redirected)       | Full CRUD on categories, category types, transactions |
 
 All authenticated users (sender/receiver) share the same data pool. Any user can create, edit, or delete any category, category type, or transaction. There are **no ownership checks** at the application or database level.
 

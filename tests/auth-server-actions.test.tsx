@@ -99,9 +99,9 @@ describe('loginAction', () => {
       throw new Error('NEXT_REDIRECT');
     });
     const { loginAction } = await import('@/app/actions/auth');
-    await expect(
-      loginAction({ email: 'test@test.com', password: 'password123' }),
-    ).rejects.toThrow('NEXT_REDIRECT');
+    await expect(loginAction({ email: 'test@test.com', password: 'password123' })).rejects.toThrow(
+      'NEXT_REDIRECT'
+    );
     expect(mockSignInWithPassword).toHaveBeenCalledWith({
       email: 'test@test.com',
       password: 'password123',
@@ -153,7 +153,7 @@ describe('signUpAction', () => {
     });
     const { signUpAction } = await import('@/app/actions/auth');
     await expect(
-      signUpAction({ email: 'test@test.com', password: 'password123', role: ERole.Receiver }),
+      signUpAction({ email: 'test@test.com', password: 'password123', role: ERole.Receiver })
     ).rejects.toThrow('NEXT_REDIRECT');
     expect(mockSignUp).toHaveBeenCalledWith({
       email: 'test@test.com',
@@ -179,7 +179,7 @@ describe('adminLoginAction', () => {
     });
     const { adminLoginAction } = await import('@/app/actions/auth');
     await expect(
-      adminLoginAction({ email: 'admin@test.com', password: 'adminpass123' }),
+      adminLoginAction({ email: 'admin@test.com', password: 'adminpass123' })
     ).rejects.toThrow('NEXT_REDIRECT');
     expect(mockSignInWithPassword).toHaveBeenCalledWith({
       email: 'admin@test.com',
@@ -219,7 +219,9 @@ describe('adminSignUpAction', () => {
         eq: vi.fn(() => ({
           eq: vi.fn(() => ({
             limit: vi.fn(() => ({
-              maybeSingle: vi.fn(() => Promise.resolve({ data: { id: 'existing-admin' }, error: null })),
+              maybeSingle: vi.fn(() =>
+                Promise.resolve({ data: { id: 'existing-admin' }, error: null })
+              ),
             })),
           })),
         })),

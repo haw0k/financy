@@ -3,6 +3,7 @@
 ## Context
 
 Every client component that needs `role`/`status` calls `useRole()` independently, each triggering:
+
 1. `supabase.auth.getUser()` — JWT verification
 2. `supabase.from('profiles').select('role, status')` — DB query
 
@@ -37,7 +38,9 @@ Auth pages get `null/null` — `getUser()` on unauthenticated request does a fas
 - Add async profile fetch before `return`:
   ```tsx
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   let role: ERole | null = null;
   let status: EProfileStatus | null = null;
   if (user) {
@@ -61,7 +64,13 @@ Auth pages get `null/null` — `getUser()` on unauthenticated request does a fas
   const ctx = useRoleContext();
   // If context has role data, return it synchronously
   if (ctx.role !== null) {
-    return { role: ctx.role, status: ctx.status, isLoading: false, error: null, refetch: ctx.refetch };
+    return {
+      role: ctx.role,
+      status: ctx.status,
+      isLoading: false,
+      error: null,
+      refetch: ctx.refetch,
+    };
   }
   ```
 - If context is null (component outside provider, or error in layout), execute existing DB-query logic as fallback
@@ -76,12 +85,12 @@ Auth pages get `null/null` — `getUser()` on unauthenticated request does a fas
 
 ## Files Summary
 
-| Action | File |
-|--------|------|
-| CREATE | `components/providers/RoleProvider.tsx` |
-| MODIFY | `components/providers/index.ts` |
-| MODIFY | `app/layout.tsx` |
-| MODIFY | `hooks/useRole.ts` |
+| Action    | File                                                                      |
+| --------- | ------------------------------------------------------------------------- |
+| CREATE    | `components/providers/RoleProvider.tsx`                                   |
+| MODIFY    | `components/providers/index.ts`                                           |
+| MODIFY    | `app/layout.tsx`                                                          |
+| MODIFY    | `hooks/useRole.ts`                                                        |
 | NO CHANGE | All consumer components (AdminPage, DashboardNav, MobileNav, PendingPage) |
 
 ## Edge Cases

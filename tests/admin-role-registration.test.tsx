@@ -23,7 +23,8 @@ let useRoleContextReturn: Record<string, unknown> = {
 };
 
 vi.mock('@/components/providers', async () => {
-  const actual = await vi.importActual<typeof import('@/components/providers')>('@/components/providers');
+  const actual =
+    await vi.importActual<typeof import('@/components/providers')>('@/components/providers');
   return {
     ...actual,
     useRoleContext: () => useRoleContextReturn,
@@ -104,21 +105,33 @@ describe('PendingPage', () => {
   });
 
   it('should show admin pending message for admin role', async () => {
-    useRoleContextReturn = { ...useRoleContextReturn, role: ERole.Admin, status: EProfileStatus.Pending };
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
+      role: ERole.Admin,
+      status: EProfileStatus.Pending,
+    };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Check your email to confirm your admin account/)).toBeDefined();
   });
 
   it('should show approval pending message for sender role', async () => {
-    useRoleContextReturn = { ...useRoleContextReturn, role: ERole.Sender, status: EProfileStatus.Pending };
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
+      role: ERole.Sender,
+      status: EProfileStatus.Pending,
+    };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
   });
 
   it('should show approval pending message for receiver role', async () => {
-    useRoleContextReturn = { ...useRoleContextReturn, role: ERole.Receiver, status: EProfileStatus.Pending };
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
+      role: ERole.Receiver,
+      status: EProfileStatus.Pending,
+    };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
@@ -302,4 +315,3 @@ describe('Admin client', () => {
     expect(typeof createAdminClient).toBe('function');
   });
 });
-

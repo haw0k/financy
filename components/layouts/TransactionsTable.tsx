@@ -137,7 +137,8 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
                 if (catResult.isSuccess) setCategories(catResult.data as ICategory[]);
                 else showError('Transactions', catResult.error);
 
-                if (catTypeResult.isSuccess) setCategoryTypes(catTypeResult.data as ICategoryType[]);
+                if (catTypeResult.isSuccess)
+                  setCategoryTypes(catTypeResult.data as ICategoryType[]);
                 else showError('Transactions', catTypeResult.error);
 
                 setIsLoading(false);

@@ -77,22 +77,22 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 
 ## Files Summary
 
-| Action | File |
-|--------|------|
-| CREATE | `app/actions/auth.ts` |
-| CREATE | `lib/with-timeout.ts` |
-| CREATE | `schemas/auth.schema.ts` |
-| CREATE | `schemas/index.ts` |
-| CREATE | `messages/auth.msg.ts` |
-| CREATE | `messages/index.ts` |
-| CREATE | `types/auth-result.type.ts` |
-| CREATE | `types/index.ts` |
-| CREATE | `config/auth.config.ts` |
-| MODIFY | `config/index.ts` |
-| MODIFY | `components/pages/auth/LoginPage.tsx` |
-| MODIFY | `components/pages/auth/SignUpPage.tsx` |
-| MODIFY | `components/pages/auth/AdminAuthPage.tsx` |
-| CREATE | `tests/auth-server-actions.test.tsx` |
+| Action    | File                                                                                                                                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CREATE    | `app/actions/auth.ts`                                                                                                                                                                                                                                           |
+| CREATE    | `lib/with-timeout.ts`                                                                                                                                                                                                                                           |
+| CREATE    | `schemas/auth.schema.ts`                                                                                                                                                                                                                                        |
+| CREATE    | `schemas/index.ts`                                                                                                                                                                                                                                              |
+| CREATE    | `messages/auth.msg.ts`                                                                                                                                                                                                                                          |
+| CREATE    | `messages/index.ts`                                                                                                                                                                                                                                             |
+| CREATE    | `types/auth-result.type.ts`                                                                                                                                                                                                                                     |
+| CREATE    | `types/index.ts`                                                                                                                                                                                                                                                |
+| CREATE    | `config/auth.config.ts`                                                                                                                                                                                                                                         |
+| MODIFY    | `config/index.ts`                                                                                                                                                                                                                                               |
+| MODIFY    | `components/pages/auth/LoginPage.tsx`                                                                                                                                                                                                                           |
+| MODIFY    | `components/pages/auth/SignUpPage.tsx`                                                                                                                                                                                                                          |
+| MODIFY    | `components/pages/auth/AdminAuthPage.tsx`                                                                                                                                                                                                                       |
+| CREATE    | `tests/auth-server-actions.test.tsx`                                                                                                                                                                                                                            |
 | NO CHANGE | `lib/supabase/server.ts`, `lib/supabase/client.ts`, `lib/handle-supabase-error.ts`, `lib/supabase/middleware.ts`, `proxy.ts`, `config/env.config.ts`, `config/routes.config.ts`, `config/site.config.ts`, `config/navigation.config.ts`, `components/layouts/*` |
 
 ## Risks & Notes

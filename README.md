@@ -4,7 +4,7 @@
 
 Built with Next.js 16, Supabase (PostgreSQL + Auth), and React 19. Features secure email/OAuth authentication, category management, interactive charts, and a dark/light theme.
 
-> This project also serves as a testbed for spec-driven development workflows with AI coding assistants (Claude Code and OpenCode). See [_specs/](./_specs/) for feature specifications and implementation plans.
+> This project also serves as a testbed for spec-driven development workflows with AI coding assistants (Claude Code and OpenCode). See [\_specs/](./_specs/) for feature specifications and implementation plans.
 
 ## Quick Start
 
@@ -100,25 +100,26 @@ All database operations go through **Next.js Server Actions** in `app/actions/`:
 
 **Benefits of Server Actions:**
 
-| Benefit | Description |
-|---------|-------------|
-| **No API boilerplate** | No need for separate API routes — actions are called directly from components |
+| Benefit                       | Description                                                                       |
+| ----------------------------- | --------------------------------------------------------------------------------- |
+| **No API boilerplate**        | No need for separate API routes — actions are called directly from components     |
 | **Automatic request context** | Server actions have access to cookies, headers, and session without passing props |
-| **Type safety end-to-end** | Input/output types are inferred; no manual serialization |
-| **Progressive enhancement** | Forms work without JavaScript; actions degrade gracefully |
-| **Security by default** | Actions run on server; sensitive logic never exposed to client |
-| **Simplified data flow** | No need for `useEffect` + `useState` for data fetching — call action directly |
+| **Type safety end-to-end**    | Input/output types are inferred; no manual serialization                          |
+| **Progressive enhancement**   | Forms work without JavaScript; actions degrade gracefully                         |
+| **Security by default**       | Actions run on server; sensitive logic never exposed to client                    |
+| **Simplified data flow**      | No need for `useEffect` + `useState` for data fetching — call action directly     |
 
 **Pattern:**
+
 ```typescript
 // Client component
-'use client'
-import { createTransactionAction } from '@/app/actions/transactions'
+'use client';
+import { createTransactionAction } from '@/app/actions/transactions';
 
 async function handleSubmit(formData: FormData) {
-  const result = await createTransactionAction({ amount: 100, type: 'expense' })
+  const result = await createTransactionAction({ amount: 100, type: 'expense' });
   if (!result.isSuccess) {
-    showError('Error', result.error)
+    showError('Error', result.error);
   }
 }
 ```

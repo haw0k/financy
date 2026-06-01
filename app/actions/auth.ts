@@ -11,10 +11,7 @@ import type { TAuthResult, TActionResult } from '@/types';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { AUTH_MSGS } from '@/messages';
 
-export async function loginAction({
-  email,
-  password,
-}: TLoginInput): Promise<TAuthResult> {
+export async function loginAction({ email, password }: TLoginInput): Promise<TAuthResult> {
   const parsed = loginSchema.safeParse({ email, password });
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -30,11 +27,7 @@ export async function loginAction({
   redirect(routes.dashboard);
 }
 
-export async function signUpAction({
-  email,
-  password,
-  role,
-}: TSignUpInput): Promise<TAuthResult> {
+export async function signUpAction({ email, password, role }: TSignUpInput): Promise<TAuthResult> {
   const parsed = signUpSchema.safeParse({ email, password, role });
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -54,10 +47,7 @@ export async function signUpAction({
   redirect(routes.signUpSuccess);
 }
 
-export async function adminLoginAction({
-  email,
-  password,
-}: TLoginInput): Promise<TAuthResult> {
+export async function adminLoginAction({ email, password }: TLoginInput): Promise<TAuthResult> {
   const parsed = loginSchema.safeParse({ email, password });
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -73,10 +63,7 @@ export async function adminLoginAction({
   redirect(routes.admin);
 }
 
-export async function adminSignUpAction({
-  email,
-  password,
-}: TLoginInput): Promise<TAuthResult> {
+export async function adminSignUpAction({ email, password }: TLoginInput): Promise<TAuthResult> {
   const parsed = loginSchema.safeParse({ email, password });
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -133,7 +120,9 @@ export async function signOutAction(): Promise<TAuthResult> {
  *
  * @returns `isSuccess: true` with the user's role/status, or `isSuccess: false` if not authenticated.
  */
-export async function getRoleAction(): Promise<TActionResult<{ role: ERole | null; status: EProfileStatus | null }>> {
+export async function getRoleAction(): Promise<
+  TActionResult<{ role: ERole | null; status: EProfileStatus | null }>
+> {
   const supabase = await createClient();
   const {
     data: { user },
