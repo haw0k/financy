@@ -15,6 +15,7 @@ import {
 import { showError, PasswordField } from '@/components/ui';
 import { siteConfig } from '@/config';
 import { adminLoginAction, adminSignUpAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
 import { withTimeout } from '@/lib/with-timeout';
 
 export function AdminAuthPage() {
@@ -35,11 +36,15 @@ export function AdminAuthPage() {
     e.preventDefault();
 
     startTransition(async () => {
-      const result = await withTimeout(adminSignUpAction({ email, password }));
-      if (result.isSuccess) {
-        setSignUpSuccess(true);
-      } else if (result.error) {
-        showError('Admin', result.error);
+      try {
+        const result = await withTimeout(adminSignUpAction({ email, password }));
+        if (result.isSuccess) {
+          setSignUpSuccess(true);
+        } else if (result.error) {
+          showError('Admin', result.error);
+        }
+      } catch {
+        showError('Admin', AUTH_MSGS.TIMEOUT);
       }
     });
   };
@@ -48,9 +53,13 @@ export function AdminAuthPage() {
     e.preventDefault();
 
     startTransition(async () => {
-      const result = await withTimeout(adminLoginAction({ email, password }));
-      if (!result.isSuccess && result.error) {
-        showError('Admin', result.error);
+      try {
+        const result = await withTimeout(adminLoginAction({ email, password }));
+        if (!result.isSuccess && result.error) {
+          showError('Admin', result.error);
+        }
+      } catch {
+        showError('Admin', AUTH_MSGS.TIMEOUT);
       }
     });
   };

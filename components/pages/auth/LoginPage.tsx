@@ -7,6 +7,7 @@ import { Button, Input, Label } from '@/lib/shadcn';
 import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
 import { loginAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
 import { withTimeout } from '@/lib/with-timeout';
 
 export function LoginPage() {
@@ -18,9 +19,13 @@ export function LoginPage() {
     e.preventDefault();
 
     startTransition(async () => {
-      const result = await withTimeout(loginAction({ email, password }));
-      if (!result.isSuccess && result.error) {
-        showError('Login', result.error);
+      try {
+        const result = await withTimeout(loginAction({ email, password }));
+        if (!result.isSuccess && result.error) {
+          showError('Login', result.error);
+        }
+      } catch {
+        showError('Login', AUTH_MSGS.TIMEOUT);
       }
     });
   };

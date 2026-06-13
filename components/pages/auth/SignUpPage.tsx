@@ -22,6 +22,7 @@ import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
 import { signUpAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
 import { withTimeout } from '@/lib/with-timeout';
 
 export function SignUpPage() {
@@ -40,9 +41,13 @@ export function SignUpPage() {
     }
 
     startTransition(async () => {
-      const result = await withTimeout(signUpAction({ email, password, role }));
-      if (!result.isSuccess && result.error) {
-        showError('Sign up', result.error);
+      try {
+        const result = await withTimeout(signUpAction({ email, password, role }));
+        if (!result.isSuccess && result.error) {
+          showError('Sign up', result.error);
+        }
+      } catch {
+        showError('Sign up', AUTH_MSGS.TIMEOUT);
       }
     });
   };

@@ -7,4 +7,5 @@ export const AUTH_MSGS = {
   AUTH_FAILED: 'Authentication failed. Please try again.',
   NOT_AUTHENTICATED: 'Not authenticated',
   ADMIN_ACCOUNT_EXISTS: 'An admin account already exists',
+  TIMEOUT: 'Request timed out. Please try again.',
 } as const;
