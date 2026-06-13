@@ -122,12 +122,14 @@ export const CategoriesTable: FC = () => {
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const input = {
+    const input: { name: string; type: 'income' | 'expense'; color: string; type_id?: string } = {
       name: formData.name,
       type: formData.type,
       color: formData.color,
-      type_id: formData.type_id || undefined,
     };
+    if (formData.type_id) {
+      input.type_id = formData.type_id;
+    }
 
     startTransition(async () => {
       const result = editingId

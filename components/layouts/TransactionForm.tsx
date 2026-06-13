@@ -66,13 +66,21 @@ export const TransactionForm: FC<ITransactionForm> = ({
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const input = {
+    const input: {
+      amount: number;
+      type: 'income' | 'expense';
+      description: string | null;
+      date: string;
+      receiverId?: string;
+    } = {
       amount: parseFloat(formData.amount),
       type: formData.type,
       description: formData.description || null,
       date: formData.date,
-      receiverId: formData.receiverId || undefined,
     };
+    if (formData.receiverId) {
+      input.receiverId = formData.receiverId;
+    }
 
     startTransition(async () => {
       const result = editingId
