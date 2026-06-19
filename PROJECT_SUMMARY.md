@@ -143,7 +143,7 @@ financy/
 
 ### Role System
 
-- **Admin**: Exists **solely** to approve or reject pending user registrations. Auto-approved on first signup. **Only one admin is allowed** — enforced server-side by `adminSignUpAction`.
+- **Admin**: Exists **solely** to approve or reject pending user registrations. Signup sets the profile status to **pending**; the `handle_email_confirmation` trigger auto-approves the admin once their email is confirmed. **Only one admin is allowed** — enforced server-side by `adminSignUpAction` and a unique partial index at the database level.
 - **Sender**: Can create transactions and track expenses. Can fully manage (CRUD) categories, category types, and transactions. No data ownership restrictions.
 - **Receiver**: Can receive transactions and track income. Can fully manage (CRUD) categories, category types, and transactions. No data ownership restrictions.
 - Role selection during signup
