@@ -167,23 +167,11 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
 /**
  * Signs out the current user and redirects to the login page.
  *
- * Mixed control flow:
- * - On error: returns `{ isSuccess: false, error }` so callers can show a toast
- * - On success: calls `redirect(routes.login)` which throws `NEXT_REDIRECT` —
- *   the function never returns a value, and callers only reach the error branch
- *
- * Cookie clearing is reliable in Server Actions: Next.js sets `phase = 'action'`
- * before invoking the action, so `cookies().set()` is mutable and `setAll` cannot
- * fail with a read-only error. The `try/catch` in `createClient`'s `setAll` exists
- * only as a guard against accidental use in Server Components.
+ * `signOut()` is best-effort — even if it fails, the user is redirected to login.
+ * `redirect()` throws `NEXT_REDIRECT`, so this function never returns.
  */
-export async function signOutAction(): Promise<TAuthResult> {
+export async function signOutAction(): Promise<never> {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    return { isSuccess: false, error: normalizeAuthError(error) };
-  }
-
+  await supabase.auth.signOut(); // best-effort: ignore errors
   redirect(routes.login);
 }
