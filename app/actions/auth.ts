@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { routes, getSupabaseRedirectUrl } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
 import { loginSchema, signUpSchema } from '@/schemas';
@@ -107,12 +108,16 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  // Validate env var before creating the Supabase client — avoids wasted
-  // cookie-store read and client construction when the URL is missing.
-  const redirectUrl = getSupabaseRedirectUrl();
-  if (!redirectUrl) {
-    return { isSuccess: false, error: AUTH_MSGS.REDIRECT_URL_NOT_CONFIGURED };
-  }
+  // Resolve redirect URL: prefer the configured env var, fall back to the
+  // request origin (replicates the old client-side `window.location.origin` behavior).
+  const redirectUrl =
+    getSupabaseRedirectUrl() ??
+    (await (async () => {
+      const heads = await headers();
+      const host = heads.get('x-forwarded-host') || heads.get('host') || 'localhost:3000';
+      const proto = heads.get('x-forwarded-proto') || 'http';
+      return `${proto}://${host}${routes.authCallback}`;
+    })());
 
   const supabase = await createClient();
 
@@ -146,18 +151,13 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
   });
 
   if (error) {
-    // Best-effort mapping of unique index violation to a friendly message.
-    // Supabase Auth wraps trigger failures as 'Database error saving new user'
-    // and may not expose the Postgres constraint name, so this check can miss
-    // the TOCTOU race survivor. When it misses, normalizeAuthError returns a
-    // generic message — acceptable because the race requires two simultaneous
-    // first-admin signups, which is rare in practice.
-    if (
-      error.message?.includes('duplicate') ||
-      error.message?.includes('idx_profiles_single_approved_admin')
-    ) {
-      return { isSuccess: false, error: AUTH_MSGS.ADMIN_ACCOUNT_EXISTS };
-    }
+    // Supabase Auth masks DB trigger errors as:
+    //   { code: "unexpected_failure", status: 500, message: "Database error saving new user" }
+    // The Postgres error code (23505) and constraint name are NOT exposed.
+    // The pre-check above already handles the common non-concurrent case with
+    // a friendly ADMIN_ACCOUNT_EXISTS message. For the rare TOCTOU race survivor,
+    // a generic error is acceptable — the race requires two simultaneous first-admin
+    // signups, and the DB unique partial index is the real enforcer.
     return { isSuccess: false, error: normalizeAuthError(error) };
   }
 
@@ -172,6 +172,10 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
  */
 export async function signOutAction(): Promise<never> {
   const supabase = await createClient();
-  await supabase.auth.signOut(); // best-effort: ignore errors
+  try {
+    await supabase.auth.signOut();
+  } catch {
+    // Best-effort: ignore thrown errors, always redirect
+  }
   redirect(routes.login);
 }
