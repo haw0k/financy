@@ -28,11 +28,7 @@ interface ITransactionForm {
   editingId: string | null;
 }
 
-export const TransactionForm: FC<ITransactionForm> = ({
-  onSuccess,
-  onCancel,
-  editingId,
-}) => {
+export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, editingId }) => {
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense' as 'income' | 'expense',

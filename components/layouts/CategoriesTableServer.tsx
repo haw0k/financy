@@ -11,9 +11,6 @@ export async function CategoriesTableServer() {
   const { categories, categoryTypes } = result.data;
 
   return (
-    <CategoriesTableClient
-      initialCategories={categories}
-      initialCategoryTypes={categoryTypes}
-    />
+    <CategoriesTableClient initialCategories={categories} initialCategoryTypes={categoryTypes} />
   );
 }

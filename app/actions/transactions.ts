@@ -85,9 +85,7 @@ export async function getReceiversAction(): Promise<
  * Ownership checks are intentionally absent — RLS is disabled and all authenticated
  * users share the same data pool. See CLAUDE.md for the permissions model.
  */
-export async function createTransactionAction(
-  input: TTransactionInput
-): Promise<TAuthResult> {
+export async function createTransactionAction(input: TTransactionInput): Promise<TAuthResult> {
   const parsed = transactionSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };

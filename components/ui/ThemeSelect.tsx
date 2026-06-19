@@ -29,7 +29,7 @@ export const ThemeSelect: FC = () => {
   return (
     <div className="grid gap-2">
       <label className="text-sm font-medium text-muted-foreground">Theme</label>
-      <Select value={theme || "system"} onValueChange={setTheme}>
+      <Select value={theme || 'system'} onValueChange={setTheme}>
         <SelectTrigger className="w-full sm:max-w-xs">
           <SelectValue placeholder="Select theme" />
         </SelectTrigger>

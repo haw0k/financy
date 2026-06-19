@@ -31,7 +31,7 @@ function normalizeAuthError(error: { message?: string }): string {
  */
 async function signInAndRedirect(
   credentials: TLoginInput,
-  redirectTo: string,
+  redirectTo: string
 ): Promise<TAuthResult> {
   const parsed = loginSchema.safeParse(credentials);
   if (!parsed.success) {
@@ -187,4 +187,3 @@ export async function signOutAction(): Promise<TAuthResult> {
 
   redirect(routes.login);
 }
-

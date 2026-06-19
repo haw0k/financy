@@ -7,9 +7,7 @@ import { categorySchema, categoryTypeSchema } from '@/schemas';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
 import type { TAuthResult, TActionResult } from '@/types';
 
-export async function createCategoryAction(
-  input: TCategoryInput
-): Promise<TAuthResult> {
+export async function createCategoryAction(input: TCategoryInput): Promise<TAuthResult> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -85,9 +83,7 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAut
   return { isSuccess: true };
 }
 
-export async function createCategoryTypeAction(
-  input: TCategoryTypeInput
-): Promise<TAuthResult> {
+export async function createCategoryTypeAction(input: TCategoryTypeInput): Promise<TAuthResult> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
