@@ -46,7 +46,7 @@ export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, edi
       const result = await getReceiversAction();
       if (isCancelled) return;
       if (result.isSuccess) {
-        setUsers(result.data as Array<{ id: string; email: string }>);
+        setUsers(result.data);
       } else if (result.error) {
         showError('Transaction', result.error);
       }

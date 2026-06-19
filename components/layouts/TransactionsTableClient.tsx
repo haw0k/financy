@@ -1,6 +1,7 @@
 'use client';
 
 import { type FC, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { showError } from '@/components/ui';
 import { deleteTransactionAction } from '@/app/actions/transactions';
 import {
@@ -41,6 +42,7 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const router = useRouter();
 
   const getCategoryDisplayName = (categoryId: string | null) => {
     if (!categoryId) return '-';
@@ -97,8 +99,8 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
               onSuccess={async () => {
                 setIsShowForm(false);
                 setEditingId(null);
-                // Reload data after form success - parent component handles this
-                window.location.reload();
+                // Re-render server components to fetch fresh data
+                router.refresh();
               }}
               onCancel={() => {
                 setIsShowForm(false);

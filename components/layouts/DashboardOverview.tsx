@@ -42,8 +42,12 @@ export const DashboardOverview: FC = () => {
         return;
       }
 
-      setTransactions(result.data.transactions as ITransaction[]);
-      setStats(result.data.stats as IStats);
+      setTransactions(result.data.transactions);
+      setStats(result.data.stats);
+
+      if (result.data.statsError) {
+        showError('Dashboard', result.data.statsError);
+      }
 
       // Prepare category data for pie chart
       const categoryMap = new Map<string, number>();

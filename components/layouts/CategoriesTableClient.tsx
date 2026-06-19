@@ -1,6 +1,7 @@
 'use client';
 
 import { type FC, useState, useTransition, type SubmitEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { showError } from '@/components/ui';
 import {
   createCategoryAction,
@@ -66,6 +67,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
   const [isCtShowForm, setCtIsShowForm] = useState(false);
   const [ctDeleteId, setCtDeleteId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleCtSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,7 +81,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
         setCtFormData({ name: '' });
         setCtEditingId(null);
         setCtIsShowForm(false);
-        window.location.reload();
+        router.refresh();
       } else if (result.error) {
         showError('Categories', result.error);
       }
@@ -125,7 +127,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
         setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
         setEditingId(null);
         setIsShowForm(false);
-        window.location.reload();
+        router.refresh();
       } else if (result.error) {
         showError('Categories', result.error);
       }
