@@ -51,7 +51,7 @@ export async function updateCategoryAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase
+  const { data: updated, error } = await authResult.supabase
     .from('categories')
     .update({
       name: parsed.data.name,
@@ -59,10 +59,14 @@ export async function updateCategoryAction({
       color: parsed.data.color,
       type_id: parsed.data.type_id ?? null,
     })
-    .eq('id', id);
+    .eq('id', id)
+    .select('id');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+  if (!updated?.length) {
+    return { isSuccess: false, error: 'Category not found' };
   }
 
   return { isSuccess: true };
@@ -74,10 +78,17 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAut
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase.from('categories').delete().eq('id', id);
+  const { data: deleted, error } = await authResult.supabase
+    .from('categories')
+    .delete()
+    .eq('id', id)
+    .select('id');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+  if (!deleted?.length) {
+    return { isSuccess: false, error: 'Category not found' };
   }
 
   return { isSuccess: true };
@@ -122,13 +133,17 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase
+  const { data: updated, error } = await authResult.supabase
     .from('category_types')
     .update({ name: parsed.data.name })
-    .eq('id', id);
+    .eq('id', id)
+    .select('id');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+  if (!updated?.length) {
+    return { isSuccess: false, error: 'Category type not found' };
   }
 
   return { isSuccess: true };
@@ -140,10 +155,17 @@ export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase.from('category_types').delete().eq('id', id);
+  const { data: deleted, error } = await authResult.supabase
+    .from('category_types')
+    .delete()
+    .eq('id', id)
+    .select('id');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+  if (!deleted?.length) {
+    return { isSuccess: false, error: 'Category type not found' };
   }
 
   return { isSuccess: true };

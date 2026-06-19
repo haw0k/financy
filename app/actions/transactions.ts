@@ -96,6 +96,25 @@ export async function createTransactionAction(input: TTransactionInput): Promise
     return { isSuccess: false, error: authResult.error };
   }
 
+  // Validate receiverId against approved, non-admin receivers
+  const receiverId = parsed.data.receiverId || authResult.userId;
+  if (parsed.data.receiverId) {
+    const { data: receiver, error: receiverError } = await authResult.supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', parsed.data.receiverId)
+      .neq('role', ERole.Admin)
+      .eq('status', EProfileStatus.Approved)
+      .maybeSingle();
+
+    if (receiverError) {
+      return { isSuccess: false, error: mapSupabaseError(receiverError) };
+    }
+    if (!receiver) {
+      return { isSuccess: false, error: 'Invalid receiver selected' };
+    }
+  }
+
   const { error } = await authResult.supabase.from('transactions').insert([
     {
       sender_id: authResult.userId,
@@ -104,7 +123,7 @@ export async function createTransactionAction(input: TTransactionInput): Promise
       date: parsed.data.date,
       description: parsed.data.description,
       category_id: parsed.data.categoryId ?? null,
-      receiver_id: parsed.data.receiverId || authResult.userId,
+      receiver_id: receiverId,
     },
   ]);
 
@@ -138,7 +157,26 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase
+  // Validate receiverId against approved, non-admin receivers
+  const receiverId = parsed.data.receiverId || authResult.userId;
+  if (parsed.data.receiverId) {
+    const { data: receiver, error: receiverError } = await authResult.supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', parsed.data.receiverId)
+      .neq('role', ERole.Admin)
+      .eq('status', EProfileStatus.Approved)
+      .maybeSingle();
+
+    if (receiverError) {
+      return { isSuccess: false, error: mapSupabaseError(receiverError) };
+    }
+    if (!receiver) {
+      return { isSuccess: false, error: 'Invalid receiver selected' };
+    }
+  }
+
+  const { data: updated, error } = await authResult.supabase
     .from('transactions')
     .update({
       amount: parsed.data.amount,
@@ -146,12 +184,16 @@ export async function updateTransactionAction({
       date: parsed.data.date,
       description: parsed.data.description,
       category_id: parsed.data.categoryId ?? null,
-      receiver_id: parsed.data.receiverId || authResult.userId,
+      receiver_id: receiverId,
     })
-    .eq('id', id);
+    .eq('id', id)
+    .select('id');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+  if (!updated?.length) {
+    return { isSuccess: false, error: 'Transaction not found' };
   }
 
   return { isSuccess: true };
@@ -169,10 +211,17 @@ export async function deleteTransactionAction({ id }: { id: string }): Promise<T
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase.from('transactions').delete().eq('id', id);
+  const { data: deleted, error } = await authResult.supabase
+    .from('transactions')
+    .delete()
+    .eq('id', id)
+    .select('id');
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
+  }
+  if (!deleted?.length) {
+    return { isSuccess: false, error: 'Transaction not found' };
   }
 
   return { isSuccess: true };

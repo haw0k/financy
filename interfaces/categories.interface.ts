@@ -6,13 +6,6 @@ export interface ICategory {
   type_id?: string;
 }
 
-export interface ICategoryInput {
-  name: string;
-  type: 'income' | 'expense';
-  color: string;
-  type_id?: string;
-}
-
 export interface ICategoryData {
   name: string;
   value: number;

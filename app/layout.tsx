@@ -31,10 +31,23 @@ async function getProfile() {
 
     // Get role/status from JWT app_metadata (populated by database trigger on signup)
     const appMetadata = user.app_metadata as { role?: string; status?: string } | undefined;
-    return {
-      role: (appMetadata?.role as ERole) ?? null,
-      status: (appMetadata?.status as EProfileStatus) ?? null,
-    };
+    const rawRole = appMetadata?.role;
+    const rawStatus = appMetadata?.status;
+
+    const role = Object.values(ERole).includes(rawRole as ERole) ? (rawRole as ERole) : null;
+    const status =
+      Object.values(EProfileStatus).includes(rawStatus as EProfileStatus)
+        ? (rawStatus as EProfileStatus)
+        : null;
+
+    if (rawRole && !role) {
+      console.warn(`[getProfile] Unexpected role value in JWT: "${rawRole}"`);
+    }
+    if (rawStatus && !status) {
+      console.warn(`[getProfile] Unexpected status value in JWT: "${rawStatus}"`);
+    }
+
+    return { role, status };
   } catch {
     return { role: null, status: null };
   }

@@ -8,12 +8,3 @@ export interface ITransaction {
   sender_id: string;
   receiver_id: string;
 }
-
-export interface ITransactionInput {
-  amount: number;
-  type: 'income' | 'expense';
-  date: string;
-  description: string | null;
-  categoryId?: string | null;
-  receiverId?: string;
-}

@@ -21,6 +21,7 @@ import {
 import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { signUpAction } from '@/app/actions/auth';
 import { AUTH_MSGS } from '@/messages';
 import { withTimeout } from '@/lib/with-timeout';
@@ -46,7 +47,8 @@ export function SignUpPage() {
         if (!result.isSuccess && result.error) {
           showError('Sign up', result.error);
         }
-      } catch {
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
         showError('Sign up', AUTH_MSGS.TIMEOUT);
       }
     });

@@ -96,8 +96,39 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
         <CardContent className="flex flex-col gap-6">
           {isShowForm && (
             <TransactionForm
-              onSuccess={async () => {
+              onSuccess={async (input) => {
                 setIsShowForm(false);
+                if (editingId) {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === editingId
+                        ? {
+                            ...t,
+                            amount: input.amount,
+                            type: input.type,
+                            date: input.date,
+                            description: input.description,
+                            receiver_id: input.receiverId || t.receiver_id,
+                          }
+                        : t,
+                    ),
+                  );
+                } else {
+                  // Optimistic add with temp ID; router.refresh() will correct it
+                  setTransactions([
+                    {
+                      id: `temp-${Date.now()}`,
+                      amount: input.amount,
+                      type: input.type,
+                      date: input.date,
+                      description: input.description,
+                      category_id: null,
+                      sender_id: '',
+                      receiver_id: input.receiverId || '',
+                    },
+                    ...transactions,
+                  ]);
+                }
                 setEditingId(null);
                 // Re-render server components to fetch fresh data
                 router.refresh();
@@ -107,6 +138,10 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                 setEditingId(null);
               }}
               editingId={editingId}
+              editingTransaction={
+                editingId ? transactions.find((t) => t.id === editingId) ?? null : null
+              }
+              categories={categories}
             />
           )}
 
@@ -203,6 +238,7 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                             size="sm"
                             onClick={() => {
                               setEditingId(transaction.id);
+                              setIsShowForm(true);
                             }}
                           >
                             <Edit2 className="h-4 w-4" />

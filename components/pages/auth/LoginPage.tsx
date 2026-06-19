@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button, Input, Label } from '@/lib/shadcn';
 import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { loginAction } from '@/app/actions/auth';
 import { AUTH_MSGS } from '@/messages';
 import { withTimeout } from '@/lib/with-timeout';
@@ -24,7 +25,8 @@ export function LoginPage() {
         if (!result.isSuccess && result.error) {
           showError('Login', result.error);
         }
-      } catch {
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
         showError('Login', AUTH_MSGS.TIMEOUT);
       }
     });

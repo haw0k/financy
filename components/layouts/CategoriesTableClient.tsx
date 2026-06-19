@@ -73,11 +73,25 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
     e.preventDefault();
 
     startTransition(async () => {
-      const result = ctEditingId
+      const isEdit = !!ctEditingId;
+      const result = isEdit
         ? await updateCategoryTypeAction({ id: ctEditingId, input: { name: ctFormData.name } })
         : await createCategoryTypeAction({ name: ctFormData.name });
 
       if (result.isSuccess) {
+        if (isEdit) {
+          setCategoryTypes(
+            categoryTypes.map((ct) =>
+              ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct,
+            ),
+          );
+        } else {
+          // Optimistic add with temp ID; router.refresh() will correct it
+          setCategoryTypes([
+            ...categoryTypes,
+            { id: `temp-${Date.now()}`, name: ctFormData.name },
+          ]);
+        }
         setCtFormData({ name: '' });
         setCtEditingId(null);
         setCtIsShowForm(false);
@@ -119,11 +133,39 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
     }
 
     startTransition(async () => {
-      const result = editingId
+      const isEdit = !!editingId;
+      const result = isEdit
         ? await updateCategoryAction({ id: editingId, input })
         : await createCategoryAction(input);
 
       if (result.isSuccess) {
+        if (isEdit) {
+          setCategories(
+            categories.map((c) =>
+              c.id === editingId
+                ? {
+                    ...c,
+                    name: formData.name,
+                    type: formData.type,
+                    color: formData.color,
+                    type_id: formData.type_id || undefined,
+                  }
+                : c,
+            ),
+          );
+        } else {
+          // Optimistic add with temp ID; router.refresh() will correct it
+          setCategories([
+            ...categories,
+            {
+              id: `temp-${Date.now()}`,
+              name: formData.name,
+              type: formData.type,
+              color: formData.color,
+              type_id: formData.type_id || undefined,
+            },
+          ]);
+        }
         setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
         setEditingId(null);
         setIsShowForm(false);

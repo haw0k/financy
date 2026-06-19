@@ -14,6 +14,7 @@ import {
 } from '@/lib/shadcn';
 import { showError, PasswordField } from '@/components/ui';
 import { siteConfig } from '@/config';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { adminLoginAction, adminSignUpAction } from '@/app/actions/auth';
 import { AUTH_MSGS } from '@/messages';
 import { withTimeout } from '@/lib/with-timeout';
@@ -22,14 +23,27 @@ export function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPending, startTransition] = useTransition();
-  const [isAdminExist, setAdminExists] = useState<boolean | null>(null);
+  const [isAdminExist, setIsAdminExist] = useState<boolean | null>(null);
   const [isSignUpSuccess, setSignUpSuccess] = useState(false);
 
   useEffect(() => {
+    let isCancelled = false;
+
     fetch('/api/auth/check-admin')
-      .then((res) => res.json())
-      .then((data) => setAdminExists(data.exists))
-      .catch(() => setAdminExists(true));
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (!isCancelled) setIsAdminExist(data.exists);
+      })
+      .catch(() => {
+        if (!isCancelled) setIsAdminExist(true);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   const handleSignUp = (e: SubmitEvent<HTMLFormElement>) => {
@@ -43,7 +57,8 @@ export function AdminAuthPage() {
         } else if (result.error) {
           showError('Admin', result.error);
         }
-      } catch {
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
         showError('Admin', AUTH_MSGS.TIMEOUT);
       }
     });
@@ -58,7 +73,8 @@ export function AdminAuthPage() {
         if (!result.isSuccess && result.error) {
           showError('Admin', result.error);
         }
-      } catch {
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
         showError('Admin', AUTH_MSGS.TIMEOUT);
       }
     });

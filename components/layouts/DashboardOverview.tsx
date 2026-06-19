@@ -20,13 +20,13 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
 export const DashboardOverview: FC = () => {
   const [stats, setStats] = useState<IStats | null>(null);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
   useEffect(() => {
     let isCancelled = false;
@@ -74,11 +74,9 @@ export const DashboardOverview: FC = () => {
   const chartData = transactions
     .slice()
     .reverse()
-    .map((trans, idx) => ({
+    .map((trans) => ({
       date: new Date(trans.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       amount: trans.amount,
-      cumulative:
-        (idx + 1) * (trans.type === 'income' ? Number(trans.amount) : -Number(trans.amount)),
     }));
 
   if (isLoading) {

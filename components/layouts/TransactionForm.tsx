@@ -21,20 +21,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/shadcn';
+import type { ITransaction, ICategory } from '@/interfaces';
 
 interface ITransactionForm {
-  onSuccess: () => void;
+  onSuccess: (input: {
+    amount: number;
+    type: 'income' | 'expense';
+    description: string | null;
+    date: string;
+    receiverId?: string;
+    categoryId?: string | null;
+  }) => void;
   onCancel: () => void;
   editingId: string | null;
+  editingTransaction?: ITransaction | null;
+  categories: ICategory[];
 }
 
-export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, editingId }) => {
+export const TransactionForm: FC<ITransactionForm> = ({
+  onSuccess,
+  onCancel,
+  editingId,
+  editingTransaction,
+  categories,
+}) => {
   const [formData, setFormData] = useState({
-    amount: '',
-    type: 'expense' as 'income' | 'expense',
-    description: '',
-    date: new Date().toISOString().split('T')[0],
-    receiverId: '',
+    amount: editingTransaction ? String(editingTransaction.amount) : '',
+    type: editingTransaction?.type ?? ('expense' as 'income' | 'expense'),
+    description: editingTransaction?.description ?? '',
+    date: editingTransaction?.date ?? new Date().toISOString().split('T')[0],
+    receiverId: editingTransaction?.receiver_id ?? '',
+    categoryId: editingTransaction?.category_id ?? '',
   });
   const [users, setUsers] = useState<Array<{ id: string; email: string }>>([]);
   const [isPending, startTransition] = useTransition();
@@ -66,6 +83,7 @@ export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, edi
       description: string | null;
       date: string;
       receiverId?: string;
+      categoryId?: string | null;
     } = {
       amount: parseFloat(formData.amount),
       type: formData.type,
@@ -75,6 +93,9 @@ export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, edi
     if (formData.receiverId) {
       input.receiverId = formData.receiverId;
     }
+    if (formData.categoryId) {
+      input.categoryId = formData.categoryId;
+    }
 
     startTransition(async () => {
       const result = editingId
@@ -82,7 +103,7 @@ export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, edi
         : await createTransactionAction(input);
 
       if (result.isSuccess) {
-        onSuccess();
+        onSuccess(input);
       } else if (result.error) {
         showError('Transaction', result.error);
       }
@@ -157,6 +178,29 @@ export const TransactionForm: FC<ITransactionForm> = ({ onSuccess, onCancel, edi
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
                         {user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {categories.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={formData.categoryId}
+                  onValueChange={(v) => {
+                    setFormData({ ...formData, categoryId: v });
+                  }}
+                >
+                  <SelectTrigger className="w-full" id="category">
+                    <SelectValue placeholder="Select category (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

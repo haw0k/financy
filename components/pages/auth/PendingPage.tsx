@@ -1,8 +1,10 @@
 'use client';
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { Button } from '@/lib/shadcn';
 import { signOutAction } from '@/app/actions/auth';
 import { useRoleContext } from '@/components/providers';
+import { AUTH_MSGS } from '@/messages';
 import { showError } from '@/components/ui';
 import { ERole } from '@/enums';
 
@@ -10,10 +12,11 @@ export function PendingPage() {
   const { role, isLoaded } = useRoleContext();
 
   const handleLogout = async () => {
-    const result = await signOutAction();
-    // signOutAction redirects on success; we only reach here on error
-    if (!result.isSuccess) {
-      showError('Logout', result.error);
+    try {
+      await signOutAction();
+    } catch (error) {
+      if (isRedirectError(error)) throw error;
+      showError('Logout', AUTH_MSGS.TIMEOUT);
     }
   };
 
