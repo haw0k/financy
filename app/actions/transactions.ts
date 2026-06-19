@@ -1,74 +1,32 @@
 'use server';
 
+import { z } from 'zod';
+import { ERole, EProfileStatus } from '@/enums';
+import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
-import { AUTH_MSGS } from '@/messages';
-import type { TAuthResult } from '@/types';
-import type { TActionResult } from '@/types';
-import { z } from 'zod';
+import { TRANSACTION_MSGS } from '@/messages';
+import type { TAuthResult, TActionResult } from '@/types';
 
 const transactionSchema = z.object({
   amount: z.number().positive({ error: 'Amount must be positive' }),
-  type: z.enum(['income', 'expense'], { error: AUTH_MSGS.INVALID_ROLE }),
+  type: z.enum(['income', 'expense'], { error: TRANSACTION_MSGS.INVALID_TYPE }),
   date: z.string().min(1, { error: 'Date is required' }),
   description: z.string().nullable(),
+  categoryId: z.string().nullable().optional(),
   receiverId: z.string().optional(),
 });
 
-export async function getTransactionsAction(): Promise<
-  TActionResult<
-    {
-      id: string;
-      amount: number;
-      type: 'income' | 'expense';
-      date: string;
-      description: string | null;
-      category_id: string | null;
-      sender_id: string;
-      receiver_id: string;
-    }[]
-  >
+export async function getTransactionsDataAction(): Promise<
+  TActionResult<{
+    transactions: ITransaction[];
+    categories: ICategory[];
+    categoryTypes: ICategoryType[];
+  }>
 > {
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
-  }
-
-  const { data, error } = await authResult.supabase
-    .from('transactions')
-    .select('*')
-    .order('date', { ascending: false });
-
-  if (error) {
-    return { isSuccess: false, error: mapSupabaseError(error) };
-  }
-
-  return { isSuccess: true, data: data ?? [] };
-}
-
-export async function getTransactionsDataAction(): Promise<{
-  transactions: {
-    id: string;
-    amount: number;
-    type: 'income' | 'expense';
-    date: string;
-    description: string | null;
-    category_id: string | null;
-    sender_id: string;
-    receiver_id: string;
-  }[];
-  categories: {
-    id: string;
-    name: string;
-    type: 'income' | 'expense';
-    color: string;
-    type_id?: string;
-  }[];
-  categoryTypes: { id: string; name: string }[];
-}> {
-  const authResult = await requireAuth();
-  if ('error' in authResult) {
-    throw new Error(authResult.error);
   }
 
   const [transResult, catResult, catTypeResult] = await Promise.all([
@@ -77,18 +35,36 @@ export async function getTransactionsDataAction(): Promise<{
     authResult.supabase.from('category_types').select('*').order('name'),
   ]);
 
+  if (transResult.error) {
+    return { isSuccess: false, error: mapSupabaseError(transResult.error) };
+  }
+  if (catResult.error) {
+    return { isSuccess: false, error: mapSupabaseError(catResult.error) };
+  }
+  if (catTypeResult.error) {
+    return { isSuccess: false, error: mapSupabaseError(catTypeResult.error) };
+  }
+
   return {
-    transactions: transResult.data ?? [],
-    categories: catResult.data ?? [],
-    categoryTypes: catTypeResult.data ?? [],
+    isSuccess: true,
+    data: {
+      transactions: transResult.data ?? [],
+      categories: catResult.data ?? [],
+      categoryTypes: catTypeResult.data ?? [],
+    },
   };
 }
 
-export async function getReceiversAction({
-  userId,
-}: {
-  userId: string;
-}): Promise<TActionResult<{ id: string; email: string }[]>> {
+/**
+ * Returns profiles eligible to be transaction receivers.
+ *
+ * Uses the authenticated user's ID from {@link requireAuth} (not a caller-supplied
+ * parameter) to prevent email enumeration. Filters out admins and pending users —
+ * only approved senders/receivers appear in the dropdown.
+ */
+export async function getReceiversAction(): Promise<
+  TActionResult<{ id: string; email: string }[]>
+> {
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -97,7 +73,9 @@ export async function getReceiversAction({
   const { data, error } = await authResult.supabase
     .from('profiles')
     .select('id, email')
-    .neq('id', userId);
+    .neq('id', authResult.userId)
+    .neq('role', ERole.Admin)
+    .eq('status', EProfileStatus.Approved);
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
@@ -106,6 +84,16 @@ export async function getReceiversAction({
   return { isSuccess: true, data: data ?? [] };
 }
 
+/**
+ * Creates a transaction.
+ *
+ * When `receiverId` is not provided, defaults to the authenticated user's own ID
+ * (self-transfer). This avoids a NOT NULL constraint violation on `receiver_id`
+ * while keeping the form field optional.
+ *
+ * Ownership checks are intentionally absent — RLS is disabled and all authenticated
+ * users share the same data pool. See CLAUDE.md for the permissions model.
+ */
 export async function createTransactionAction(
   input: z.infer<typeof transactionSchema>
 ): Promise<TAuthResult> {
@@ -126,7 +114,8 @@ export async function createTransactionAction(
       type: parsed.data.type,
       date: parsed.data.date,
       description: parsed.data.description,
-      receiver_id: parsed.data.receiverId ?? null,
+      category_id: parsed.data.categoryId ?? null,
+      receiver_id: parsed.data.receiverId || authResult.userId,
     },
   ]);
 
@@ -137,6 +126,12 @@ export async function createTransactionAction(
   return { isSuccess: true };
 }
 
+/**
+ * Updates a transaction by ID.
+ *
+ * Ownership checks are intentionally absent — any authenticated user can modify
+ * any transaction. See CLAUDE.md for the permissions model.
+ */
 export async function updateTransactionAction({
   id,
   input,
@@ -161,7 +156,8 @@ export async function updateTransactionAction({
       type: parsed.data.type,
       date: parsed.data.date,
       description: parsed.data.description,
-      receiver_id: parsed.data.receiverId ?? null,
+      category_id: parsed.data.categoryId ?? null,
+      receiver_id: parsed.data.receiverId || authResult.userId,
     })
     .eq('id', id);
 
@@ -172,6 +168,12 @@ export async function updateTransactionAction({
   return { isSuccess: true };
 }
 
+/**
+ * Deletes a transaction by ID.
+ *
+ * Ownership checks are intentionally absent — any authenticated user can delete
+ * any transaction. See CLAUDE.md for the permissions model.
+ */
 export async function deleteTransactionAction({ id }: { id: string }): Promise<TAuthResult> {
   const authResult = await requireAuth();
   if ('error' in authResult) {

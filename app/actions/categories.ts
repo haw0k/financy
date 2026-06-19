@@ -1,15 +1,15 @@
 'use server';
 
 import { z } from 'zod';
+import type { ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
-import { AUTH_MSGS } from '@/messages';
-import type { TAuthResult } from '@/types';
-import type { TActionResult } from '@/types';
+import { CATEGORY_MSGS } from '@/messages';
+import type { TAuthResult, TActionResult } from '@/types';
 
 const categorySchema = z.object({
   name: z.string().min(1, { error: 'Name is required' }),
-  type: z.enum(['income', 'expense'], { error: AUTH_MSGS.INVALID_ROLE }),
+  type: z.enum(['income', 'expense'], { error: CATEGORY_MSGS.INVALID_TYPE }),
   color: z.string().min(1, { error: 'Color is required' }),
   type_id: z.string().optional(),
 });
@@ -18,11 +18,7 @@ const categoryTypeSchema = z.object({
   name: z.string().min(1, { error: 'Name is required' }),
 });
 
-export async function getCategoriesAction(): Promise<
-  TActionResult<
-    { id: string; name: string; type: 'income' | 'expense'; color: string; type_id?: string }[]
-  >
-> {
+export async function getCategoriesAction(): Promise<TActionResult<ICategory[]>> {
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -37,9 +33,7 @@ export async function getCategoriesAction(): Promise<
   return { isSuccess: true, data: data ?? [] };
 }
 
-export async function getCategoryTypesAction(): Promise<
-  TActionResult<{ id: string; name: string }[]>
-> {
+export async function getCategoryTypesAction(): Promise<TActionResult<ICategoryType[]>> {
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -203,19 +197,15 @@ export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<
   return { isSuccess: true };
 }
 
-export async function getCategoriesDataAction(): Promise<{
-  categories: {
-    id: string;
-    name: string;
-    type: 'income' | 'expense';
-    color: string;
-    type_id?: string;
-  }[];
-  categoryTypes: { id: string; name: string }[];
-}> {
+export async function getCategoriesDataAction(): Promise<
+  TActionResult<{
+    categories: ICategory[];
+    categoryTypes: ICategoryType[];
+  }>
+> {
   const authResult = await requireAuth();
   if ('error' in authResult) {
-    throw new Error(authResult.error);
+    return { isSuccess: false, error: authResult.error };
   }
 
   const [catResult, ctResult] = await Promise.all([
@@ -223,8 +213,18 @@ export async function getCategoriesDataAction(): Promise<{
     authResult.supabase.from('category_types').select('*').order('name'),
   ]);
 
+  if (catResult.error) {
+    return { isSuccess: false, error: mapSupabaseError(catResult.error) };
+  }
+  if (ctResult.error) {
+    return { isSuccess: false, error: mapSupabaseError(ctResult.error) };
+  }
+
   return {
-    categories: catResult.data ?? [],
-    categoryTypes: ctResult.data ?? [],
+    isSuccess: true,
+    data: {
+      categories: catResult.data ?? [],
+      categoryTypes: ctResult.data ?? [],
+    },
   };
 }

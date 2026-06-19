@@ -1,15 +1,20 @@
 import { getTransactionsDataAction } from '@/app/actions/transactions';
 import { TransactionsTableClient } from './TransactionsTableClient';
 
-export async function TransactionsTableServer({ userId }: { userId: string }) {
-  const data = await getTransactionsDataAction();
+export async function TransactionsTableServer() {
+  const result = await getTransactionsDataAction();
+
+  if (!result.isSuccess) {
+    throw new Error(result.error);
+  }
+
+  const { transactions, categories, categoryTypes } = result.data;
 
   return (
     <TransactionsTableClient
-      userId={userId}
-      initialTransactions={data.transactions}
-      initialCategories={data.categories}
-      initialCategoryTypes={data.categoryTypes}
+      initialTransactions={transactions}
+      initialCategories={categories}
+      initialCategoryTypes={categoryTypes}
     />
   );
 }

@@ -14,5 +14,6 @@ export interface ITransactionInput {
   type: 'income' | 'expense';
   date: string;
   description: string | null;
+  categoryId?: string | null;
   receiverId?: string;
 }

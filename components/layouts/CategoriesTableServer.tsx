@@ -2,12 +2,18 @@ import { getCategoriesDataAction } from '@/app/actions/categories';
 import { CategoriesTableClient } from './CategoriesTableClient';
 
 export async function CategoriesTableServer() {
-  const data = await getCategoriesDataAction();
+  const result = await getCategoriesDataAction();
+
+  if (!result.isSuccess) {
+    throw new Error(result.error);
+  }
+
+  const { categories, categoryTypes } = result.data;
 
   return (
     <CategoriesTableClient
-      initialCategories={data.categories}
-      initialCategoryTypes={data.categoryTypes}
+      initialCategories={categories}
+      initialCategoryTypes={categoryTypes}
     />
   );
 }

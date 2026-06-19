@@ -23,14 +23,12 @@ import {
 } from '@/lib/shadcn';
 
 interface ITransactionForm {
-  userId: string;
   onSuccess: () => void;
   onCancel: () => void;
   editingId: string | null;
 }
 
 export const TransactionForm: FC<ITransactionForm> = ({
-  userId,
   onSuccess,
   onCancel,
   editingId,
@@ -49,7 +47,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
     let isCancelled = false;
 
     (async () => {
-      const result = await getReceiversAction({ userId });
+      const result = await getReceiversAction();
       if (isCancelled) return;
       if (result.isSuccess) {
         setUsers(result.data as Array<{ id: string; email: string }>);
@@ -61,7 +59,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
     return () => {
       isCancelled = true;
     };
-  }, [userId]);
+  }, []);
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();

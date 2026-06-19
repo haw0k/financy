@@ -23,14 +23,12 @@ import { TransactionForm } from '@/components/layouts';
 import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 
 interface ITransactionsTableClient {
-  userId: string;
   initialTransactions: ITransaction[];
   initialCategories: ICategory[];
   initialCategoryTypes: ICategoryType[];
 }
 
 export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
-  userId,
   initialTransactions,
   initialCategories,
   initialCategoryTypes,
@@ -96,7 +94,6 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
         <CardContent className="flex flex-col gap-6">
           {isShowForm && (
             <TransactionForm
-              userId={userId}
               onSuccess={async () => {
                 setIsShowForm(false);
                 setEditingId(null);
