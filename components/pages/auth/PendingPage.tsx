@@ -12,7 +12,9 @@ export function PendingPage() {
   const handleLogout = async () => {
     const result = await signOutAction();
     // signOutAction redirects on success; we only reach here on error
-    showError('Logout', result.error || 'Failed to log out');
+    if (!result.isSuccess) {
+      showError('Logout', result.error);
+    }
   };
 
   if (!isLoaded) {

@@ -1,58 +1,14 @@
 'use server';
 
-import { z } from 'zod';
 import type { ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
-import { CATEGORY_MSGS } from '@/messages';
+import { categorySchema, categoryTypeSchema } from '@/schemas';
+import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
 import type { TAuthResult, TActionResult } from '@/types';
 
-const categorySchema = z.object({
-  name: z.string().min(1, { error: 'Name is required' }),
-  type: z.enum(['income', 'expense'], { error: CATEGORY_MSGS.INVALID_TYPE }),
-  color: z.string().min(1, { error: 'Color is required' }),
-  type_id: z.string().optional(),
-});
-
-const categoryTypeSchema = z.object({
-  name: z.string().min(1, { error: 'Name is required' }),
-});
-
-export async function getCategoriesAction(): Promise<TActionResult<ICategory[]>> {
-  const authResult = await requireAuth();
-  if ('error' in authResult) {
-    return { isSuccess: false, error: authResult.error };
-  }
-
-  const { data, error } = await authResult.supabase.from('categories').select('*').order('name');
-
-  if (error) {
-    return { isSuccess: false, error: mapSupabaseError(error) };
-  }
-
-  return { isSuccess: true, data: data ?? [] };
-}
-
-export async function getCategoryTypesAction(): Promise<TActionResult<ICategoryType[]>> {
-  const authResult = await requireAuth();
-  if ('error' in authResult) {
-    return { isSuccess: false, error: authResult.error };
-  }
-
-  const { data, error } = await authResult.supabase
-    .from('category_types')
-    .select('*')
-    .order('name');
-
-  if (error) {
-    return { isSuccess: false, error: mapSupabaseError(error) };
-  }
-
-  return { isSuccess: true, data: data ?? [] };
-}
-
 export async function createCategoryAction(
-  input: z.infer<typeof categorySchema>
+  input: TCategoryInput
 ): Promise<TAuthResult> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
@@ -85,7 +41,7 @@ export async function updateCategoryAction({
   input,
 }: {
   id: string;
-  input: z.infer<typeof categorySchema>;
+  input: TCategoryInput;
 }): Promise<TAuthResult> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
@@ -130,7 +86,7 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAut
 }
 
 export async function createCategoryTypeAction(
-  input: z.infer<typeof categoryTypeSchema>
+  input: TCategoryTypeInput
 ): Promise<TAuthResult> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
@@ -158,7 +114,7 @@ export async function updateCategoryTypeAction({
   input,
 }: {
   id: string;
-  input: z.infer<typeof categoryTypeSchema>;
+  input: TCategoryTypeInput;
 }): Promise<TAuthResult> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {

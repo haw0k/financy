@@ -16,9 +16,9 @@ export async function requireAuth(): Promise<
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user?.id) {
     return { error: AUTH_MSGS.AUTH_FAILED };
   }
 
-  return { supabase, userId: user.id! };
+  return { supabase, userId: user.id };
 }

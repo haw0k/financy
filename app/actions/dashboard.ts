@@ -1,14 +1,15 @@
 'use server';
 
+import type { ITransaction } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
 import type { TActionResult } from '@/types';
-import type { ITransaction } from '@/interfaces';
 
 export async function getDashboardDataAction(): Promise<
   TActionResult<{
     transactions: ITransaction[];
     stats: { total_balance: number; total_income: number; total_expense: number } | null;
+    statsError?: string;
   }>
 > {
   const authResult = await requireAuth();
@@ -29,21 +30,21 @@ export async function getDashboardDataAction(): Promise<
     return { isSuccess: false, error: mapSupabaseError(transactionsResult.error) };
   }
 
-  if (statsResult.error) {
-    console.warn('[getDashboardDataAction] Stats RPC failed:', statsResult.error.message);
-  }
+  let stats: { total_balance: number; total_income: number; total_expense: number } | null = null;
+  let statsError: string | undefined;
 
-  const stats = statsResult.error
-    ? null
-    : Array.isArray(statsResult.data)
-      ? statsResult.data[0]
-      : statsResult.data;
+  if (statsResult.error) {
+    statsError = mapSupabaseError(statsResult.error);
+  } else {
+    stats = Array.isArray(statsResult.data) ? statsResult.data[0] : statsResult.data;
+  }
 
   return {
     isSuccess: true,
     data: {
       transactions: transactionsResult.data ?? [],
       stats,
+      ...(statsError && { statsError }),
     },
   };
 }

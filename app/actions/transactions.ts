@@ -1,21 +1,12 @@
 'use server';
 
-import { z } from 'zod';
 import { ERole, EProfileStatus } from '@/enums';
 import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
-import { TRANSACTION_MSGS } from '@/messages';
+import { transactionSchema } from '@/schemas';
+import type { TTransactionInput } from '@/schemas';
 import type { TAuthResult, TActionResult } from '@/types';
-
-const transactionSchema = z.object({
-  amount: z.number().positive({ error: 'Amount must be positive' }),
-  type: z.enum(['income', 'expense'], { error: TRANSACTION_MSGS.INVALID_TYPE }),
-  date: z.string().min(1, { error: 'Date is required' }),
-  description: z.string().nullable(),
-  categoryId: z.string().nullable().optional(),
-  receiverId: z.string().optional(),
-});
 
 export async function getTransactionsDataAction(): Promise<
   TActionResult<{
@@ -95,7 +86,7 @@ export async function getReceiversAction(): Promise<
  * users share the same data pool. See CLAUDE.md for the permissions model.
  */
 export async function createTransactionAction(
-  input: z.infer<typeof transactionSchema>
+  input: TTransactionInput
 ): Promise<TAuthResult> {
   const parsed = transactionSchema.safeParse(input);
   if (!parsed.success) {
@@ -137,7 +128,7 @@ export async function updateTransactionAction({
   input,
 }: {
   id: string;
-  input: z.infer<typeof transactionSchema>;
+  input: TTransactionInput;
 }): Promise<TAuthResult> {
   const parsed = transactionSchema.safeParse(input);
   if (!parsed.success) {

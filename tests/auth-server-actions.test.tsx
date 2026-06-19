@@ -73,7 +73,9 @@ describe('loginAction', () => {
     const { loginAction } = await import('@/app/actions/auth');
     const result = await loginAction({ email: 'invalid', password: 'password123' });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.isSuccess) {
+      expect(result.error).toBeDefined();
+    }
     expect(mockSignInWithPassword).not.toHaveBeenCalled();
   });
 
@@ -81,7 +83,9 @@ describe('loginAction', () => {
     const { loginAction } = await import('@/app/actions/auth');
     const result = await loginAction({ email: 'test@test.com', password: '12345' });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.isSuccess) {
+      expect(result.error).toBeDefined();
+    }
     expect(mockSignInWithPassword).not.toHaveBeenCalled();
   });
 
@@ -90,7 +94,9 @@ describe('loginAction', () => {
     const { loginAction } = await import('@/app/actions/auth');
     const result = await loginAction({ email: 'test@test.com', password: 'password123' });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBe('Invalid credentials');
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Invalid credentials');
+    }
   });
 
   it('should return fallback message when error has no message', async () => {
@@ -98,7 +104,9 @@ describe('loginAction', () => {
     const { loginAction } = await import('@/app/actions/auth');
     const result = await loginAction({ email: 'test@test.com', password: 'password123' });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBe('Authentication failed. Please try again.');
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Authentication failed. Please try again.');
+    }
   });
 
   it('should call signInWithPassword and redirect on success', async () => {
@@ -126,7 +134,9 @@ describe('signUpAction', () => {
       role: ERole.Sender,
     });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.isSuccess) {
+      expect(result.error).toBeDefined();
+    }
     expect(mockSignUp).not.toHaveBeenCalled();
   });
 
@@ -138,7 +148,9 @@ describe('signUpAction', () => {
       role: ERole.Admin,
     });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBeDefined();
+    if (!result.isSuccess) {
+      expect(result.error).toBeDefined();
+    }
     expect(mockSignUp).not.toHaveBeenCalled();
   });
 
@@ -151,7 +163,9 @@ describe('signUpAction', () => {
       role: ERole.Sender,
     });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBe('Email already registered');
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Email already registered');
+    }
   });
 
   it('should call signUp with role data and redirect on success', async () => {
@@ -177,7 +191,9 @@ describe('adminLoginAction', () => {
     const { adminLoginAction } = await import('@/app/actions/auth');
     const result = await adminLoginAction({ email: 'admin@test.com', password: 'wrongpass' });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBe('Invalid credentials');
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Invalid credentials');
+    }
   });
 
   it('should call signInWithPassword and redirect to admin on success', async () => {
@@ -241,7 +257,9 @@ describe('adminSignUpAction', () => {
       password: 'adminpass123',
     });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBe('An admin account already exists');
+    if (!result.isSuccess) {
+      expect(result.error).toBe('An admin account already exists');
+    }
   });
 
   it('should return error on signUp failure', async () => {
@@ -253,7 +271,9 @@ describe('adminSignUpAction', () => {
       password: 'adminpass123',
     });
     expect(result.isSuccess).toBe(false);
-    expect(result.error).toBe('Signup failed');
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Signup failed');
+    }
   });
 });
 

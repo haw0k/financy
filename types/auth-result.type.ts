@@ -1,1 +1,1 @@
-export type TAuthResult = { isSuccess: boolean; error?: string };
+export type TAuthResult = { isSuccess: true } | { isSuccess: false; error: string };
