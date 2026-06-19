@@ -98,9 +98,9 @@ Middleware checks:
 
 ### Role System & Permissions
 
-Users have `sender`, `receiver`, or `admin` role (set at signup). Each profile has a `status` field (`pending` | `approved`). First admin is auto-approved by a database trigger; regular users require admin approval before accessing the dashboard.
+Users have `sender`, `receiver`, or `admin` role (set at signup). Each profile has a `status` field (`pending` | `approved`). Admin is auto-approved by a database trigger upon email confirmation; regular users require admin approval before accessing the dashboard.
 
-**Single Admin Policy**: Only **one admin** is allowed in the system. The `adminSignUpAction` server action validates that no approved admin exists before allowing signup. This is enforced server-side.
+**Single Admin Policy**: Only **one approved admin** is allowed in the system. The `adminSignUpAction` server action validates that no approved admin exists before allowing signup. A pending admin (who hasn't confirmed email) does not block re-registration. The unique partial index `idx_profiles_single_approved_admin` enforces this at the database level.
 
 **RLS is intentionally disabled** for simplicity. This is a pet project with no data ownership checks.
 
@@ -122,15 +122,15 @@ Admin-specific flows:
 
 Supabase project has **"Enable email confirmations" ON** (default). Confirmation emails are sent on every signup.
 
-**JWT App Metadata**: Database triggers (`handle_new_user` and `handle_profile_update`) automatically populate `app_metadata` with `role` and `status` on signup and profile updates. This allows reading role/status directly from the JWT token without an extra database query.
+**JWT App Metadata**: Database triggers (`handle_new_user`, `handle_profile_update`, and `handle_email_confirmation`) automatically populate and update `app_metadata` with `role` and `status` on signup, profile updates, and email confirmation. This allows reading role/status directly from the JWT token without an extra database query.
 
 **Admin registration** (`/auth/admin`):
 
-1. **First admin only**: Signs up → server action checks no approved admin exists → DB trigger auto-sets `status = 'approved'` + updates `app_metadata`
-2. Supabase sends confirmation email → admin clicks link → callback exchanges code → checks profile (admin + approved) → redirects to `/admin`
+1. Admin signs up → server action checks no **approved** admin exists → DB trigger creates profile with `status = 'pending'` + updates `app_metadata`
+2. Supabase sends confirmation email → admin clicks link → callback exchanges code → `handle_email_confirmation` DB trigger sets `status = 'approved'` (unique partial index ensures only one admin can be approved) → callback checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
 
-**Important**: Only **one admin** is allowed. The `adminSignUpAction` server action checks for an existing approved admin before allowing signup. If an approved admin already exists, the signup fails with an error.
+**Important**: Only **one approved admin** is allowed. The `adminSignUpAction` server action checks for an existing **approved** admin before allowing signup. A pending admin (who hasn't confirmed email) does **not** block a new admin from registering — if the confirmation email is lost, another admin can sign up and confirm their email to take the slot.
 
 **Regular user registration** (`/auth/sign-up`):
 

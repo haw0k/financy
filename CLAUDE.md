@@ -104,11 +104,11 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 
 **Admin registration** (`/auth/admin`):
 
-1. **First admin only**: Signs up via `/auth/admin` → server action checks no approved admin exists → DB trigger auto-sets `status = 'approved'` + updates `app_metadata`
-2. Supabase sends confirmation email → admin clicks link → callback exchanges code → checks profile (admin + approved) → redirects to `/admin`
+1. Admin signs up via `/auth/admin` → server action checks no **approved** admin exists → DB trigger creates profile with `status = 'pending'` + updates `app_metadata`
+2. Supabase sends confirmation email → admin clicks link → callback exchanges code → `handle_email_confirmation` DB trigger sets `status = 'approved'` (only if no other admin was approved first — unique partial index enforces single approved admin) → callback checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent admin logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
 
-**Important**: Only **one admin** is allowed in the system. The `adminSignUpAction` server action checks for an existing approved admin before allowing signup. If an approved admin already exists, the signup fails with an error.
+**Important**: Only **one approved admin** is allowed in the system. The `adminSignUpAction` server action checks for an existing **approved** admin before allowing signup. A pending admin (who hasn't confirmed email yet) does **not** block a new admin from registering — if the confirmation email is lost, another admin can sign up and confirm their email to take the slot. The unique partial index `idx_profiles_single_approved_admin` is the final enforcer at the database level.
 
 **Regular user registration** (`/auth/sign-up`):
 

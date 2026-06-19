@@ -28,6 +28,14 @@ vi.mock('@/lib/with-timeout', () => ({
   withTimeout: <T,>(p: Promise<T>) => p,
 }));
 
+vi.mock('@/config', async () => {
+  const actual = await vi.importActual<typeof import('@/config')>('@/config');
+  return {
+    ...actual,
+    getSupabaseRedirectUrl: () => 'http://localhost:3000/auth/callback',
+  };
+});
+
 const mockShowError = vi.fn();
 vi.mock('@/components/ui/ToastNotification', () => ({
   showError: mockShowError,

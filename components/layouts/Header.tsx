@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobileNav } from '@/components/providers';
-import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,6 +15,7 @@ import {
 } from '@/lib/shadcn';
 import { routes, siteConfig } from '@/config';
 import { signOutAction } from '@/app/actions/auth';
+import { showError } from '@/components/ui';
 import { type FC } from 'react';
 
 interface IHeader {
@@ -23,14 +23,12 @@ interface IHeader {
 }
 
 export const Header: FC<IHeader> = ({ user }) => {
-  const router = useRouter();
   const { setIsOpen } = useMobileNav();
 
   const handleLogout = async () => {
     const result = await signOutAction();
-    if (result.isSuccess) {
-      router.push(routes.login);
-    }
+    // signOutAction redirects on success; we only reach here on error
+    showError('Logout', result.error || 'Failed to log out');
   };
 
   return (

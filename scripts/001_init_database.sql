@@ -16,6 +16,11 @@ create table if not exists public.profiles (
 
 alter table public.profiles disable row level security;
 
+-- Enforce single approved admin at the database level (closes TOCTOU race in adminSignUpAction)
+create unique index if not exists idx_profiles_single_approved_admin
+  on public.profiles (role)
+  where role = 'admin' and status = 'approved';
+
 -- Create category_types table (global reference, not user-specific)
 create table if not exists public.category_types (
   id uuid primary key default gen_random_uuid(),
@@ -67,10 +72,7 @@ declare
   user_status text;
 begin
   user_role := coalesce(new.raw_user_meta_data ->> 'role', 'sender');
-  user_status := case
-    when user_role = 'admin' then 'approved'
-    else 'pending'
-  end;
+  user_status := 'pending';
 
   insert into public.profiles (id, email, role, status)
   values (
@@ -134,6 +136,33 @@ create trigger on_profile_updated
   after update of role, status on public.profiles
   for each row
   execute function public.handle_profile_update();
+
+-- Create trigger for auto-approving admin on email confirmation
+-- When an admin confirms their email, the profile status transitions from 'pending' to 'approved'.
+-- The unique partial index idx_profiles_single_approved_admin ensures only one admin can be approved.
+-- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
+create or replace function public.handle_email_confirmation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if old.email_confirmed_at is null and new.email_confirmed_at is not null then
+    update public.profiles
+    set status = 'approved', updated_at = now()
+    where id = new.id and role = 'admin' and status = 'pending';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_email_confirmed on auth.users;
+
+create trigger on_auth_user_email_confirmed
+  after update of email_confirmed_at on auth.users
+  for each row
+  execute function public.handle_email_confirmation();
 
 -- Create function to get user statistics
 create or replace function public.get_user_stats()

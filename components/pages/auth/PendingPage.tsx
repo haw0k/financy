@@ -1,21 +1,18 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { Button } from '@/lib/shadcn';
 import { signOutAction } from '@/app/actions/auth';
 import { useRoleContext } from '@/components/providers';
+import { showError } from '@/components/ui';
 import { ERole } from '@/enums';
-import { routes } from '@/config';
 
 export function PendingPage() {
   const { role, isLoaded } = useRoleContext();
-  const router = useRouter();
 
   const handleLogout = async () => {
     const result = await signOutAction();
-    if (result.isSuccess) {
-      router.push(routes.login);
-    }
+    // signOutAction redirects on success; we only reach here on error
+    showError('Logout', result.error || 'Failed to log out');
   };
 
   if (!isLoaded) {
