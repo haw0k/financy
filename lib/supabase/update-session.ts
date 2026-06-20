@@ -103,7 +103,9 @@ export async function updateSession(request: NextRequest) {
 
     if (role !== ERole.Admin || status !== EProfileStatus.Approved) {
       const url = request.nextUrl.clone();
-      url.pathname = routes.dashboard;
+      // Non-approved admins should land on /auth/pending, not /dashboard,
+      // to avoid an extra redirect through the dashboard middleware.
+      url.pathname = role === ERole.Admin ? routes.pending : routes.dashboard;
       return NextResponse.redirect(url);
     }
   }

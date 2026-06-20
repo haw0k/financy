@@ -8,14 +8,12 @@ import type { TLoginInput, TSignUpInput } from '@/schemas';
 import type { TAuthResult } from '@/types';
 import { AUTH_MSGS } from '@/messages';
 import { createClient } from '@/lib/supabase/server';
-import { mapSupabaseError } from '@/lib/db-errors';
 
 /**
  * Normalizes a Supabase Auth error into a user-facing message.
  *
- * Uses `mapSupabaseError` for database errors but handles Auth errors separately:
- * `mapSupabaseError` falls back to a generic 'An error occurred', while auth actions
- * need the specific AUTH_MSGS.AUTH_FAILED fallback for consistency with the login/signup UI.
+ * Auth actions use their own generic fallback so that error messages stay
+ * consistent across the login/signup UI and do not leak internal details.
  */
 function normalizeAuthError(error: { message?: string }): string {
   return error.message || AUTH_MSGS.AUTH_FAILED;
@@ -176,7 +174,9 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
     .maybeSingle();
 
   if (profileError) {
-    return { isSuccess: false, error: mapSupabaseError(profileError) };
+    // Keep the error generic: do not leak database/infra details to
+    // unauthenticated callers probing the admin registration endpoint.
+    return { isSuccess: false, error: AUTH_MSGS.AUTH_FAILED };
   }
 
   if (existingAdmin) {
