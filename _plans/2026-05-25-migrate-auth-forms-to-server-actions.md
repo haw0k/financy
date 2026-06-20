@@ -141,7 +141,7 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 - `redirect()` throws `NEXT_REDIRECT` internally — server action `try/catch` must not intercept it. The `redirect()` call is placed in the success path, outside any error handling, so this is safe.
 - `adminSignUpAction` cannot use `window.location.origin` fallback for `emailRedirectTo` — resolves `emailRedirectTo` from `getSupabaseRedirectUrl()` first, and falls back to the request origin built from `headers()` when no env var is configured.
 - `useTransition` with async functions is supported in React 19.2.5. `isPending` prevents double submission identically to manual `isLoading`. The timeout wrapper guarantees `isPending` resets even if the server action never resolves — without it, a hung action would leave the form permanently disabled.
-- **TODO**: Auth server actions have no rate limiting (see `docs/TODO.md`) — intentionally out of scope per user instruction.
+- **TODO**: Auth server actions have no rate limiting (see `TODO.md`) — intentionally out of scope per user instruction.
 
 ## Definition of Done
 

@@ -1,3 +1,21 @@
+# TODO
+
+## Auth
+
+- [ ] **Rate limiting for auth server actions**: Server actions (`loginAction`, `signUpAction`, `adminLoginAction`, `adminSignUpAction`) have no rate limiting. Consider adding per-IP attempt tracking or middleware-based rate limiting to prevent brute-force attacks.
+
+## Features
+
+- [ ] **Pagination and filtering**: Add server-side pagination and filtering to the transactions page. Evaluate the same for the categories page.
+- [ ] **Multi-currency support**: Support multiple currencies and fetch exchange rates via bank APIs.
+- [ ] **Simple data caching**: Introduce lightweight caching so that navigating between pages does not refetch data from the database every time.
+
+## Styling
+
+- [ ] **Polish application styling**: Improve button styles, card styles, fonts, and colors.
+
+## Production deployment
+
 After deploying production to Vercel:
 
 - [ ] Change Site URL in Supabase Dashboard → Authentication → URL Configuration (currently set to http://localhost:3000/auth/callback)
