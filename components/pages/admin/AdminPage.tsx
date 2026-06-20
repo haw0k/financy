@@ -47,6 +47,11 @@ export function AdminPage() {
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
+      router.replace(routes.dashboard);
+      return;
+    }
+
     let isCancelled = false;
 
     const loadUsers = async () => {
@@ -70,7 +75,7 @@ export function AdminPage() {
     return () => {
       isCancelled = true;
     };
-  }, [isLoaded, role, status]);
+  }, [isLoaded, role, status, router]);
 
   const handleApprove = (userId: string) => {
     setProcessingIds((prev) => new Set(prev).add(userId));
@@ -125,11 +130,6 @@ export function AdminPage() {
       day: 'numeric',
     });
   };
-
-  if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
-    router.replace(routes.dashboard);
-    return null;
-  }
 
   if (!isLoaded || isLoading) {
     return (

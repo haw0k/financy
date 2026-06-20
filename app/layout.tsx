@@ -29,18 +29,36 @@ async function getProfile() {
       return { role: null, status: null };
     }
 
-    // Get role/status from JWT app_metadata (populated by database trigger on signup)
+    // Prefer role/status from JWT app_metadata (populated by database trigger on signup).
+    // If they are missing or invalid, fall back to the profiles table so the client
+    // UI matches the server-side middleware checks even after email confirmation.
     const appMetadata = user.app_metadata as { role?: string; status?: string } | undefined;
     const rawRole = appMetadata?.role;
     const rawStatus = appMetadata?.status;
 
-    const role = Object.values(ERole).includes(rawRole as ERole) ? (rawRole as ERole) : null;
-    const status = Object.values(EProfileStatus).includes(rawStatus as EProfileStatus)
+    const roleFromJwt = Object.values(ERole).includes(rawRole as ERole) ? (rawRole as ERole) : null;
+    const statusFromJwt = Object.values(EProfileStatus).includes(rawStatus as EProfileStatus)
       ? (rawStatus as EProfileStatus)
       : null;
 
-    // Unexpected JWT app_metadata values are silently ignored here. They will be
-    // corrected by the middleware/profile checks on the next request.
+    if (roleFromJwt && statusFromJwt) {
+      return { role: roleFromJwt, status: statusFromJwt };
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const role =
+      roleFromJwt ??
+      (Object.values(ERole).includes(profile?.role as ERole) ? (profile?.role as ERole) : null);
+    const status =
+      statusFromJwt ??
+      (Object.values(EProfileStatus).includes(profile?.status as EProfileStatus)
+        ? (profile?.status as EProfileStatus)
+        : null);
 
     return { role, status };
   } catch {
