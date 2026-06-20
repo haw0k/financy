@@ -81,10 +81,21 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
     return { isSuccess: false, error: targetResult.error };
   }
 
-  // Approve the profile first so the user is never left in a half-confirmed state
-  // (email confirmed but still pending). The DB trigger handle_profile_update will
-  // sync role/status into JWT app_metadata, and the subsequent email_confirm call
-  // forces Supabase to refresh the user's JWT on their next auth exchange.
+  const adminClient = createAdminClient();
+
+  // Confirm the email first. If this fails, the user remains pending and can be
+  // approved again later; we never leave them "approved but unable to log in".
+  const { error: confirmError } = await adminClient.auth.admin.updateUserById(userId, {
+    email_confirm: true,
+  });
+
+  if (confirmError) {
+    return { isSuccess: false, error: mapSupabaseError(confirmError) };
+  }
+
+  // Now that the email is confirmed, mark the profile as approved.
+  // The DB trigger handle_profile_update will sync the new status into JWT
+  // app_metadata, so the user's next auth exchange sees the approved state.
   const { error: statusError } = await adminResult.supabase
     .from('profiles')
     .update({ status: EProfileStatus.Approved })
@@ -92,16 +103,6 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
 
   if (statusError) {
     return { isSuccess: false, error: ADMIN_MSGS.APPROVE_STATUS_FAILED };
-  }
-
-  const adminClient = createAdminClient();
-
-  const { error: confirmError } = await adminClient.auth.admin.updateUserById(userId, {
-    email_confirm: true,
-  });
-
-  if (confirmError) {
-    return { isSuccess: false, error: mapSupabaseError(confirmError) };
   }
 
   return { isSuccess: true, data: undefined };

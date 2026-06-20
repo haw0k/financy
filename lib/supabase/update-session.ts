@@ -3,6 +3,32 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { routes, env } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
 
+function getRoleFromUser(user: { app_metadata?: Record<string, unknown> } | null): string | null {
+  const role = user?.app_metadata?.role;
+  return typeof role === 'string' ? role : null;
+}
+
+function getStatusFromUser(user: { app_metadata?: Record<string, unknown> } | null): string | null {
+  const status = user?.app_metadata?.status;
+  return typeof status === 'string' ? status : null;
+}
+
+async function getProfileFromDatabase(
+  supabase: Awaited<ReturnType<typeof createServerClient>>,
+  userId: string
+): Promise<{ role: string | null; status: string | null }> {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', userId)
+    .maybeSingle();
+
+  return {
+    role: profile?.role ?? null,
+    status: profile?.status ?? null,
+  };
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -63,13 +89,19 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, status')
-      .eq('id', user.id)
-      .maybeSingle();
+    let role = getRoleFromUser(user);
+    let status = getStatusFromUser(user);
 
-    if (!profile || profile.role !== ERole.Admin || profile.status !== EProfileStatus.Approved) {
+    // Fallback to the database only when the JWT does not contain synced claims.
+    // The handle_profile_update trigger keeps app_metadata in sync, so this path
+    // is rare (e.g. legacy sessions created before the trigger existed).
+    if (role === null || status === null) {
+      const profile = await getProfileFromDatabase(supabase, user.id);
+      role = profile.role ?? role;
+      status = profile.status ?? status;
+    }
+
+    if (role !== ERole.Admin || status !== EProfileStatus.Approved) {
       const url = request.nextUrl.clone();
       url.pathname = routes.dashboard;
       return NextResponse.redirect(url);
@@ -77,23 +109,26 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (isDashboardPath && user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('status, role')
-      .eq('id', user.id)
-      .maybeSingle();
+    let role = getRoleFromUser(user);
+    let status = getStatusFromUser(user);
 
-    if (!profile || profile.status !== EProfileStatus.Approved || profile.role === ERole.Admin) {
+    if (role === null || status === null) {
+      const profile = await getProfileFromDatabase(supabase, user.id);
+      role = profile.role ?? role;
+      status = profile.status ?? status;
+    }
+
+    if (status !== EProfileStatus.Approved || role === ERole.Admin) {
       const url = request.nextUrl.clone();
-      url.pathname = profile?.role === ERole.Admin ? routes.admin : routes.pending;
+      url.pathname = role === ERole.Admin ? routes.admin : routes.pending;
       return NextResponse.redirect(url);
     }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
+  // If you are creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
+  //    myNewResponse = NextResponse.next({ request })
   // 2. Copy over the cookies, like so:
   //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
   // 3. Change the myNewResponse object to fit your needs, but avoid changing

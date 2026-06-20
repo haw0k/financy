@@ -140,13 +140,13 @@ export async function adminLoginAction(credentials: TLoginInput): Promise<TAuthR
  *
  * Flow:
  * 1. Validate input (email + password via loginSchema)
- * 2. Check redirect URL env var — fail early to avoid wasted work
- * 3. Pre-check: query profiles for an existing approved admin (fast-path error)
+ * 2. Pre-check: query profiles for an existing approved admin (fast-path error)
+ * 3. Check redirect URL env var
  * 4. Sign up via Supabase Auth — DB trigger creates profile with status = 'pending'
  * 5. Admin confirms email → `handle_email_confirmation` trigger sets status = 'approved'
  *
  * Single-admin enforcement is two-layered:
- * - App-level pre-check (step 3): catches the common non-concurrent case with a
+ * - App-level pre-check (step 2): catches the common non-concurrent case with a
  *   friendly AUTH_MSGS.ADMIN_ACCOUNT_EXISTS message. Only checks for approved admins,
  *   so a pending admin (who lost their confirmation email) does not block re-registration.
  * - DB-level unique partial index `idx_profiles_single_approved_admin`: blocks
@@ -159,17 +159,11 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  // Resolve redirect URL from the configured env var only. Building it from
-  // request headers would allow host-header injection and open redirects in
-  // the confirmation email link.
-  const redirectUrl = getSupabaseRedirectUrl();
-  if (!redirectUrl) {
-    return { isSuccess: false, error: AUTH_MSGS.REDIRECT_URL_NOT_CONFIGURED };
-  }
-
   const supabase = await createClient();
 
-  // Pre-check: query for an existing approved admin.
+  // Pre-check: query for an existing approved admin. Run this before any
+  // configuration checks so we do not leak environment state to unauthenticated
+  // visitors who are simply probing the admin registration endpoint.
   // The unique partial index idx_profiles_single_approved_admin is the real
   // enforcer against concurrent signups; this check provides a better error
   // message for the common (non-concurrent) case.
@@ -187,6 +181,14 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
 
   if (existingAdmin) {
     return { isSuccess: false, error: AUTH_MSGS.ADMIN_ACCOUNT_EXISTS };
+  }
+
+  // Resolve redirect URL from the configured env var only. Building it from
+  // request headers would allow host-header injection and open redirects in
+  // the confirmation email link.
+  const redirectUrl = getSupabaseRedirectUrl();
+  if (!redirectUrl) {
+    return { isSuccess: false, error: AUTH_MSGS.REDIRECT_URL_NOT_CONFIGURED };
   }
 
   const { error } = await supabase.auth.signUp({
