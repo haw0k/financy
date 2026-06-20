@@ -4,7 +4,8 @@ import { usePathname } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import { DashboardNav, Header, MobileNav } from '@/components/layouts';
 import { DashboardShell } from '@/components/providers';
-import { navItems, adminNavItems } from '@/config';
+import { navItems, routes } from '@/config';
+import { ShieldCheckIcon } from 'lucide-react';
 import type { FC, ReactNode } from 'react';
 
 interface IAppShell {
@@ -14,8 +15,10 @@ interface IAppShell {
 
 export const AppShell: FC<IAppShell> = ({ user, children }) => {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith('/admin');
-  const resolvedItems = isAdmin ? adminNavItems : navItems;
+  const isAdmin = pathname.startsWith(routes.admin);
+  const resolvedItems = isAdmin
+    ? [{ href: routes.admin, label: 'Admin', icon: ShieldCheckIcon }]
+    : navItems;
 
   return (
     <DashboardShell>

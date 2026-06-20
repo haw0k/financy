@@ -40,11 +40,12 @@ export function AdminPage() {
   const router = useRouter();
   const { role, status, isLoaded } = useRoleContext();
   const [users, setUsers] = useState<IPendingUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(
+    !isLoaded || role !== ERole.Admin || status !== EProfileStatus.Approved
+  );
   const [isPending, startTransition] = useTransition();
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     let isCancelled = false;
 
@@ -64,14 +65,11 @@ export function AdminPage() {
 
     if (isLoaded && role === ERole.Admin && status === EProfileStatus.Approved) {
       loadUsers();
-    } else if (isLoaded) {
-      setIsLoading(false);
     }
 
     return () => {
       isCancelled = true;
     };
-    /* eslint-enable react-hooks/set-state-in-effect */
   }, [isLoaded, role, status]);
 
   const handleApprove = (userId: string) => {
@@ -128,17 +126,17 @@ export function AdminPage() {
     });
   };
 
+  if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
+    router.replace(routes.dashboard);
+    return null;
+  }
+
   if (!isLoaded || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <Spinner className="size-8" />
       </div>
     );
-  }
-
-  if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
-    router.replace(routes.dashboard);
-    return null;
   }
 
   return (

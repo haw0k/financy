@@ -23,16 +23,17 @@ const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'
 interface IDashboardOverview {
   transactions: ITransaction[];
   stats: IStats | null;
+  statsError?: string;
 }
 
-export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats }) => {
-  const categoryData = useMemo(() => {
-    const categoryMap = new Map<string, number>();
+export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats, statsError }) => {
+  const incomeExpenseData = useMemo(() => {
+    const typeMap = new Map<string, number>();
     transactions.forEach((trans) => {
       const type = trans.type === 'income' ? 'Income' : 'Expense';
-      categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
+      typeMap.set(type, (typeMap.get(type) || 0) + Number(trans.amount));
     });
-    return Array.from(categoryMap, ([name, value]) => ({
+    return Array.from(typeMap, ([name, value]) => ({
       name,
       value: Number(value.toFixed(2)),
     }));
@@ -94,6 +95,12 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats 
         </Card>
       </div>
 
+      {statsError && (
+        <div className="rounded-md border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200">
+          {statsError}
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -101,11 +108,11 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats 
             <CardDescription>Distribution of your transactions</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
-            {categoryData.length > 0 ? (
+            {incomeExpenseData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={categoryData}
+                    data={incomeExpenseData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -114,7 +121,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats 
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {incomeExpenseData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

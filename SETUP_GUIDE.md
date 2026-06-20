@@ -39,13 +39,14 @@ Replace `your_project_url_here` and `your_anon_key_here` with the values from yo
 2. Open **SQL Editor** from the left sidebar
 3. Create a new query and copy-paste the entire content from `scripts/001_init_database.sql`
 4. Click "Run" to execute the script
+5. If you previously ran `002_add_role_to_jwt_metadata.sql`, re-run it after `001_init_database.sql` so the trigger versions stay aligned
 
 This will create:
 
-- `profiles` table (users with roles: sender/receiver)
+- `profiles` table (users with roles: sender/receiver/admin)
 - `categories` table (income/expense categories)
 - `transactions` table (payment transactions)
-- Row Level Security (RLS) policies for data protection
+- Triggers that keep JWT `app_metadata` in sync with profile role/status
 
 ### 2.2 Enable Google OAuth (Optional but Recommended)
 
@@ -96,9 +97,9 @@ pnpm clean       # Clean build cache
 
 ### Data Security
 
-- **Row Level Security (RLS)**: Users can only see their own data
 - **Authentication Required**: All dashboard routes are protected
 - **Password Hashing**: Passwords are securely hashed by Supabase
+- **Approval Check**: Server Actions reject pending users even if they bypass middleware
 
 ## Default Test Data
 
@@ -135,6 +136,7 @@ profiles (User Profiles)
 ├── id (UUID, PK, references auth.users)
 ├── email (TEXT, not null)
 ├── role (TEXT, not null, default 'sender')
+├── status (TEXT, not null, default 'pending')
 ├── created_at (TIMESTAMPTZ)
 ├── updated_at (TIMESTAMPTZ)
 
@@ -189,7 +191,9 @@ components/
 config/                  # Centralized configuration
 lib/
 ├── shadcn/              # shadcn/ui components
-└── supabase/            # Supabase clients
+├── supabase/            # Supabase clients
+├── require-auth.ts      # Server Action auth guards
+└── with-timeout.ts      # Promise timeout helper
 _specs/                  # Feature specs
 _plans/                  # Implementation plans
 app/                     # Next.js pages (thin re-exports)

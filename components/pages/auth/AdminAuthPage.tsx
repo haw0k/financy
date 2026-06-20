@@ -24,10 +24,12 @@ export function AdminAuthPage() {
   const [password, setPassword] = useState('');
   const [isPending, startTransition] = useTransition();
   const [isAdminExist, setIsAdminExist] = useState<boolean | null>(null);
+  const [isCheckError, setIsCheckError] = useState(false);
   const [isSignUpSuccess, setSignUpSuccess] = useState(false);
 
-  useEffect(() => {
-    let isCancelled = false;
+  const checkAdmin = () => {
+    setIsCheckError(false);
+    setIsAdminExist(null);
 
     fetch('/api/auth/check-admin')
       .then((res) => {
@@ -35,14 +37,21 @@ export function AdminAuthPage() {
         return res.json();
       })
       .then((data) => {
-        if (!isCancelled) setIsAdminExist(data.exists);
+        setIsAdminExist(data.exists);
       })
       .catch(() => {
-        if (!isCancelled) setIsAdminExist(true);
+        setIsCheckError(true);
       });
+  };
+
+  useEffect(() => {
+    // Defer the fetch so the state update does not happen synchronously inside the effect body.
+    const timer = setTimeout(() => {
+      checkAdmin();
+    }, 0);
 
     return () => {
-      isCancelled = true;
+      clearTimeout(timer);
     };
   }, []);
 
@@ -79,6 +88,19 @@ export function AdminAuthPage() {
       }
     });
   };
+
+  if (isCheckError) {
+    return (
+      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+        <div className="flex max-w-sm flex-col items-center gap-4 text-center">
+          <p className="text-muted-foreground">
+            Failed to check admin status. Please check your connection and try again.
+          </p>
+          <Button onClick={checkAdmin}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (isAdminExist === null) {
     return (

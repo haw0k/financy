@@ -32,9 +32,10 @@ Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (das
                 ↓
          lib/supabase/         app/actions/        config/             enums/
          ├── client.ts         ├── auth.ts         ├── env.config.ts   ├── role.enum.ts
-         ├── server.ts         ├── categories.ts   ├── routes.config.ts├── profile-status.enum.ts
-         ├── middleware.ts     ├── dashboard.ts    ├── site.config.ts  └── index.ts
-         └── admin.ts          └── transactions.ts └── navigation.config.ts
+         ├── server.ts         ├── admin.ts        ├── routes.config.ts├── profile-status.enum.ts
+         ├── middleware.ts     ├── categories.ts   ├── site.config.ts  └── index.ts
+         └── admin.ts          ├── dashboard.ts    └── navigation.config.ts
+                               └── transactions.ts
 ```
 
 ### Configuration Pattern
@@ -54,8 +55,8 @@ The optional `DEV_SUPABASE_REDIRECT_URL` env var provides a local development re
   - `app/(auth)/` - Login, sign-up, admin auth, pending, OAuth callback, error pages
   - `app/(app)/dashboard/` - Protected routes (transactions, categories, settings)
   - `app/(app)/admin/` - Admin dashboard (pending user management)
-  - `app/actions/` - Next.js Server Actions (auth, categories, transactions, dashboard)
-  - `app/api/` - API routes (admin pending-users CRUD, check-admin)
+  - `app/actions/` - Next.js Server Actions (auth, categories, transactions, dashboard, admin)
+  - `app/api/` - API routes (`check-admin` only; admin pending-users CRUD migrated to Server Actions)
   - `app/layout.tsx` - Root layout with ThemeProvider + RoleProvider
 - `components/pages/` - Page components (HomePage, auth/_, dashboard/_, admin/\*)
 - `components/layouts/` - Dashboard layout components (DashboardNav, Header, MobileNav)
@@ -63,6 +64,7 @@ The optional `DEV_SUPABASE_REDIRECT_URL` env var provides a local development re
 - `components/ui/` - Reusable UI components (PasswordField, DatePicker)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase clients (client, server, middleware, admin)
+- `lib/require-auth.ts` - `requireAuth()` and `requireApprovedUser()` guards for Server Actions
 - `config/` - Centralized configuration (env, routes, site, navigation)
 - `hooks/` - Custom hooks (useMobile, useHandler)
 - `enums/` - TypeScript enums (ERole, EProfileStatus)
@@ -117,14 +119,14 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 2. Supabase sends confirmation email (project setting, not `emailRedirectTo`)
 3. User clicks email link → callback exchanges code → not admin → redirects to `/dashboard`
 4. Middleware at `/dashboard` checks `profile.status` → `'pending'` → redirects to `/auth/pending`
-5. Admin approves via `/admin` → API sets `profile.status = 'approved'` → DB trigger updates `app_metadata` → email confirmation refreshes JWT
+5. Admin approves via `/admin` → Server Action `approveUserAction` sets `profile.status = 'approved'` and confirms email via `adminClient.auth.admin.updateUserById` → DB trigger updates `app_metadata` → email confirmation refreshes JWT
 6. User refreshes `/dashboard` → middleware sees `status = 'approved'` (from JWT or profiles) → access granted
 
-**Reject flow** (`/api/admin/pending-users/reject`):
+**Reject flow** (`rejectUserAction`):
 
 - Calls `adminClient.auth.admin.deleteUser(userId)` — cascade deletes the profile row
 
-**Self-protection**: admin cannot approve/reject their own account (checked both in API routes and UI).
+**Self-protection**: admin cannot approve/reject their own account (checked in Server Actions and UI).
 
 ### Role System & Permissions
 
@@ -147,6 +149,12 @@ Admin-specific flows:
 - `/auth/admin` — admin signup (if no admin exists) or login
 - `/admin` — manage pending user registrations (approve/reject) — **this is the admin's only function**
 - `/auth/pending` — shown to users awaiting admin approval or email confirmation
+
+### Server Action Authorization
+
+All data-mutating and data-reading Server Actions (`categories.ts`, `transactions.ts`, `dashboard.ts`) call `requireApprovedUser()` from `lib/require-auth.ts`. This rejects pending users at the action boundary even if they bypass middleware and call the generated action endpoint directly.
+
+Admin actions (`admin.ts`) validate that the caller is an approved admin and that the target `userId` is a valid UUID belonging to a pending, non-admin profile before approving or rejecting.
 
 ## Code Style
 

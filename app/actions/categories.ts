@@ -2,7 +2,7 @@
 
 import type { ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
-import { requireAuth } from '@/lib/require-auth';
+import { requireApprovedUser } from '@/lib/require-auth';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
 import { CATEGORY_MSGS } from '@/messages';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
@@ -14,7 +14,7 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TAuth
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -63,7 +63,7 @@ export async function updateCategoryAction({
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -106,7 +106,7 @@ export async function updateCategoryAction({
 }
 
 export async function deleteCategoryAction({ id }: { id: string }): Promise<TAuthResult> {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -133,7 +133,7 @@ export async function createCategoryTypeAction(input: TCategoryTypeInput): Promi
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -161,7 +161,7 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -183,7 +183,7 @@ export async function updateCategoryTypeAction({
 }
 
 export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<TAuthResult> {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -210,7 +210,7 @@ export async function getCategoriesDataAction(): Promise<
     categoryTypes: ICategoryType[];
   }>
 > {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }

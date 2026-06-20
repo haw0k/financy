@@ -3,7 +3,7 @@
 import { ERole, EProfileStatus } from '@/enums';
 import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
-import { requireAuth } from '@/lib/require-auth';
+import { requireApprovedUser } from '@/lib/require-auth';
 import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
 import type { TTransactionInput } from '@/schemas';
@@ -16,7 +16,7 @@ export async function getTransactionsDataAction(): Promise<
     categoryTypes: ICategoryType[];
   }>
 > {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -57,7 +57,7 @@ export async function getTransactionsDataAction(): Promise<
 export async function getReceiversAction(): Promise<
   TActionResult<{ id: string; email: string }[]>
 > {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -92,7 +92,7 @@ export async function createTransactionAction(input: TTransactionInput): Promise
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -153,7 +153,7 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }
@@ -211,7 +211,7 @@ export async function updateTransactionAction({
  * any transaction. See CLAUDE.md for the permissions model.
  */
 export async function deleteTransactionAction({ id }: { id: string }): Promise<TAuthResult> {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }

@@ -69,38 +69,77 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 - [x] Server action unit tests: mock `@/lib/supabase/server` → verify correct params passed, error path returns `{ success: false, error }`, success path calls `redirect()` or returns `{ success: true }`
 - [x] Form component tests: LoginPage shows error on failure, SignUpPage validates password mismatch without calling server action, AdminAuthPage renders correct form based on admin existence
 
-### Phase 6 — Verification
+### Phase 6 — Code Review Follow-up
 
-- [x] Run `pnpm test:run` — existing tests pass, new tests pass
-- [x] Run `pnpm lint && pnpm type-check && pnpm build` — no errors
-- [x] Manual smoke test: login success/error, signup success/password mismatch/duplicate email, admin login/signup
+- [x] Close authorization gap in data Server Actions by adding `requireApprovedUser` to `categories.ts`, `transactions.ts`, and `dashboard.ts`
+- [x] Remove dead admin API routes `app/api/admin/pending-users/*`
+- [x] Align `scripts/002_add_role_to_jwt_metadata.sql` with `001_init_database.sql`: admin profile starts as `pending` and is approved on email confirmation
+- [x] Harden `approveUserAction` / `rejectUserAction` with target UUID, role, and status validation
+- [x] Surface `statsError` in `DashboardOverview` with a visible warning
+- [x] Remove admin navigation to financial pages (`/admin/categories`, `/admin/dashboard`, `/admin/settings`)
+- [x] Fix `AdminAuthPage` error state when `/api/auth/check-admin` fails (show retry instead of defaulting to login)
+- [x] Fix small issues: stale comment, empty eslint-disable, optimistic `category_id` update, `setState-in-effect` rule violations, JWT warnings
+
+### Phase 7 — Tests
+
+- [x] Create `tests/auth-server-actions.test.tsx`
+- [x] Create `tests/admin-server-actions.test.tsx`
+- [x] Update `tests/data-server-actions.test.tsx` for `requireApprovedUser`
+- [x] Update `tests/admin-role-registration.test.tsx` for new admin action mocks
+- [x] Run `pnpm test:run` — all tests pass
+
+### Phase 8 — Verification
+
+- [ ] Run `pnpm lint && pnpm type-check && pnpm format:check && pnpm test:run && pnpm build` — no errors
+- [ ] Manual smoke test: login success/error, signup success/password mismatch/duplicate email, admin login/signup
 
 ## Files Summary
 
-| Action    | File                                                                                                                                                                                                                                                            |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CREATE    | `app/actions/auth.ts`                                                                                                                                                                                                                                           |
-| CREATE    | `lib/with-timeout.ts`                                                                                                                                                                                                                                           |
-| CREATE    | `schemas/auth.schema.ts`                                                                                                                                                                                                                                        |
-| CREATE    | `schemas/index.ts`                                                                                                                                                                                                                                              |
-| CREATE    | `messages/auth.msg.ts`                                                                                                                                                                                                                                          |
-| CREATE    | `messages/index.ts`                                                                                                                                                                                                                                             |
-| CREATE    | `types/auth-result.type.ts`                                                                                                                                                                                                                                     |
-| CREATE    | `types/index.ts`                                                                                                                                                                                                                                                |
-| CREATE    | `config/auth.config.ts`                                                                                                                                                                                                                                         |
-| MODIFY    | `config/index.ts`                                                                                                                                                                                                                                               |
-| MODIFY    | `components/pages/auth/LoginPage.tsx`                                                                                                                                                                                                                           |
-| MODIFY    | `components/pages/auth/SignUpPage.tsx`                                                                                                                                                                                                                          |
-| MODIFY    | `components/pages/auth/AdminAuthPage.tsx`                                                                                                                                                                                                                       |
-| CREATE    | `tests/auth-server-actions.test.tsx`                                                                                                                                                                                                                            |
-| NO CHANGE | `lib/supabase/server.ts`, `lib/supabase/client.ts`, `lib/handle-supabase-error.ts`, `lib/supabase/middleware.ts`, `proxy.ts`, `config/env.config.ts`, `config/routes.config.ts`, `config/site.config.ts`, `config/navigation.config.ts`, `components/layouts/*` |
+| Action    | File                                                                                                                                                                                                  |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CREATE    | `app/actions/auth.ts`                                                                                                                                                                                 |
+| CREATE    | `app/actions/admin.ts`                                                                                                                                                                                |
+| CREATE    | `lib/with-timeout.ts`                                                                                                                                                                                 |
+| CREATE    | `schemas/auth.schema.ts`                                                                                                                                                                              |
+| CREATE    | `schemas/index.ts`                                                                                                                                                                                    |
+| CREATE    | `messages/auth.msg.ts`                                                                                                                                                                                |
+| CREATE    | `messages/admin.msg.ts`                                                                                                                                                                               |
+| CREATE    | `messages/category.msg.ts`                                                                                                                                                                            |
+| CREATE    | `messages/transaction.msg.ts`                                                                                                                                                                         |
+| CREATE    | `messages/index.ts`                                                                                                                                                                                   |
+| CREATE    | `types/auth-result.type.ts`                                                                                                                                                                           |
+| CREATE    | `types/index.ts`                                                                                                                                                                                      |
+| CREATE    | `config/auth.config.ts`                                                                                                                                                                               |
+| CREATE    | `tests/auth-server-actions.test.tsx`                                                                                                                                                                  |
+| CREATE    | `tests/admin-server-actions.test.tsx`                                                                                                                                                                 |
+| MODIFY    | `lib/require-auth.ts`                                                                                                                                                                                 |
+| MODIFY    | `app/actions/categories.ts`                                                                                                                                                                           |
+| MODIFY    | `app/actions/transactions.ts`                                                                                                                                                                         |
+| MODIFY    | `app/actions/dashboard.ts`                                                                                                                                                                            |
+| MODIFY    | `components/pages/dashboard/DashboardPage.tsx`                                                                                                                                                        |
+| MODIFY    | `components/layouts/DashboardOverview.tsx`                                                                                                                                                            |
+| MODIFY    | `components/pages/admin/AdminPage.tsx`                                                                                                                                                                |
+| MODIFY    | `components/pages/auth/AdminAuthPage.tsx`                                                                                                                                                             |
+| MODIFY    | `components/ui/ThemeSelect.tsx`                                                                                                                                                                       |
+| MODIFY    | `components/layouts/TransactionsTableClient.tsx`                                                                                                                                                      |
+| MODIFY    | `components/layouts/AppShell.tsx`                                                                                                                                                                     |
+| MODIFY    | `config/index.ts`                                                                                                                                                                                     |
+| MODIFY    | `config/routes.config.ts`                                                                                                                                                                             |
+| MODIFY    | `config/navigation.config.ts`                                                                                                                                                                         |
+| MODIFY    | `app/layout.tsx`                                                                                                                                                                                      |
+| MODIFY    | `app/(app)/admin/page.tsx`                                                                                                                                                                            |
+| DELETE    | `app/api/admin/pending-users/*`                                                                                                                                                                       |
+| DELETE    | `app/(app)/admin/categories/page.tsx`                                                                                                                                                                 |
+| DELETE    | `app/(app)/admin/dashboard/page.tsx`                                                                                                                                                                  |
+| DELETE    | `app/(app)/admin/settings/page.tsx`                                                                                                                                                                   |
+| NO CHANGE | `lib/supabase/server.ts`, `lib/supabase/client.ts`, `lib/handle-supabase-error.ts`, `lib/supabase/middleware.ts`, `proxy.ts`, `config/env.config.ts`, `config/site.config.ts`, `components/layouts/*` |
 
 ## Risks & Notes
 
 - `redirect()` throws `NEXT_REDIRECT` internally — server action `try/catch` must not intercept it. The `redirect()` call is placed in the success path, outside any error handling, so this is safe.
 - `adminSignUpAction` cannot use `window.location.origin` fallback for `emailRedirectTo` — resolves `emailRedirectTo` from `getSupabaseRedirectUrl()` first, and falls back to the request origin built from `headers()` when no env var is configured.
 - `useTransition` with async functions is supported in React 19.2.5. `isPending` prevents double submission identically to manual `isLoading`. The timeout wrapper guarantees `isPending` resets even if the server action never resolves — without it, a hung action would leave the form permanently disabled.
-- **TODO**: Auth server actions have no rate limiting (see `docs/TODO.md`).
+- **TODO**: Auth server actions have no rate limiting (see `docs/TODO.md`) — intentionally out of scope per user instruction.
 
 ## Definition of Done
 
@@ -110,5 +149,7 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 - [x] Password mismatch on sign-up shows error without calling server action
 - [x] Auth errors (invalid credentials, email taken) shown as toast notifications
 - [x] Loading state correctly shown and cleared in all cases
+- [x] Data Server Actions reject pending users at the action boundary
+- [x] Admin actions validate target user before approve/reject
 - [x] `pnpm test:run` passes
-- [x] `pnpm lint && pnpm type-check && pnpm build` passes
+- [ ] `pnpm lint && pnpm type-check && pnpm format:check && pnpm build` passes

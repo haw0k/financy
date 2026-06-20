@@ -2,7 +2,7 @@
 
 import type { ITransaction } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
-import { requireAuth } from '@/lib/require-auth';
+import { requireApprovedUser } from '@/lib/require-auth';
 import type { TActionResult } from '@/types';
 
 export async function getDashboardDataAction(): Promise<
@@ -12,7 +12,7 @@ export async function getDashboardDataAction(): Promise<
     statsError?: string;
   }>
 > {
-  const authResult = await requireAuth();
+  const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
   }

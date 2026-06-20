@@ -6,6 +6,71 @@ import { requireAuth } from '@/lib/require-auth';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { ADMIN_MSGS } from '@/messages';
 import type { TAuthResult, TActionResult } from '@/types';
+import { z } from 'zod';
+
+const userIdSchema = z.string().uuid({ message: ADMIN_MSGS.INVALID_USER_ID });
+
+function isAdminApproved(profile: { role: string; status: string } | null): boolean {
+  return !!profile && profile.role === ERole.Admin && profile.status === EProfileStatus.Approved;
+}
+
+async function requireAdmin(authResult: Awaited<ReturnType<typeof requireAuth>>): Promise<
+  | {
+      supabase: Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>;
+      userId: string;
+    }
+  | { error: string }
+> {
+  if ('error' in authResult) {
+    return { error: authResult.error };
+  }
+
+  const { data: adminProfile } = await authResult.supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', authResult.userId)
+    .maybeSingle();
+
+  if (!isAdminApproved(adminProfile)) {
+    return { error: ADMIN_MSGS.FORBIDDEN };
+  }
+
+  return { supabase: authResult.supabase, userId: authResult.userId };
+}
+
+async function validateTargetUser(
+  supabase: Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>,
+  userId: string
+): Promise<{ role: string; status: string } | { error: string }> {
+  const parsed = userIdSchema.safeParse(userId);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { data: targetProfile, error: targetError } = await supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (targetError) {
+    return { error: mapSupabaseError(targetError) };
+  }
+
+  if (!targetProfile) {
+    return { error: ADMIN_MSGS.USER_NOT_PENDING };
+  }
+
+  if (targetProfile.role === ERole.Admin) {
+    return { error: ADMIN_MSGS.CANNOT_MANAGE_ADMIN };
+  }
+
+  if (targetProfile.status !== EProfileStatus.Pending) {
+    return { error: ADMIN_MSGS.USER_NOT_PENDING };
+  }
+
+  return targetProfile;
+}
 
 export async function getPendingUsersAction(): Promise<
   TActionResult<{ id: string; email: string; role: string; created_at: string }[]>
@@ -15,7 +80,12 @@ export async function getPendingUsersAction(): Promise<
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { data, error } = await authResult.supabase
+  const adminResult = await requireAdmin(authResult);
+  if ('error' in adminResult) {
+    return { isSuccess: false, error: adminResult.error };
+  }
+
+  const { data, error } = await adminResult.supabase
     .from('profiles')
     .select('id, email, role, created_at')
     .eq('status', EProfileStatus.Pending)
@@ -35,26 +105,18 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { data: adminProfile } = await authResult.supabase
-    .from('profiles')
-    .select('role, status')
-    .eq('id', authResult.userId)
-    .maybeSingle();
-
-  if (
-    !adminProfile ||
-    adminProfile.role !== ERole.Admin ||
-    adminProfile.status !== EProfileStatus.Approved
-  ) {
-    return { isSuccess: false, error: ADMIN_MSGS.FORBIDDEN };
+  const adminResult = await requireAdmin(authResult);
+  if ('error' in adminResult) {
+    return { isSuccess: false, error: adminResult.error };
   }
 
-  if (!userId) {
-    return { isSuccess: false, error: ADMIN_MSGS.USER_ID_REQUIRED };
-  }
-
-  if (userId === authResult.userId) {
+  if (userId === adminResult.userId) {
     return { isSuccess: false, error: ADMIN_MSGS.CANNOT_APPROVE_SELF };
+  }
+
+  const targetResult = await validateTargetUser(adminResult.supabase, userId);
+  if ('error' in targetResult) {
+    return { isSuccess: false, error: targetResult.error };
   }
 
   const adminClient = createAdminClient();
@@ -67,16 +129,12 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
     return { isSuccess: false, error: confirmError.message };
   }
 
-  const { error: statusError } = await authResult.supabase
+  const { error: statusError } = await adminResult.supabase
     .from('profiles')
     .update({ status: EProfileStatus.Approved })
     .eq('id', userId);
 
   if (statusError) {
-    console.error('Failed to approve profile after email confirmation:', {
-      userId,
-      error: statusError,
-    });
     return { isSuccess: false, error: ADMIN_MSGS.APPROVE_STATUS_FAILED };
   }
 
@@ -89,26 +147,18 @@ export async function rejectUserAction({ userId }: { userId: string }): Promise<
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { data: adminProfile } = await authResult.supabase
-    .from('profiles')
-    .select('role, status')
-    .eq('id', authResult.userId)
-    .maybeSingle();
-
-  if (
-    !adminProfile ||
-    adminProfile.role !== ERole.Admin ||
-    adminProfile.status !== EProfileStatus.Approved
-  ) {
-    return { isSuccess: false, error: ADMIN_MSGS.FORBIDDEN };
+  const adminResult = await requireAdmin(authResult);
+  if ('error' in adminResult) {
+    return { isSuccess: false, error: adminResult.error };
   }
 
-  if (!userId) {
-    return { isSuccess: false, error: ADMIN_MSGS.USER_ID_REQUIRED };
-  }
-
-  if (userId === authResult.userId) {
+  if (userId === adminResult.userId) {
     return { isSuccess: false, error: ADMIN_MSGS.CANNOT_REJECT_SELF };
+  }
+
+  const targetResult = await validateTargetUser(adminResult.supabase, userId);
+  if ('error' in targetResult) {
+    return { isSuccess: false, error: targetResult.error };
   }
 
   const adminClient = createAdminClient();

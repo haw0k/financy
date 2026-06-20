@@ -17,10 +17,7 @@ declare
   user_status text;
 begin
   user_role := coalesce(new.raw_user_meta_data ->> 'role', 'sender');
-  user_status := case
-    when user_role = 'admin' then 'approved'
-    else 'pending'
-  end;
+  user_status := 'pending';
 
   insert into public.profiles (id, email, role, status)
   values (

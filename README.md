@@ -93,7 +93,8 @@ Visit `http://localhost:3000` and create your account!
 
 All database operations go through **Next.js Server Actions** in `app/actions/`:
 
-- `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut, getRole
+- `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut
+- `admin.ts` — getPendingUsers, approveUser, rejectUser
 - `categories.ts` — CRUD for categories and category types
 - `transactions.ts` — CRUD for transactions, get receivers list
 - `dashboard.ts` — get transactions + stats for dashboard overview
@@ -167,8 +168,8 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 │   ├── (app)/            # Protected routes (dashboard/*, admin/*)
 │   │   ├── admin/        # Admin dashboard (/admin)
 │   │   └── dashboard/    # Dashboard routes
-│   ├── api/              # API routes (/api/admin/*, /api/auth/*)
-│   └── actions/          # Server Actions for auth, categories, transactions
+│   ├── api/              # API routes (/api/auth/check-admin)
+│   └── actions/          # Server Actions for auth, admin, categories, transactions
 ├── components/
 │   ├── pages/            # Page components (HomePage, auth/*, dashboard/*, admin/*)
 │   ├── layouts/          # Layout components (DashboardNav, Header, MobileNav)

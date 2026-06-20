@@ -109,7 +109,7 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
   }
 
   // Resolve redirect URL: prefer the configured env var, fall back to the
-  // request origin (replicates the old client-side `window.location.origin` behavior).
+  // request origin built from `headers()` (`x-forwarded-host` / `host` + `x-forwarded-proto`).
   const redirectUrl =
     getSupabaseRedirectUrl() ??
     (await (async () => {

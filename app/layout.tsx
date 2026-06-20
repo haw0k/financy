@@ -39,12 +39,8 @@ async function getProfile() {
       ? (rawStatus as EProfileStatus)
       : null;
 
-    if (rawRole && !role) {
-      console.warn(`[getProfile] Unexpected role value in JWT: "${rawRole}"`);
-    }
-    if (rawStatus && !status) {
-      console.warn(`[getProfile] Unexpected status value in JWT: "${rawStatus}"`);
-    }
+    // Unexpected JWT app_metadata values are silently ignored here. They will be
+    // corrected by the middleware/profile checks on the next request.
 
     return { role, status };
   } catch {

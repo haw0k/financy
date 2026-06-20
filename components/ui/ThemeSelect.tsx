@@ -3,16 +3,23 @@
 import { useTheme } from 'next-themes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/lib/shadcn';
 import { SunMoon, Sun, Moon, ChevronDown } from 'lucide-react';
-import { useState, useEffect, type FC } from 'react';
+import { useSyncExternalStore, type FC } from 'react';
+
+function getIsServerSnapshot() {
+  return false;
+}
+
+function getIsClientSnapshot() {
+  return true;
+}
+
+function subscribe() {
+  return () => {};
+}
 
 export const ThemeSelect: FC = () => {
   const { theme, setTheme } = useTheme();
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line
-    setIsMounted(true);
-  }, []);
+  const isMounted = useSyncExternalStore(subscribe, getIsClientSnapshot, getIsServerSnapshot);
 
   if (!isMounted) {
     return (

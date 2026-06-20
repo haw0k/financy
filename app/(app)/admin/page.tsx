@@ -1,6 +1,10 @@
-import { redirect } from 'next/navigation';
-import { routes } from '@/config';
+import { AdminPage } from '@/components/pages/admin';
+import { siteConfig } from '@/config';
+import type { Metadata } from 'next';
 
-export default function AdminPage() {
-  redirect(routes.adminDashboard);
-}
+export const metadata: Metadata = {
+  title: `Admin Dashboard — ${siteConfig.name}`,
+  description: 'Manage user registrations and approvals',
+};
+
+export default AdminPage;

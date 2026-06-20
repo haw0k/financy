@@ -20,7 +20,11 @@ export async function DashboardPage() {
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">Welcome back, {user?.email}</p>
       </div>
-      <DashboardOverview transactions={result.data.transactions} stats={result.data.stats} />
+      <DashboardOverview
+        transactions={result.data.transactions}
+        stats={result.data.stats}
+        statsError={result.data.statsError}
+      />
     </div>
   );
 }

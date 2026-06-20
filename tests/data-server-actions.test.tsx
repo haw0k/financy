@@ -25,9 +25,19 @@ vi.mock('@/lib/with-timeout', () => ({
   withTimeout: <T,>(p: Promise<T>) => p,
 }));
 
+function mockApprovedProfile() {
+  mockFrom.mockImplementation((table: string) => {
+    if (table === 'profiles') {
+      return createQueryBuilder({ status: 'approved' });
+    }
+    return createQueryBuilder(null);
+  });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetUser.mockReturnValue(Promise.resolve({ data: { user: mockUser }, error: null }));
+  mockApprovedProfile();
 });
 
 /* ── Helpers ───────────────────────────────────────────────────── */
@@ -62,6 +72,9 @@ describe('getDashboardDataAction', () => {
     const { getDashboardDataAction } = await import('@/app/actions/dashboard');
 
     mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
       if (table === 'transactions') {
         return createQueryBuilder([{ id: 't1', amount: 100 }]);
       }
@@ -90,6 +103,9 @@ describe('getDashboardDataAction', () => {
     const { getDashboardDataAction } = await import('@/app/actions/dashboard');
 
     mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
       if (table === 'transactions') {
         return createQueryBuilder([]);
       }
@@ -118,6 +134,24 @@ describe('getDashboardDataAction', () => {
       expect(result.error).toBeDefined();
     }
   });
+
+  it('should reject pending users', async () => {
+    const { getDashboardDataAction } = await import('@/app/actions/dashboard');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'pending' });
+      }
+      return createQueryBuilder(null);
+    });
+
+    const result = await getDashboardDataAction();
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toContain('pending');
+    }
+  });
 });
 
 /* ── Receivers ───────────────────────────────────────────────────── */
@@ -126,7 +160,7 @@ describe('getReceiversAction', () => {
   it('should return approved non-admin receivers excluding self', async () => {
     const { getReceiversAction } = await import('@/app/actions/transactions');
 
-    mockFrom.mockReturnValue(
+    mockFrom.mockReturnValueOnce(createQueryBuilder({ status: 'approved' })).mockReturnValueOnce(
       createQueryBuilder([
         { id: 'user-2', email: 'a@test.com' },
         { id: 'user-3', email: 'b@test.com' },
@@ -145,7 +179,9 @@ describe('getReceiversAction', () => {
   it('should return error when query fails', async () => {
     const { getReceiversAction } = await import('@/app/actions/transactions');
 
-    mockFrom.mockReturnValue(createQueryBuilder(null, { code: 'XX000', message: 'DB error' }));
+    mockFrom
+      .mockReturnValueOnce(createQueryBuilder({ status: 'approved' }))
+      .mockReturnValueOnce(createQueryBuilder(null, { code: 'XX000', message: 'DB error' }));
 
     const result = await getReceiversAction();
 
@@ -162,6 +198,8 @@ describe('createCategoryAction', () => {
   it('should return validation error for empty name', async () => {
     const { createCategoryAction } = await import('@/app/actions/categories');
 
+    mockFrom.mockClear();
+
     const result = await createCategoryAction({ name: '', type: 'expense', color: '#fff' });
 
     expect(result.isSuccess).toBe(false);
@@ -175,6 +213,9 @@ describe('createCategoryAction', () => {
     const { createCategoryAction } = await import('@/app/actions/categories');
 
     mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
       if (table === 'category_types') {
         return createQueryBuilder(null);
       }
@@ -198,6 +239,9 @@ describe('createCategoryAction', () => {
     const { createCategoryAction } = await import('@/app/actions/categories');
 
     mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
       if (table === 'category_types') {
         return createQueryBuilder({ id: 'ct1' });
       }
@@ -223,6 +267,8 @@ describe('updateCategoryAction', () => {
   it('should return validation error for invalid type', async () => {
     const { updateCategoryAction } = await import('@/app/actions/categories');
 
+    mockApprovedProfile();
+
     const result = await updateCategoryAction({
       id: 'cat1',
       input: { name: 'Food', type: 'invalid' as 'expense', color: '#fff' },
@@ -238,6 +284,9 @@ describe('updateCategoryAction', () => {
     const { updateCategoryAction } = await import('@/app/actions/categories');
 
     mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
       if (table === 'category_types') {
         return createQueryBuilder({ id: 'ct1' });
       }
@@ -263,7 +312,15 @@ describe('deleteCategoryAction', () => {
   it('should delete category on success', async () => {
     const { deleteCategoryAction } = await import('@/app/actions/categories');
 
-    mockFrom.mockReturnValue(createQueryBuilder([{ id: 'cat1' }]));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'categories') {
+        return createQueryBuilder([{ id: 'cat1' }]);
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await deleteCategoryAction({ id: 'cat1' });
 
@@ -273,7 +330,15 @@ describe('deleteCategoryAction', () => {
   it('should return error when category is not found', async () => {
     const { deleteCategoryAction } = await import('@/app/actions/categories');
 
-    mockFrom.mockReturnValue(createQueryBuilder([]));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'categories') {
+        return createQueryBuilder([]);
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await deleteCategoryAction({ id: 'missing' });
 
@@ -301,7 +366,12 @@ describe('createCategoryTypeAction', () => {
   it('should insert category type on success', async () => {
     const { createCategoryTypeAction } = await import('@/app/actions/categories');
 
-    mockFrom.mockReturnValue(createQueryBuilder(null));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await createCategoryTypeAction({ name: 'Goods' });
 
@@ -314,7 +384,15 @@ describe('updateCategoryTypeAction', () => {
   it('should return error when category type is not found', async () => {
     const { updateCategoryTypeAction } = await import('@/app/actions/categories');
 
-    mockFrom.mockReturnValue(createQueryBuilder([]));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder([]);
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await updateCategoryTypeAction({ id: 'missing', input: { name: 'Goods' } });
 
@@ -329,7 +407,15 @@ describe('deleteCategoryTypeAction', () => {
   it('should return error when category type is not found', async () => {
     const { deleteCategoryTypeAction } = await import('@/app/actions/categories');
 
-    mockFrom.mockReturnValue(createQueryBuilder([]));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder([]);
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await deleteCategoryTypeAction({ id: 'missing' });
 
@@ -345,6 +431,8 @@ describe('deleteCategoryTypeAction', () => {
 describe('createTransactionAction', () => {
   it('should return validation error for non-positive amount', async () => {
     const { createTransactionAction } = await import('@/app/actions/transactions');
+
+    mockApprovedProfile();
 
     const result = await createTransactionAction({
       amount: 0,
@@ -362,7 +450,9 @@ describe('createTransactionAction', () => {
   it('should return error for invalid receiver', async () => {
     const { createTransactionAction } = await import('@/app/actions/transactions');
 
-    mockFrom.mockReturnValue(createQueryBuilder(null));
+    mockFrom
+      .mockReturnValueOnce(createQueryBuilder({ status: 'approved' }))
+      .mockReturnValueOnce(createQueryBuilder(null));
 
     const result = await createTransactionAction({
       amount: 100,
@@ -381,7 +471,12 @@ describe('createTransactionAction', () => {
   it('should insert transaction on success with default receiver', async () => {
     const { createTransactionAction } = await import('@/app/actions/transactions');
 
-    mockFrom.mockReturnValue(createQueryBuilder(null));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await createTransactionAction({
       amount: 100,
@@ -400,7 +495,7 @@ describe('updateTransactionAction', () => {
 
     mockFrom.mockImplementation((table: string) => {
       if (table === 'profiles') {
-        return createQueryBuilder({ id: 'receiver-1' });
+        return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
       if (table === 'transactions') {
         return createQueryBuilder([]);
@@ -430,7 +525,15 @@ describe('deleteTransactionAction', () => {
   it('should return error when transaction is not found', async () => {
     const { deleteTransactionAction } = await import('@/app/actions/transactions');
 
-    mockFrom.mockReturnValue(createQueryBuilder([]));
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder([]);
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await deleteTransactionAction({ id: 'missing' });
 

@@ -32,11 +32,12 @@ pnpm test:run        # Run Vitest tests (single run)
 ```
 Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (dashboard/*, admin/*)
                 ↓
-         app/actions/           lib/supabase/         config/
-         ├── auth.ts             ├── server.ts         ├── env.config.ts
-         ├── categories.ts       ├── middleware.ts     ├── routes.config.ts
-         ├── transactions.ts     └── admin.ts          ├── site.config.ts
-         └── dashboard.ts                            └── navigation.config.ts
+         app/actions/           lib/supabase/         config/              lib/
+         ├── auth.ts             ├── server.ts         ├── env.config.ts    └── require-auth.ts
+         ├── admin.ts            ├── middleware.ts     ├── routes.config.ts
+         ├── categories.ts       └── admin.ts          ├── site.config.ts
+         ├── transactions.ts                           └── navigation.config.ts
+         └── dashboard.ts
 ```
 
 ### Key Directories
@@ -45,8 +46,8 @@ Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (das
   - `app/(auth)/` - Login, sign-up, admin auth, pending, OAuth callback, error pages
   - `app/(app)/dashboard/` - Protected routes (transactions, categories, settings)
   - `app/(app)/admin/` - Admin dashboard (pending user management)
-  - `app/api/` - API routes (admin pending-users CRUD, check-admin)
-  - `app/actions/` - Server Actions for auth, categories, transactions, dashboard
+  - `app/api/` - API routes (`check-admin` only; admin pending-users migrated to Server Actions)
+  - `app/actions/` - Server Actions for auth, admin, categories, transactions, dashboard
   - `app/layout.tsx` - Root layout with ThemeProvider + RoleProvider
 - `components/pages/` - Page components (HomePage, auth/_, dashboard/_, admin/\*)
 - `components/layouts/` - Layout components (DashboardNav, Header, MobileNav, DashboardOverview, TransactionsTableClient/Server, CategoriesTableClient/Server, TransactionForm)
@@ -54,6 +55,7 @@ Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (das
 - `components/ui/` - Reusable UI components (PasswordField, DatePicker, ToastNotification)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase clients (server, middleware, admin) — **no browser client**
+- `lib/require-auth.ts` - `requireAuth()` and `requireApprovedUser()` guards for Server Actions
 - `lib/db-errors.ts` - PostgreSQL error code mapping for user-friendly messages
 - `config/` - Centralized configuration (env, routes, site, navigation)
 - `hooks/` - Custom hooks (useMobile, useHandler)
@@ -80,12 +82,13 @@ The admin client uses `@supabase/supabase-js` directly (not `@supabase/ssr`) wit
 
 All data mutations go through Server Actions in `app/actions/`:
 
-- `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut, getRole
+- `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut
+- `admin.ts` — getPendingUsers, approveUser, rejectUser
 - `categories.ts` — CRUD for categories and category types
 - `transactions.ts` — CRUD for transactions, get receivers list
 - `dashboard.ts` — get transactions + stats for dashboard overview
 
-All actions use `createClient()` from `@/lib/supabase/server` and return `TActionResult<T>` or `TAuthResult`.
+All actions use `createClient()` from `@/lib/supabase/server` and return `TActionResult<T>` or `TAuthResult`. Data actions use `requireApprovedUser()` so pending users cannot call them directly.
 
 ### Middleware / Proxy Pattern
 
@@ -138,14 +141,14 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 2. Supabase sends confirmation email (project setting, not `emailRedirectTo`)
 3. User clicks email link → callback exchanges code → not admin → redirects to `/dashboard`
 4. Middleware at `/dashboard` checks `profile.status` → `'pending'` → redirects to `/auth/pending`
-5. Admin approves via `/admin` → API sets `profile.status = 'approved'` → DB trigger updates `app_metadata` → email confirmation refreshes JWT
+5. Admin approves via `/admin` → `approveUserAction` sets `profile.status = 'approved'` and confirms email → DB trigger updates `app_metadata` → email confirmation refreshes JWT
 6. User accesses `/dashboard` → middleware sees `status = 'approved'` (from JWT or profiles) → access granted
 
-**Reject flow** (`/api/admin/pending-users/reject`):
+**Reject flow** (`rejectUserAction`):
 
 - Calls `adminClient.auth.admin.deleteUser(userId)` — cascade deletes the profile row
 
-**Self-protection**: admin cannot approve/reject their own account (checked both in API routes and UI).
+**Self-protection**: admin cannot approve/reject their own account (checked in Server Actions and UI).
 
 ### Middleware redirects summary
 

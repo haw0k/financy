@@ -10,12 +10,13 @@ All database operations are performed through **Next.js Server Actions** in `app
 
 | File              | Actions                                                                                                |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `auth.ts`         | login, signUp, adminLogin, adminSignUp, signOut, getRole                                               |
+| `auth.ts`         | login, signUp, adminLogin, adminSignUp, signOut                                                        |
+| `admin.ts`        | getPendingUsers, approveUser, rejectUser                                                               |
 | `categories.ts`   | getCategories, getCategoryTypes, createCategory, updateCategory, deleteCategory, + category types CRUD |
 | `transactions.ts` | getTransactions, getReceivers, createTransaction, updateTransaction, deleteTransaction                 |
 | `dashboard.ts`    | getDashboardData (transactions + stats)                                                                |
 
-All actions use `requireAuth()` from `@/lib/require-auth` which returns `{ supabase, userId }` — a single DB connection used for both authentication check and subsequent queries.
+All actions use `requireAuth()` from `@/lib/require-auth` which returns `{ supabase, userId }`. Data actions (`categories.ts`, `transactions.ts`, `dashboard.ts`) use `requireApprovedUser()` so pending users are rejected at the action boundary.
 
 **Benefits of this architecture:**
 
@@ -64,10 +65,7 @@ financy/
 │   │   └── error/               # Auth error page
 │   ├── (app)/
 │   │   ├── admin/
-│   │   │   ├── page.tsx         # Redirect to /admin/dashboard
-│   │   │   ├── dashboard/       # Admin dashboard (user management)
-│   │   │   ├── categories/      # Admin categories view
-│   │   │   ├── settings/        # Admin settings
+│   │   │   ├── page.tsx         # Admin dashboard (pending user management)
 │   │   │   └── layout.tsx       # Server-side admin authorization
 │   │   ├── dashboard/
 │   │   │   ├── page.tsx         # Dashboard overview
@@ -86,12 +84,9 @@ financy/
 │   │       ├── callback/        # OAuth callback handler
 │   │       └── error/           # Auth error page
 │   ├── api/
-│   │   └── admin/
-│   │       ├── pending-users/           # GET pending users
-│   │       ├── pending-users/approve/   # POST approve user
-│   │       ├── pending-users/reject/    # POST reject user
-│   │       └── auth/check-admin/       # GET check admin exists
-│   ├── actions/                 # Server Actions (auth, categories, transactions, dashboard)
+│   │   └── auth/
+│   │       └── check-admin/       # GET check admin exists
+│   ├── actions/                 # Server Actions (auth, admin, categories, transactions, dashboard)
 │   ├── layout.tsx               # Root layout with ThemeProvider + RoleProvider
 │   ├── page.tsx                 # Home page (redirects to auth)
 │   ├── robots.ts                # Robots.txt (disallows /auth/admin)
@@ -169,8 +164,8 @@ financy/
 ### Admin Features
 
 - **Admin Auth Page** (`/auth/admin`): Signup for first admin, login for subsequent
-- **Admin Dashboard** (`/admin/dashboard`): View pending user registrations in a table
-- **Approve/Reject**: Approve confirms email and sets profile status to approved; reject deletes user
+- **Admin Dashboard** (`/admin`): View pending user registrations in a table
+- **Approve/Reject**: `approveUserAction` confirms email and sets profile status to approved; `rejectUserAction` deletes user
 - **Self-protection**: Admin cannot approve or reject their own account
 - **Middleware protection**: Unauthorized users redirected away from admin routes
 
@@ -217,7 +212,7 @@ financy/
 - **Admin role**: Exists **solely** for approving or rejecting user registrations.
 - **Sender/Receiver roles**: All authenticated users (regardless of role) can **create, read, update, and delete** categories, category types, and transactions. There are **no ownership checks** — any user can modify any record.
 - Secure password hashing by Supabase
-- Protected API routes with auth and role checks (admin vs non-admin for route access only)
+- Server Actions enforce approval status at the action boundary (not just middleware)
 - CSRF protection via Next.js middleware
 - Email verification and admin approval requirements
 - Server-side admin layout guard (defense-in-depth)
