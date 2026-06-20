@@ -158,6 +158,7 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 
 - **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Detailed setup instructions
 - **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - Architecture overview
+- **[React Server Components Guide](./docs/react-server-components-guide.md)** - Practical RSC patterns with auth and SQL database
 - **[Naming Conventions](./docs/naming-conventions.md)** - Convention for naming React components, hooks, and TypeScript types
 - **[Commit Message Convention](./docs/commit-message-convention.md)** - Commit message format and guidelines
 
@@ -263,6 +264,7 @@ Deploy to Vercel with one click:
 
 ## Features Roadmap
 
+- [x] Document React Server Components practical patterns with auth and SQL database
 - [ ] Budget tracking & alerts
 - [ ] Recurring transactions
 - [ ] Real-time notifications

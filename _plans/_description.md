@@ -30,3 +30,4 @@
 - [x] chore: Disable Row Level Security on User Tables — { 2026-05-20-disable-rls-on-user-tables.md }
 - [x] feat: Move Theme Toggle to Settings Page — { 2026-05-21-move-theme-toggle-to-settings.md }
 - [x] refactor: Migrate Auth Forms to Server Actions — { 2026-05-25-migrate-auth-forms-to-server-actions.md }
+- [x] docs: Document React Server Components Practical Patterns — { 2026-06-20-document-rsc-patterns.md }
