@@ -2,14 +2,14 @@ import { z } from 'zod';
 import { CATEGORY_MSGS } from '@/messages';
 
 export const categorySchema = z.object({
-  name: z.string().min(1, { error: 'Name is required' }),
-  type: z.enum(['income', 'expense'], { error: CATEGORY_MSGS.INVALID_TYPE }),
-  color: z.string().min(1, { error: 'Color is required' }),
+  name: z.string().min(1, { message: CATEGORY_MSGS.NAME_REQUIRED }),
+  type: z.enum(['income', 'expense'], { message: CATEGORY_MSGS.INVALID_TYPE }),
+  color: z.string().min(1, { message: CATEGORY_MSGS.COLOR_REQUIRED }),
   type_id: z.string().optional(),
 });
 
 export const categoryTypeSchema = z.object({
-  name: z.string().min(1, { error: 'Name is required' }),
+  name: z.string().min(1, { message: CATEGORY_MSGS.NAME_REQUIRED }),
 });
 
 export type TCategoryInput = z.infer<typeof categorySchema>;

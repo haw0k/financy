@@ -4,4 +4,6 @@ export const CATEGORY_MSGS = {
   NOT_FOUND: 'Category not found',
   TYPE_NOT_FOUND: 'Category type not found',
   TYPE_NOT_SELECTED: 'Selected category type does not exist',
+  NAME_REQUIRED: 'Name is required',
+  COLOR_REQUIRED: 'Color is required',
 } as const;

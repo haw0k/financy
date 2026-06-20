@@ -162,7 +162,7 @@ export async function updateTransactionAction({
   // When receiverId is not provided for an update, omit receiver_id from the
   // payload to preserve the existing value (unlike create, which defaults to
   // the authenticated user for self-transfers).
-  const updatePayload: Record<string, unknown> = {
+  const updatePayload: Partial<ITransaction> = {
     amount: parsed.data.amount,
     type: parsed.data.type,
     date: parsed.data.date,
