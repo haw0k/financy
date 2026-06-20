@@ -35,10 +35,9 @@ async function getProfile() {
     const rawStatus = appMetadata?.status;
 
     const role = Object.values(ERole).includes(rawRole as ERole) ? (rawRole as ERole) : null;
-    const status =
-      Object.values(EProfileStatus).includes(rawStatus as EProfileStatus)
-        ? (rawStatus as EProfileStatus)
-        : null;
+    const status = Object.values(EProfileStatus).includes(rawStatus as EProfileStatus)
+      ? (rawStatus as EProfileStatus)
+      : null;
 
     if (rawRole && !role) {
       console.warn(`[getProfile] Unexpected role value in JWT: "${rawRole}"`);

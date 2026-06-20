@@ -110,8 +110,8 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                             description: input.description,
                             receiver_id: input.receiverId || t.receiver_id,
                           }
-                        : t,
-                    ),
+                        : t
+                    )
                   );
                 } else {
                   // Optimistic add with temp ID; router.refresh() will correct it
@@ -139,7 +139,7 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
               }}
               editingId={editingId}
               editingTransaction={
-                editingId ? transactions.find((t) => t.id === editingId) ?? null : null
+                editingId ? (transactions.find((t) => t.id === editingId) ?? null) : null
               }
               categories={categories}
             />

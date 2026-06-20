@@ -82,15 +82,12 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
         if (isEdit) {
           setCategoryTypes(
             categoryTypes.map((ct) =>
-              ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct,
-            ),
+              ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct
+            )
           );
         } else {
           // Optimistic add with temp ID; router.refresh() will correct it
-          setCategoryTypes([
-            ...categoryTypes,
-            { id: `temp-${Date.now()}`, name: ctFormData.name },
-          ]);
+          setCategoryTypes([...categoryTypes, { id: `temp-${Date.now()}`, name: ctFormData.name }]);
         }
         setCtFormData({ name: '' });
         setCtEditingId(null);
@@ -150,8 +147,8 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                     color: formData.color,
                     type_id: formData.type_id || undefined,
                   }
-                : c,
-            ),
+                : c
+            )
           );
         } else {
           // Optimistic add with temp ID; router.refresh() will correct it
