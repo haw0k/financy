@@ -18,15 +18,15 @@
 Create or update `.env.local` in your project root:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_project_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+SUPABASE_URL=your_project_url_here
+SUPABASE_ANON_KEY=your_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 ```
 
 For local development, you can optionally set a redirect URL override:
 
 ```bash
-NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=http://localhost:3000/auth/callback
+DEV_SUPABASE_REDIRECT_URL=http://localhost:3000/auth/callback
 ```
 
 Replace `your_project_url_here` and `your_anon_key_here` with the values from your Supabase project.
@@ -202,18 +202,17 @@ scripts/                 # Database migrations
 1. Push code to GitHub
 2. Import project in Vercel
 3. Add environment variables in Vercel Settings:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` (optional, for custom redirect)
+   - `SUPABASE_REDIRECT_URL` (production redirect)
+   - `DEV_SUPABASE_REDIRECT_URL` (optional, for local development)
 4. Deploy
 
 ## Notes
 
 - Free Supabase tier includes 500 MB database storage
-- Rate limiting is applied by default
-- Transactions are soft-deletable (marked as deleted, not removed)
-- All transactions are filtered by user (RLS)
+- Row Level Security is intentionally disabled in this pet project; all authenticated users share the same data pool
 
 ## Support
 

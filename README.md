@@ -23,8 +23,8 @@ pnpm install
 4. Create `.env.local`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_URL=your_project_url
+SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
@@ -163,22 +163,24 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 
 ```
 ├── app/                  # Next.js pages (thin re-exports)
-│   ├── auth/             # Authentication pages (/login, /sign-up, /admin, /pending)
-│   ├── admin/            # Admin dashboard (/admin)
+│   ├── (auth)/           # Authentication pages (/login, /sign-up, /admin, /pending)
+│   ├── (app)/            # Protected routes (dashboard/*, admin/*)
+│   │   ├── admin/        # Admin dashboard (/admin)
+│   │   └── dashboard/    # Dashboard routes
 │   ├── api/              # API routes (/api/admin/*, /api/auth/*)
-│   └── dashboard/        # Protected dashboard routes
+│   └── actions/          # Server Actions for auth, categories, transactions
 ├── components/
 │   ├── pages/            # Page components (HomePage, auth/*, dashboard/*, admin/*)
 │   ├── layouts/          # Layout components (DashboardNav, Header, MobileNav)
-│   ├── providers/        # React context providers
+│   ├── providers/        # React context providers (ThemeProvider, RoleProvider)
 │   └── ui/               # Reusable UI components
 ├── config/               # Centralized configuration
 ├── enums/                # TypeScript enums (ERole, EProfileStatus)
 ├── interfaces/           # TypeScript interfaces
-├── hooks/                # Custom hooks (useRole, useToast, useMobile)
+├── hooks/                # Custom hooks (useMobile, useHandler)
 ├── lib/
 │   ├── shadcn/           # shadcn/ui component library
-│   └── supabase/         # Supabase clients (client, server, middleware, admin)
+│   └── supabase/         # Supabase clients (server, middleware, admin) — no browser client
 ├── _specs/               # Feature specs
 ├── _plans/               # Implementation plans
 ├── scripts/              # SQL migration scripts
@@ -202,11 +204,11 @@ See `scripts/001_init_database.sql` for full schema with triggers and policies.
 ## Environment Variables
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=                # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=           # Public anon key
-SUPABASE_SERVICE_ROLE_KEY=               # Secret service_role key (admin API)
-NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=   # Dev-only redirect override (optional)
-NEXT_PUBLIC_SUPABASE_REDIRECT_URL=       # Production redirect URL
+SUPABASE_URL=                # Supabase project URL
+SUPABASE_ANON_KEY=           # Public anon key
+SUPABASE_SERVICE_ROLE_KEY=   # Secret service_role key (admin API)
+DEV_SUPABASE_REDIRECT_URL=   # Dev-only redirect override (optional)
+SUPABASE_REDIRECT_URL=       # Production redirect URL
 ```
 
 ## Development

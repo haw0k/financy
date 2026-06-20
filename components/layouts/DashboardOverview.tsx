@@ -1,11 +1,9 @@
 'use client';
 
-import { type FC, useEffect, useState } from 'react';
-import { showError } from '@/components/ui';
-import { getDashboardDataAction } from '@/app/actions/dashboard';
+import { type FC, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import type { ITransaction, IStats, ICategoryData } from '@/interfaces';
+import type { ITransaction, IStats } from '@/interfaces';
 import {
   LineChart,
   Line,
@@ -22,70 +20,41 @@ import {
 
 const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
-export const DashboardOverview: FC = () => {
-  const [stats, setStats] = useState<IStats | null>(null);
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface IDashboardOverview {
+  transactions: ITransaction[];
+  stats: IStats | null;
+}
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    (async () => {
-      const result = await getDashboardDataAction();
-
-      if (isCancelled) return;
-
-      if (!result.isSuccess) {
-        showError('Dashboard', result.error);
-        setIsLoading(false);
-        return;
-      }
-
-      setTransactions(result.data.transactions);
-      setStats(result.data.stats);
-
-      if (result.data.statsError) {
-        showError('Dashboard', result.data.statsError);
-      }
-
-      // Prepare category data for pie chart
-      const categoryMap = new Map<string, number>();
-      result.data.transactions.forEach((trans) => {
-        const type = trans.type === 'income' ? 'Income' : 'Expense';
-        categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
-      });
-      setCategoryData(
-        Array.from(categoryMap, ([name, value]) => ({
-          name,
-          value: Number(value.toFixed(2)),
-        }))
-      );
-
-      setIsLoading(false);
-    })();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
-
-  // Prepare data for line chart
-  const chartData = transactions
-    .slice()
-    .reverse()
-    .map((trans) => ({
-      date: new Date(trans.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      amount: trans.amount,
+export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats }) => {
+  const categoryData = useMemo(() => {
+    const categoryMap = new Map<string, number>();
+    transactions.forEach((trans) => {
+      const type = trans.type === 'income' ? 'Income' : 'Expense';
+      categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
+    });
+    return Array.from(categoryMap, ([name, value]) => ({
+      name,
+      value: Number(value.toFixed(2)),
     }));
+  }, [transactions]);
 
-  if (isLoading) {
-    return <div className="text-center text-muted-foreground">Loading...</div>;
-  }
+  const chartData = useMemo(
+    () =>
+      transactions
+        .slice()
+        .reverse()
+        .map((trans) => ({
+          date: new Date(trans.date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
+          amount: trans.amount,
+        })),
+    [transactions]
+  );
 
   return (
     <div className="grid gap-6">
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -125,7 +94,6 @@ export const DashboardOverview: FC = () => {
         </Card>
       </div>
 
-      {/* Charts */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>

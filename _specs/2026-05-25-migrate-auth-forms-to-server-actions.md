@@ -40,7 +40,7 @@ Replace direct client-side Supabase auth calls in login, sign-up, and admin auth
 ## Open Questions
 
 - Should we use `revalidatePath` or `router.refresh()` after successful auth to ensure middleware re-evaluates session? Use `redirect()`
-- Should the `useRole` hook remain client-side or also move to server-side data fetching? the `useRole` hook remains client-side.
+- Should the `useRole` hook remain client-side or also move to server-side data fetching? Replace `useRole` with `RoleProvider` / `useRoleContext`; role/status are read server-side in `app/layout.tsx` and provided via React context.
 
 ## Testing Guidelines
 

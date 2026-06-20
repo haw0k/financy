@@ -34,7 +34,7 @@ Auth forms (Login, SignUp, AdminAuth) currently call Supabase browser client dir
   - `loginAction({ email, password })` — calls `signInWithPassword`, on success `redirect(routes.dashboard)`, on error returns `{ success: false, error }`
   - `signUpAction({ email, password, role })` — calls `signUp` with `options.data.role`, on success `redirect(routes.signUpSuccess)`, on error returns `{ success: false, error }`
   - `adminLoginAction({ email, password })` — calls `signInWithPassword`, on success `redirect(routes.admin)`, on error returns `{ success: false, error }`
-  - `adminSignUpAction({ email, password })` — calls `signUp` with `emailRedirectTo` (using `getSupabaseRedirectUrl()`) and `data.role = ERole.Admin`, on error returns `{ success: false, error }`, on success returns `{ success: true }` (no redirect)
+  - `adminSignUpAction({ email, password })` — calls `signUp` with `emailRedirectTo` and `data.role = ERole.Admin`, on error returns `{ success: false, error }`, on success returns `{ success: true }` (no redirect). `emailRedirectTo` is resolved from `getSupabaseRedirectUrl()`; if not configured, it falls back to the request origin built from `headers()` (`x-forwarded-host` / `host` + `x-forwarded-proto`).
 
 All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use server'` directive.
 
@@ -98,7 +98,7 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 ## Risks & Notes
 
 - `redirect()` throws `NEXT_REDIRECT` internally — server action `try/catch` must not intercept it. The `redirect()` call is placed in the success path, outside any error handling, so this is safe.
-- `adminSignUpAction` cannot use `window.location.origin` fallback for `emailRedirectTo` — uses `getSupabaseRedirectUrl()` only. If neither env var is set, Supabase uses its configured default redirect URL.
+- `adminSignUpAction` cannot use `window.location.origin` fallback for `emailRedirectTo` — resolves `emailRedirectTo` from `getSupabaseRedirectUrl()` first, and falls back to the request origin built from `headers()` when no env var is configured.
 - `useTransition` with async functions is supported in React 19.2.5. `isPending` prevents double submission identically to manual `isLoading`. The timeout wrapper guarantees `isPending` resets even if the server action never resolves — without it, a hung action would leave the form permanently disabled.
 - **TODO**: Auth server actions have no rate limiting (see `docs/TODO.md`).
 

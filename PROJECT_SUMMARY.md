@@ -62,22 +62,37 @@ financy/
 │   │   ├── pending/             # Pending approval status page
 │   │   ├── callback/            # OAuth callback handler
 │   │   └── error/               # Auth error page
-│   ├── admin/
-│   │   ├── page.tsx             # Admin dashboard (user management)
-│   │   └── layout.tsx           # Server-side admin authorization
+│   ├── (app)/
+│   │   ├── admin/
+│   │   │   ├── page.tsx         # Redirect to /admin/dashboard
+│   │   │   ├── dashboard/       # Admin dashboard (user management)
+│   │   │   ├── categories/      # Admin categories view
+│   │   │   ├── settings/        # Admin settings
+│   │   │   └── layout.tsx       # Server-side admin authorization
+│   │   ├── dashboard/
+│   │   │   ├── page.tsx         # Dashboard overview
+│   │   │   ├── transactions/    # Transactions management
+│   │   │   ├── categories/    # Categories management
+│   │   │   ├── settings/      # User settings & theme
+│   │   │   └── layout.tsx     # Dashboard layout (nav + header)
+│   │   └── layout.tsx         # App layout with AppShell
+│   ├── (auth)/
+│   │   └── auth/
+│   │       ├── admin/           # Admin signup/login page
+│   │       ├── login/           # Login page
+│   │       ├── sign-up/         # Sign up with role selection
+│   │       ├── sign-up-success/ # Post-signup pending approval page
+│   │       ├── pending/         # Pending approval status page
+│   │       ├── callback/        # OAuth callback handler
+│   │       └── error/           # Auth error page
 │   ├── api/
 │   │   └── admin/
 │   │       ├── pending-users/           # GET pending users
 │   │       ├── pending-users/approve/   # POST approve user
 │   │       ├── pending-users/reject/    # POST reject user
 │   │       └── auth/check-admin/       # GET check admin exists
-│   ├── dashboard/
-│   │   ├── page.tsx             # Dashboard overview
-│   │   ├── transactions/        # Transactions management
-│   │   ├── categories/          # Categories management
-│   │   ├── settings/            # User settings & theme
-│   │   └── layout.tsx           # Dashboard layout (nav + header)
-│   ├── layout.tsx               # Root layout with theme provider
+│   ├── actions/                 # Server Actions (auth, categories, transactions, dashboard)
+│   ├── layout.tsx               # Root layout with ThemeProvider + RoleProvider
 │   ├── page.tsx                 # Home page (redirects to auth)
 │   ├── robots.ts                # Robots.txt (disallows /auth/admin)
 │   └── globals.css              # Global styles & design tokens
@@ -85,7 +100,7 @@ financy/
 ├── components/
 │   ├── pages/                   # Page components (HomePage, auth/*, dashboard/*, admin/*)
 │   ├── layouts/                 # Layout components (DashboardNav, Header, MobileNav)
-│   ├── providers/               # React context providers (ThemeProvider, MobileNavContext)
+│   ├── providers/               # React context providers (ThemeProvider, MobileNavContext, RoleProvider)
 │   └── ui/                      # Reusable UI components (PasswordField, DatePicker)
 │
 ├── config/                      # Centralized configuration
@@ -104,23 +119,24 @@ financy/
 │   └── stats.interface.ts
 │
 ├── hooks/                       # Custom hooks
-│   ├── useRole.ts               # Fetch current user role and status
-│   ├── useToast.ts
 │   ├── useMobile.ts
 │   └── useHandler.ts
 │
 ├── lib/
 │   ├── shadcn/                  # shadcn/ui component library
-│   └── supabase/
-│       ├── client.ts            # Browser client
-│       ├── server.ts            # Server client
-│       ├── middleware.ts        # Session + role middleware
-│       └── admin.ts             # Service-role admin client
+│   ├── supabase/
+│   │   ├── server.ts            # Server client
+│   │   ├── middleware.ts        # Session + role middleware
+│   │   └── admin.ts             # Service-role admin client
+│   ├── db-errors.ts             # PostgreSQL error mapping
+│   ├── require-auth.ts          # Shared auth guard for Server Actions
+│   └── with-timeout.ts          # Promise timeout helper
 │
 ├── _specs/                      # Feature specification documents
 ├── _plans/                      # Implementation plans
 ├── scripts/
-│   └── 001_init_database.sql    # Database initialization script
+│   ├── 001_init_database.sql    # Database initialization script
+│   └── 002_add_role_to_jwt_metadata.sql # JWT role/status metadata triggers
 │
 ├── tests/                       # Vitest test files
 │
@@ -153,8 +169,8 @@ financy/
 ### Admin Features
 
 - **Admin Auth Page** (`/auth/admin`): Signup for first admin, login for subsequent
-- **Admin Dashboard** (`/admin`): View pending user registrations in a table
-- **Approve/Reject**: Approve sends Supabase confirmation email; reject deletes user
+- **Admin Dashboard** (`/admin/dashboard`): View pending user registrations in a table
+- **Approve/Reject**: Approve confirms email and sets profile status to approved; reject deletes user
 - **Self-protection**: Admin cannot approve or reject their own account
 - **Middleware protection**: Unauthorized users redirected away from admin routes
 

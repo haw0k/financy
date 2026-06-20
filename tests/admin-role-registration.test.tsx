@@ -15,6 +15,26 @@ vi.mock('@/app/actions/auth', () => ({
   signOutAction: vi.fn(() => Promise.resolve({ isSuccess: true })),
 }));
 
+const mockGetPendingUsersAction = vi.fn(() =>
+  Promise.resolve<
+    | { isSuccess: true; data: { id: string; email: string; role: string; created_at: string }[] }
+    | { isSuccess: false; error: string }
+  >({
+    isSuccess: true,
+    data: [],
+  })
+);
+const mockApproveUserAction = vi.fn(() =>
+  Promise.resolve<{ isSuccess: true }>({ isSuccess: true })
+);
+const mockRejectUserAction = vi.fn(() => Promise.resolve<{ isSuccess: true }>({ isSuccess: true }));
+
+vi.mock('@/app/actions/admin', () => ({
+  getPendingUsersAction: () => mockGetPendingUsersAction(),
+  approveUserAction: () => mockApproveUserAction(),
+  rejectUserAction: () => mockRejectUserAction(),
+}));
+
 let useRoleContextReturn: Record<string, unknown> = {
   role: ERole.Sender,
   status: EProfileStatus.Pending,
@@ -36,6 +56,9 @@ const mockFetch = vi.fn();
 beforeEach(() => {
   vi.clearAllMocks();
   globalThis.fetch = mockFetch;
+  mockGetPendingUsersAction.mockResolvedValue({ isSuccess: true, data: [] });
+  mockApproveUserAction.mockResolvedValue({ isSuccess: true });
+  mockRejectUserAction.mockResolvedValue({ isSuccess: true });
   useRoleContextReturn = {
     role: ERole.Sender,
     status: EProfileStatus.Pending,
@@ -153,10 +176,7 @@ describe('AdminPage', () => {
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: [] }),
-    });
+    mockGetPendingUsersAction.mockResolvedValueOnce({ isSuccess: true, data: [] });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
@@ -171,15 +191,12 @@ describe('AdminPage', () => {
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          data: [
-            { id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' },
-            { id: '2', email: 'b@test.com', role: 'receiver', created_at: '2026-01-02T00:00:00Z' },
-          ],
-        }),
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [
+        { id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' },
+        { id: '2', email: 'b@test.com', role: 'receiver', created_at: '2026-01-02T00:00:00Z' },
+      ],
     });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
@@ -191,26 +208,16 @@ describe('AdminPage', () => {
     expect(screen.getByText('receiver')).toBeDefined();
   });
 
-  it('should call approve API on approve button click', async () => {
+  it('should call approve action on approve button click', async () => {
     useRoleContextReturn = {
       ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            data: [
-              { id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' },
-            ],
-          }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      });
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [{ id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' }],
+    });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
@@ -218,40 +225,27 @@ describe('AdminPage', () => {
     });
     fireEvent.click(screen.getByText('Approve'));
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/admin/pending-users/approve', {
-        method: 'POST',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: '1' }),
-      });
+      expect(mockApproveUserAction).toHaveBeenCalled();
     });
   });
 
-  it('should call reject API on reject button click', async () => {
+  it('should call reject action on reject button click', async () => {
     useRoleContextReturn = {
       ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            data: [
-              {
-                id: '2',
-                email: 'b@test.com',
-                role: 'receiver',
-                created_at: '2026-01-02T00:00:00Z',
-              },
-            ],
-          }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      });
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [
+        {
+          id: '2',
+          email: 'b@test.com',
+          role: 'receiver',
+          created_at: '2026-01-02T00:00:00Z',
+        },
+      ],
+    });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
@@ -259,12 +253,7 @@ describe('AdminPage', () => {
     });
     fireEvent.click(screen.getByText('Reject'));
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/admin/pending-users/reject', {
-        method: 'POST',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: '2' }),
-      });
+      expect(mockRejectUserAction).toHaveBeenCalled();
     });
   });
 
@@ -285,9 +274,9 @@ describe('AdminPage', () => {
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: () => Promise.resolve({}),
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: false,
+      error: 'Failed to fetch pending users',
     });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);

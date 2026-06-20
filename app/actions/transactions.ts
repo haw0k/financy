@@ -5,6 +5,7 @@ import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
 import { transactionSchema } from '@/schemas';
+import { TRANSACTION_MSGS } from '@/messages';
 import type { TTransactionInput } from '@/schemas';
 import type { TAuthResult, TActionResult } from '@/types';
 
@@ -111,7 +112,7 @@ export async function createTransactionAction(input: TTransactionInput): Promise
       return { isSuccess: false, error: mapSupabaseError(receiverError) };
     }
     if (!receiver) {
-      return { isSuccess: false, error: 'Invalid receiver selected' };
+      return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_RECEIVER };
     }
   }
 
@@ -182,7 +183,7 @@ export async function updateTransactionAction({
       return { isSuccess: false, error: mapSupabaseError(receiverError) };
     }
     if (!receiver) {
-      return { isSuccess: false, error: 'Invalid receiver selected' };
+      return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_RECEIVER };
     }
     updatePayload.receiver_id = parsed.data.receiverId;
   }
@@ -197,7 +198,7 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!updated?.length) {
-    return { isSuccess: false, error: 'Transaction not found' };
+    return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
   return { isSuccess: true };
@@ -225,7 +226,7 @@ export async function deleteTransactionAction({ id }: { id: string }): Promise<T
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!deleted?.length) {
-    return { isSuccess: false, error: 'Transaction not found' };
+    return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
   return { isSuccess: true };

@@ -4,6 +4,7 @@ import type { ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireAuth } from '@/lib/require-auth';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
+import { CATEGORY_MSGS } from '@/messages';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
 import type { TAuthResult, TActionResult } from '@/types';
 
@@ -30,7 +31,7 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TAuth
       return { isSuccess: false, error: mapSupabaseError(ctError) };
     }
     if (!ct) {
-      return { isSuccess: false, error: 'Selected category type does not exist' };
+      return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_SELECTED };
     }
   }
 
@@ -79,7 +80,7 @@ export async function updateCategoryAction({
       return { isSuccess: false, error: mapSupabaseError(ctError) };
     }
     if (!ct) {
-      return { isSuccess: false, error: 'Selected category type does not exist' };
+      return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_SELECTED };
     }
   }
 
@@ -98,7 +99,7 @@ export async function updateCategoryAction({
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!updated?.length) {
-    return { isSuccess: false, error: 'Category not found' };
+    return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
   return { isSuccess: true };
@@ -120,7 +121,7 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAut
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!deleted?.length) {
-    return { isSuccess: false, error: 'Category not found' };
+    return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
   return { isSuccess: true };
@@ -175,7 +176,7 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!updated?.length) {
-    return { isSuccess: false, error: 'Category type not found' };
+    return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
   return { isSuccess: true };
@@ -197,7 +198,7 @@ export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!deleted?.length) {
-    return { isSuccess: false, error: 'Category type not found' };
+    return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
   return { isSuccess: true };

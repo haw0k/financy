@@ -30,7 +30,7 @@ pnpm test:run        # Run Vitest tests (single run)
 ### Data Flow
 
 ```
-Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*, admin/*)
+Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (dashboard/*, admin/*)
                 ↓
          app/actions/           lib/supabase/         config/
          ├── auth.ts             ├── server.ts         ├── env.config.ts
@@ -42,21 +42,21 @@ Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*, a
 ### Key Directories
 
 - `app/` - Next.js App Router pages (thin re-exports)
-  - `app/auth/` - Login, sign-up, admin auth, pending, OAuth callback, error pages
-  - `app/dashboard/` - Protected routes (transactions, categories, settings)
-  - `app/admin/` - Admin dashboard (pending user management)
+  - `app/(auth)/` - Login, sign-up, admin auth, pending, OAuth callback, error pages
+  - `app/(app)/dashboard/` - Protected routes (transactions, categories, settings)
+  - `app/(app)/admin/` - Admin dashboard (pending user management)
   - `app/api/` - API routes (admin pending-users CRUD, check-admin)
   - `app/actions/` - Server Actions for auth, categories, transactions, dashboard
   - `app/layout.tsx` - Root layout with ThemeProvider + RoleProvider
 - `components/pages/` - Page components (HomePage, auth/_, dashboard/_, admin/\*)
-- `components/layouts/` - Layout components (DashboardNav, Header, MobileNav, DashboardOverview, TransactionsTable, CategoriesTable, TransactionForm)
+- `components/layouts/` - Layout components (DashboardNav, Header, MobileNav, DashboardOverview, TransactionsTableClient/Server, CategoriesTableClient/Server, TransactionForm)
 - `components/providers/` - React context providers (ThemeProvider, MobileNavContext, RoleProvider)
 - `components/ui/` - Reusable UI components (PasswordField, DatePicker, ToastNotification)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase clients (server, middleware, admin) — **no browser client**
 - `lib/db-errors.ts` - PostgreSQL error code mapping for user-friendly messages
 - `config/` - Centralized configuration (env, routes, site, navigation)
-- `hooks/` - Custom hooks (useRole, useToast, useMobile, useHandler)
+- `hooks/` - Custom hooks (useMobile, useHandler)
 - `enums/` - TypeScript enums (ERole, EProfileStatus)
 - `interfaces/` - TypeScript interfaces (transactions, categories, stats)
 - `scripts/001_init_database.sql` - Database schema
@@ -180,24 +180,28 @@ These are enforced by `@typescript-eslint/naming-convention`. Failing to follow 
 
 Tests use Vitest + `@testing-library/react` + jsdom. A setup file at `tests/setup.ts` calls `cleanup()` after each test.
 
-When testing components that use `useRole()`:
+When testing components that use `useRoleContext()` from `@/components/providers`:
 
 ```ts
 // Module-level mock state — mutate in tests before dynamic import
-let useRoleReturn = {
+let useRoleContextReturn = {
   role: ERole.Admin,
   status: EProfileStatus.Approved,
-  isLoading: false,
-  error: null,
+  isLoaded: true,
   refetch: vi.fn(),
 };
 
-vi.mock('@/hooks', () => ({
-  useRole: () => useRoleReturn,
-}));
+vi.mock('@/components/providers', async () => {
+  const actual =
+    await vi.importActual<typeof import('@/components/providers')>('@/components/providers');
+  return {
+    ...actual,
+    useRoleContext: () => useRoleContextReturn,
+  };
+});
 
 // Use dynamic import AFTER setting mock state to avoid hoisting issues:
-const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+const { AdminPage } = await import('@/components/pages/admin/AdminPage');
 ```
 
 Mock `next/navigation` and Server Actions similarly at module level. Always use `vi.clearAllMocks()` in `beforeEach`.
