@@ -1,4 +1,4 @@
-import { updateSession } from './lib/supabase/middleware';
+import { updateSession } from './lib/supabase/update-session';
 import { NextRequest } from 'next/server';
 
 // Next.js expects a function named `proxy` in this file when using proxy mode
@@ -7,14 +7,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (.*\.(?:svg|png|jpg|jpeg|gif|webp)$)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  // Run session refresh and role checks only on protected routes. Public pages
+  // (/auth/*, /, etc.) do not need supabase.auth.getUser() on every request,
+  // avoiding 30-80ms warm / 100-300ms cold overhead per public page load.
+  matcher: ['/dashboard/:path*', '/admin/:path*'],
 };

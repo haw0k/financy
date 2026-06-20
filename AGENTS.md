@@ -70,11 +70,11 @@ Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (das
 
 There are **3** Supabase clients — the browser client was removed in favor of Server Actions:
 
-| Client     | File                                   | Key          | When to use                                   |
-| ---------- | -------------------------------------- | ------------ | --------------------------------------------- |
-| Server     | `lib/supabase/server.ts`               | Anon key     | Server Components, Server Actions, API routes |
-| Middleware | Inline in `lib/supabase/middleware.ts` | Anon key     | Session refresh, redirects                    |
-| Admin      | `lib/supabase/admin.ts`                | Service role | Admin operations (approve/delete users)       |
+| Client     | File                                       | Key          | When to use                                   |
+| ---------- | ------------------------------------------ | ------------ | --------------------------------------------- |
+| Server     | `lib/supabase/server.ts`                   | Anon key     | Server Components, Server Actions, API routes |
+| Middleware | Inline in `lib/supabase/update-session.ts` | Anon key     | Session refresh, redirects                    |
+| Admin      | `lib/supabase/admin.ts`                    | Service role | Admin operations (approve/delete users)       |
 
 The admin client uses `@supabase/supabase-js` directly (not `@supabase/ssr`) with `autoRefreshToken: false, persistSession: false`. Always validate caller authorization before using it.
 
@@ -92,7 +92,7 @@ All actions use `createClient()` from `@/lib/supabase/server` and return `TActio
 
 ### Middleware / Proxy Pattern
 
-The app uses Next.js proxy mode: `proxy.ts` exports a `proxy` function (invoked by Next.js) that delegates to `updateSession()` in `lib/supabase/middleware.ts`. The matcher in `proxy.ts` controls which paths the middleware runs on. Update both files when adding new protected routes.
+The app uses Next.js proxy mode: `proxy.ts` exports a `proxy` function (invoked by Next.js) that delegates to `updateSession()` in `lib/supabase/update-session.ts`. The matcher in `proxy.ts` controls which paths the middleware runs on. Update both files when adding new protected routes.
 
 Middleware checks:
 
