@@ -4,17 +4,14 @@ import { usePathname } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import { DashboardNav, Header, MobileNav } from '@/components/layouts';
 import { DashboardShell, useRoleContext } from '@/components/providers';
-import { navItems, routes } from '@/config';
+import { navItems, adminNavItem, routes } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
-import { ShieldCheckIcon } from 'lucide-react';
 import type { FC, ReactNode } from 'react';
 
 interface IAppShell {
   user: User;
   children: ReactNode;
 }
-
-const adminNavItem = { href: routes.admin, label: 'Admin', icon: ShieldCheckIcon };
 
 export const AppShell: FC<IAppShell> = ({ user, children }) => {
   const pathname = usePathname();
@@ -26,6 +23,10 @@ export const AppShell: FC<IAppShell> = ({ user, children }) => {
   const isAdminByRole = role === ERole.Admin && status === EProfileStatus.Approved;
   const isAdminByPath = pathname.startsWith(routes.admin);
   const resolvedItems = isAdminByRole || isAdminByPath ? [adminNavItem] : navItems;
+
+  // If the server-side role lookup failed, avoid showing the wrong menu by falling
+  // back to pathname. A null role on an admin path keeps the admin item visible.
+  // A null role on a dashboard path keeps the dashboard items visible.
 
   return (
     <DashboardShell>

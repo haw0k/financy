@@ -180,7 +180,10 @@ describe('signUpAction', () => {
     expect(mockSignUp).toHaveBeenCalledWith({
       email: 'test@test.com',
       password: 'password123',
-      options: { data: { role: 'receiver' } },
+      options: {
+        data: { role: 'receiver' },
+        emailRedirectTo: 'http://localhost:3000/auth/callback?next=/dashboard',
+      },
     });
   });
 });
@@ -218,7 +221,14 @@ describe('adminLoginAction', () => {
   it('should redirect non-admin users to dashboard', async () => {
     mockSignInWithPassword.mockResolvedValueOnce({
       error: null,
-      data: { user: { app_metadata: { role: 'sender' } } },
+      data: { user: { id: 'sender-1', app_metadata: { role: 'sender' } } },
+    });
+    mockFrom.mockReturnValueOnce({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: vi.fn(() => Promise.resolve({ data: { role: 'sender' }, error: null })),
+        })),
+      })),
     });
     mockRedirect.mockImplementation(() => {
       throw new Error('NEXT_REDIRECT');

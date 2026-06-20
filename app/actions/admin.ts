@@ -5,7 +5,7 @@ import { ERole, EProfileStatus } from '@/enums';
 import { requireAuth } from '@/lib/require-auth';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { ADMIN_MSGS } from '@/messages';
-import type { TAuthResult, TActionResult } from '@/types';
+import type { TActionResult } from '@/types';
 import { z } from 'zod';
 
 const userIdSchema = z.string().uuid({ message: ADMIN_MSGS.INVALID_USER_ID });
@@ -99,7 +99,7 @@ export async function getPendingUsersAction(): Promise<
   return { isSuccess: true, data: data ?? [] };
 }
 
-export async function approveUserAction({ userId }: { userId: string }): Promise<TAuthResult> {
+export async function approveUserAction({ userId }: { userId: string }): Promise<TActionResult<void>> {
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -119,6 +119,19 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
     return { isSuccess: false, error: targetResult.error };
   }
 
+  // Approve the profile first so the user is never left in a half-confirmed state
+  // (email confirmed but still pending). The DB trigger handle_profile_update will
+  // sync role/status into JWT app_metadata, and the subsequent email_confirm call
+  // forces Supabase to refresh the user's JWT on their next auth exchange.
+  const { error: statusError } = await adminResult.supabase
+    .from('profiles')
+    .update({ status: EProfileStatus.Approved })
+    .eq('id', userId);
+
+  if (statusError) {
+    return { isSuccess: false, error: ADMIN_MSGS.APPROVE_STATUS_FAILED };
+  }
+
   const adminClient = createAdminClient();
 
   const { error: confirmError } = await adminClient.auth.admin.updateUserById(userId, {
@@ -129,19 +142,10 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
     return { isSuccess: false, error: mapSupabaseError(confirmError) };
   }
 
-  const { error: statusError } = await adminResult.supabase
-    .from('profiles')
-    .update({ status: EProfileStatus.Approved })
-    .eq('id', userId);
-
-  if (statusError) {
-    return { isSuccess: false, error: ADMIN_MSGS.APPROVE_STATUS_FAILED };
-  }
-
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
-export async function rejectUserAction({ userId }: { userId: string }): Promise<TAuthResult> {
+export async function rejectUserAction({ userId }: { userId: string }): Promise<TActionResult<void>> {
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -169,5 +173,5 @@ export async function rejectUserAction({ userId }: { userId: string }): Promise<
     return { isSuccess: false, error: mapSupabaseError(deleteError) };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }

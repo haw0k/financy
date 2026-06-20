@@ -38,7 +38,7 @@ interface IPendingUser {
 
 export function AdminPage() {
   const router = useRouter();
-  const { role, status, isLoaded } = useRoleContext();
+  const { role, status, isLoaded, isError } = useRoleContext();
   const [users, setUsers] = useState<IPendingUser[]>([]);
   const [isLoading, setIsLoading] = useState(
     !isLoaded || role !== ERole.Admin || status !== EProfileStatus.Approved
@@ -47,6 +47,11 @@ export function AdminPage() {
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    if (isLoaded && isError) {
+      router.replace(routes.dashboard);
+      return;
+    }
+
     if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
       router.replace(routes.dashboard);
       return;
@@ -75,7 +80,7 @@ export function AdminPage() {
     return () => {
       isCancelled = true;
     };
-  }, [isLoaded, role, status, router]);
+  }, [isLoaded, isError, role, status, router]);
 
   const handleApprove = (userId: string) => {
     setProcessingIds((prev) => new Set(prev).add(userId));

@@ -7,7 +7,7 @@ import { requireApprovedUser } from '@/lib/require-auth';
 import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
 import type { TTransactionInput } from '@/schemas';
-import type { TAuthResult, TActionResult } from '@/types';
+import type { TActionResult } from '@/types';
 
 export async function getTransactionsDataAction(): Promise<
   TActionResult<{
@@ -86,7 +86,7 @@ export async function getReceiversAction(): Promise<
  * Ownership checks are intentionally absent — RLS is disabled and all authenticated
  * users share the same data pool. See CLAUDE.md for the permissions model.
  */
-export async function createTransactionAction(input: TTransactionInput): Promise<TAuthResult> {
+export async function createTransactionAction(input: TTransactionInput): Promise<TActionResult<void>> {
   const parsed = transactionSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -132,7 +132,7 @@ export async function createTransactionAction(input: TTransactionInput): Promise
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
 /**
@@ -147,7 +147,7 @@ export async function updateTransactionAction({
 }: {
   id: string;
   input: TTransactionInput;
-}): Promise<TAuthResult> {
+}): Promise<TActionResult<void>> {
   const parsed = transactionSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -201,7 +201,7 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
 /**
@@ -210,7 +210,7 @@ export async function updateTransactionAction({
  * Ownership checks are intentionally absent — any authenticated user can delete
  * any transaction. See CLAUDE.md for the permissions model.
  */
-export async function deleteTransactionAction({ id }: { id: string }): Promise<TAuthResult> {
+export async function deleteTransactionAction({ id }: { id: string }): Promise<TActionResult<void>> {
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -229,5 +229,5 @@ export async function deleteTransactionAction({ id }: { id: string }): Promise<T
     return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }

@@ -55,9 +55,9 @@ export async function loginAction(credentials: TLoginInput): Promise<TAuthResult
 /**
  * Regular user sign-up.
  *
- * Intentionally does NOT pass `emailRedirectTo` — the Supabase project setting
- * handles confirmation emails for regular users. Only admin sign-up uses
- * `emailRedirectTo` to point at the in-app callback route.
+ * Uses `emailRedirectTo` pointing at the in-app callback route so the email
+ * confirmation link always lands in a page we control, regardless of the
+ * Supabase project Site URL.
  */
 export async function signUpAction(input: TSignUpInput): Promise<TAuthResult> {
   const parsed = signUpSchema.safeParse(input);
@@ -65,11 +65,17 @@ export async function signUpAction(input: TSignUpInput): Promise<TAuthResult> {
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
+  const redirectUrl = getSupabaseRedirectUrl();
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: { data: { role: parsed.data.role } },
+    options: {
+      // Always redirect back to the app callback so the email confirmation link
+      // lands in a page we control, regardless of the Supabase project Site URL.
+      emailRedirectTo: redirectUrl ? `${redirectUrl}?next=/dashboard` : undefined,
+      data: { role: parsed.data.role },
+    },
   });
 
   if (error) {
@@ -97,7 +103,21 @@ export async function adminLoginAction(credentials: TLoginInput): Promise<TAuthR
   // their own dashboard, avoiding the /admin → /dashboard middleware hop and
   // the possibility of flashing the admin layout/menu.
   const appMetadata = data.user?.app_metadata as { role?: string } | undefined;
-  if (appMetadata?.role !== ERole.Admin) {
+  const roleFromJwt = appMetadata?.role;
+
+  // Fall back to the profiles table if the JWT app_metadata is stale or missing
+  // (e.g. sessions created before the metadata migration).
+  let resolvedRole = roleFromJwt;
+  if (resolvedRole !== ERole.Admin) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .maybeSingle();
+    resolvedRole = profile?.role ?? resolvedRole;
+  }
+
+  if (resolvedRole !== ERole.Admin) {
     redirect(routes.dashboard);
   }
 

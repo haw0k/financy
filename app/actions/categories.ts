@@ -6,9 +6,9 @@ import { requireApprovedUser } from '@/lib/require-auth';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
 import { CATEGORY_MSGS } from '@/messages';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
-import type { TAuthResult, TActionResult } from '@/types';
+import type { TActionResult } from '@/types';
 
-export async function createCategoryAction(input: TCategoryInput): Promise<TAuthResult> {
+export async function createCategoryAction(input: TCategoryInput): Promise<TActionResult<void>> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -48,7 +48,7 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TAuth
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
 export async function updateCategoryAction({
@@ -57,7 +57,7 @@ export async function updateCategoryAction({
 }: {
   id: string;
   input: TCategoryInput;
-}): Promise<TAuthResult> {
+}): Promise<TActionResult<void>> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -102,10 +102,10 @@ export async function updateCategoryAction({
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
-export async function deleteCategoryAction({ id }: { id: string }): Promise<TAuthResult> {
+export async function deleteCategoryAction({ id }: { id: string }): Promise<TActionResult<void>> {
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -124,10 +124,10 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAut
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
-export async function createCategoryTypeAction(input: TCategoryTypeInput): Promise<TAuthResult> {
+export async function createCategoryTypeAction(input: TCategoryTypeInput): Promise<TActionResult<void>> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -146,7 +146,7 @@ export async function createCategoryTypeAction(input: TCategoryTypeInput): Promi
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
 export async function updateCategoryTypeAction({
@@ -155,7 +155,7 @@ export async function updateCategoryTypeAction({
 }: {
   id: string;
   input: TCategoryTypeInput;
-}): Promise<TAuthResult> {
+}): Promise<TActionResult<void>> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -179,10 +179,10 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
-export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<TAuthResult> {
+export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<TActionResult<void>> {
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -201,7 +201,7 @@ export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
-  return { isSuccess: true };
+  return { isSuccess: true, data: undefined };
 }
 
 export async function getCategoriesDataAction(): Promise<

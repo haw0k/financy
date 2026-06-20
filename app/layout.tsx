@@ -18,7 +18,11 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 };
 
-async function getProfile() {
+type TProfileResult =
+  | { role: ERole | null; status: EProfileStatus | null; isError: false }
+  | { role: null; status: null; isError: true };
+
+async function getProfile(): Promise<TProfileResult> {
   try {
     const supabase = await createClient();
     const {
@@ -26,7 +30,7 @@ async function getProfile() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { role: null, status: null };
+      return { role: null, status: null, isError: false };
     }
 
     // Prefer role/status from JWT app_metadata (populated by database trigger on signup).
@@ -42,7 +46,7 @@ async function getProfile() {
       : null;
 
     if (roleFromJwt && statusFromJwt) {
-      return { role: roleFromJwt, status: statusFromJwt };
+      return { role: roleFromJwt, status: statusFromJwt, isError: false };
     }
 
     const { data: profile } = await supabase
@@ -60,9 +64,9 @@ async function getProfile() {
         ? (profile?.status as EProfileStatus)
         : null);
 
-    return { role, status };
+    return { role, status, isError: false };
   } catch {
-    return { role: null, status: null };
+    return { role: null, status: null, isError: true };
   }
 }
 
@@ -71,7 +75,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { role, status } = await getProfile();
+  const { role, status, isError } = await getProfile();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -88,7 +92,7 @@ export default async function RootLayout({
           `}
         </Script>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          <RoleProvider role={role} status={status}>
+          <RoleProvider role={role} status={status} isError={isError}>
             {children}
           </RoleProvider>
           <SonnerToaster richColors position="bottom-right" />
