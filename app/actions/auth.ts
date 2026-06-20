@@ -1,7 +1,6 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import { routes, getSupabaseRedirectUrl } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
 import { loginSchema, signUpSchema } from '@/schemas';
@@ -108,16 +107,13 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
     return { isSuccess: false, error: parsed.error.issues[0].message };
   }
 
-  // Resolve redirect URL: prefer the configured env var, fall back to the
-  // request origin built from `headers()` (`x-forwarded-host` / `host` + `x-forwarded-proto`).
-  const redirectUrl =
-    getSupabaseRedirectUrl() ??
-    (await (async () => {
-      const heads = await headers();
-      const host = heads.get('x-forwarded-host') || heads.get('host') || 'localhost:3000';
-      const proto = heads.get('x-forwarded-proto') || 'http';
-      return `${proto}://${host}${routes.authCallback}`;
-    })());
+  // Resolve redirect URL from the configured env var only. Building it from
+  // request headers would allow host-header injection and open redirects in
+  // the confirmation email link.
+  const redirectUrl = getSupabaseRedirectUrl();
+  if (!redirectUrl) {
+    return { isSuccess: false, error: AUTH_MSGS.REDIRECT_URL_NOT_CONFIGURED };
+  }
 
   const supabase = await createClient();
 
@@ -167,15 +163,18 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
 /**
  * Signs out the current user and redirects to the login page.
  *
- * `signOut()` is best-effort — even if it fails, the user is redirected to login.
+ * `signOut()` returns an error object on failure rather than throwing. We still
+ * redirect on error because the session cookie is cleared client-side and the
+ * user should land on the login page, but we log the failure for observability.
  * `redirect()` throws `NEXT_REDIRECT`, so this function never returns.
  */
 export async function signOutAction(): Promise<never> {
   const supabase = await createClient();
-  try {
-    await supabase.auth.signOut();
-  } catch {
-    // Best-effort: ignore thrown errors, always redirect
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    // Log for observability but continue to redirect: the cookie will be
+    // cleared by the browser/middleware on the next request.
+    console.error('Sign out failed:', error.message);
   }
   redirect(routes.login);
 }

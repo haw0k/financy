@@ -10,4 +10,5 @@ export const AUTH_MSGS = {
   TIMEOUT: 'Request timed out. Please try again.',
   PENDING_APPROVAL_REQUIRED:
     'Your account is pending approval. Please wait for an admin to approve your registration.',
+  ADMIN_ACCESS_DENIED: 'Admin accounts cannot access financial data.',
 } as const;

@@ -16,7 +16,7 @@ All database operations are performed through **Next.js Server Actions** in `app
 | `transactions.ts` | getTransactions, getReceivers, createTransaction, updateTransaction, deleteTransaction                 |
 | `dashboard.ts`    | getDashboardData (transactions + stats)                                                                |
 
-All actions use `requireAuth()` from `@/lib/require-auth` which returns `{ supabase, userId }`. Data actions (`categories.ts`, `transactions.ts`, `dashboard.ts`) use `requireApprovedUser()` so pending users are rejected at the action boundary.
+All actions use `requireAuth()` from `@/lib/require-auth` which returns `{ supabase, userId }`. Data actions (`categories.ts`, `transactions.ts`, `dashboard.ts`) use `requireApprovedUser()` so pending users and admin users are rejected at the action boundary.
 
 **Benefits of this architecture:**
 
@@ -165,7 +165,7 @@ financy/
 
 - **Admin Auth Page** (`/auth/admin`): Signup for first admin, login for subsequent
 - **Admin Dashboard** (`/admin`): View pending user registrations in a table
-- **Approve/Reject**: `approveUserAction` confirms email and sets profile status to approved; `rejectUserAction` deletes user
+- **Approve/Reject**: `approveUserAction` confirms email and sets profile status to approved; `rejectUserAction` deletes user; both sanitize service-role client errors
 - **Self-protection**: Admin cannot approve or reject their own account
 - **Middleware protection**: Unauthorized users redirected away from admin routes
 

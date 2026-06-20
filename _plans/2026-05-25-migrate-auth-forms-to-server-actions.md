@@ -72,9 +72,11 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 ### Phase 6 — Code Review Follow-up
 
 - [x] Close authorization gap in data Server Actions by adding `requireApprovedUser` to `categories.ts`, `transactions.ts`, and `dashboard.ts`
+- [x] Ensure `requireApprovedUser` rejects admin users from financial data actions
 - [x] Remove dead admin API routes `app/api/admin/pending-users/*`
 - [x] Align `scripts/002_add_role_to_jwt_metadata.sql` with `001_init_database.sql`: admin profile starts as `pending` and is approved on email confirmation
 - [x] Harden `approveUserAction` / `rejectUserAction` with target UUID, role, and status validation
+- [x] Map service-role client errors through `mapSupabaseError` in admin actions
 - [x] Surface `statsError` in `DashboardOverview` with a visible warning
 - [x] Remove admin navigation to financial pages (`/admin/categories`, `/admin/dashboard`, `/admin/settings`)
 - [x] Fix `AdminAuthPage` error state when `/api/auth/check-admin` fails (show retry instead of defaulting to login)
@@ -149,7 +151,9 @@ All actions use `createClient()` from `@/lib/supabase/server`. Marked with `'use
 - [x] Password mismatch on sign-up shows error without calling server action
 - [x] Auth errors (invalid credentials, email taken) shown as toast notifications
 - [x] Loading state correctly shown and cleared in all cases
-- [x] Data Server Actions reject pending users at the action boundary
+- [x] Data Server Actions reject pending users and admin users at the action boundary
 - [x] Admin actions validate target user before approve/reject
+- [x] Admin sign-up fails early when redirect URL is not configured
+- [x] Admin action errors from the service-role client are sanitized
 - [x] `pnpm test:run` passes
 - [ ] `pnpm lint && pnpm type-check && pnpm format:check && pnpm build` passes

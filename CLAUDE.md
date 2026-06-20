@@ -107,7 +107,7 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 
 **Admin registration** (`/auth/admin`):
 
-1. Admin signs up via `/auth/admin` → server action checks no **approved** admin exists → DB trigger creates profile with `status = 'pending'` + updates `app_metadata`
+1. Admin signs up via `/auth/admin` → server action checks no **approved** admin exists and that `getSupabaseRedirectUrl()` is configured → DB trigger creates profile with `status = 'pending'` + updates `app_metadata`
 2. Supabase sends confirmation email → admin clicks link → callback exchanges code → `handle_email_confirmation` DB trigger sets `status = 'approved'` (only if no other admin was approved first — unique partial index enforces single approved admin) → callback checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent admin logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
 
@@ -152,9 +152,9 @@ Admin-specific flows:
 
 ### Server Action Authorization
 
-All data-mutating and data-reading Server Actions (`categories.ts`, `transactions.ts`, `dashboard.ts`) call `requireApprovedUser()` from `lib/require-auth.ts`. This rejects pending users at the action boundary even if they bypass middleware and call the generated action endpoint directly.
+All data-mutating and data-reading Server Actions (`categories.ts`, `transactions.ts`, `dashboard.ts`) call `requireApprovedUser()` from `lib/require-auth.ts`. This rejects pending users **and admin users** at the action boundary even if they bypass middleware and call the generated action endpoint directly.
 
-Admin actions (`admin.ts`) validate that the caller is an approved admin and that the target `userId` is a valid UUID belonging to a pending, non-admin profile before approving or rejecting.
+Admin actions (`admin.ts`) validate that the caller is an approved admin and that the target `userId` is a valid UUID belonging to a pending, non-admin profile before approving or rejecting. Errors from the service-role admin client are mapped through `mapSupabaseError` rather than returned raw.
 
 ## Code Style
 

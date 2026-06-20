@@ -126,7 +126,7 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
   });
 
   if (confirmError) {
-    return { isSuccess: false, error: confirmError.message };
+    return { isSuccess: false, error: mapSupabaseError(confirmError) };
   }
 
   const { error: statusError } = await adminResult.supabase
@@ -166,7 +166,7 @@ export async function rejectUserAction({ userId }: { userId: string }): Promise<
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
 
   if (deleteError) {
-    return { isSuccess: false, error: deleteError.message };
+    return { isSuccess: false, error: mapSupabaseError(deleteError) };
   }
 
   return { isSuccess: true };

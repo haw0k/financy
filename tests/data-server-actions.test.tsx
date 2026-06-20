@@ -25,10 +25,10 @@ vi.mock('@/lib/with-timeout', () => ({
   withTimeout: <T,>(p: Promise<T>) => p,
 }));
 
-function mockApprovedProfile() {
+function mockApprovedProfile(role = 'sender') {
   mockFrom.mockImplementation((table: string) => {
     if (table === 'profiles') {
-      return createQueryBuilder({ status: 'approved' });
+      return createQueryBuilder({ status: 'approved', role });
     }
     return createQueryBuilder(null);
   });
@@ -140,7 +140,7 @@ describe('getDashboardDataAction', () => {
 
     mockFrom.mockImplementation((table: string) => {
       if (table === 'profiles') {
-        return createQueryBuilder({ status: 'pending' });
+        return createQueryBuilder({ status: 'pending', role: 'sender' });
       }
       return createQueryBuilder(null);
     });
@@ -150,6 +150,24 @@ describe('getDashboardDataAction', () => {
     expect(result.isSuccess).toBe(false);
     if (!result.isSuccess) {
       expect(result.error).toContain('pending');
+    }
+  });
+
+  it('should reject admin users', async () => {
+    const { getDashboardDataAction } = await import('@/app/actions/dashboard');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved', role: 'admin' });
+      }
+      return createQueryBuilder(null);
+    });
+
+    const result = await getDashboardDataAction();
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Admin accounts cannot access financial data.');
     }
   });
 });

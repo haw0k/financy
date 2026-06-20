@@ -128,10 +128,10 @@ async function handleSubmit(formData: FormData) {
 ```typescript
 // Server Action
 'use server'
-import { requireAuth } from '@/lib/require-auth'
+import { requireApprovedUser } from '@/lib/require-auth'
 
 export async function createTransactionAction(input: TInput): Promise<TAuthResult> {
-  const authResult = await requireAuth() // Single DB connection, returns supabase + userId
+  const authResult = await requireApprovedUser() // Rejects pending users and admins
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error }
   }

@@ -16,8 +16,10 @@ Replace direct client-side Supabase auth calls in login, sign-up, and admin auth
 - Redirect after successful auth must still work (login → dashboard, sign-up → success page)
 - Admin auth flow (login vs sign-up detection) must continue to work correctly
 - Existing role/status middleware behavior must not be affected
-- Data Server Actions (categories, transactions, dashboard) must reject unapproved users at the action boundary via `requireApprovedUser`
+- Data Server Actions (categories, transactions, dashboard) must reject unapproved users and admin users at the action boundary via `requireApprovedUser`
 - Admin actions must validate the target user (valid UUID, non-admin, pending status) before approve/reject
+- Admin sign-up must use only the configured redirect URL and fail if it is missing
+- Admin action errors from the service-role client must be mapped through the centralized error mapper
 - Dead admin API routes must be removed after migrating admin UI to Server Actions
 
 ## Possible Edge Cases
@@ -39,8 +41,10 @@ Replace direct client-side Supabase auth calls in login, sign-up, and admin auth
 - Loading state is correctly shown and cleared in all cases (success, error, timeout)
 - Existing tests pass or are updated to reflect the new pattern
 - No regression in middleware-based route protection
-- Data Server Actions reject pending users with a clear message
+- Data Server Actions reject pending users and admin users with a clear message
 - Admin actions validate target UUID, role, and status before mutating
+- Admin sign-up fails early when redirect URL is not configured
+- Admin action errors from the service-role client are sanitized
 - DashboardOverview displays a warning when stats RPC fails
 - Admin navigation does not expose financial pages to admin users
 

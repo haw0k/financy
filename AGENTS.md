@@ -88,7 +88,7 @@ All data mutations go through Server Actions in `app/actions/`:
 - `transactions.ts` — CRUD for transactions, get receivers list
 - `dashboard.ts` — get transactions + stats for dashboard overview
 
-All actions use `createClient()` from `@/lib/supabase/server` and return `TActionResult<T>` or `TAuthResult`. Data actions use `requireApprovedUser()` so pending users cannot call them directly.
+All actions use `createClient()` from `@/lib/supabase/server` and return `TActionResult<T>` or `TAuthResult`. Data actions use `requireApprovedUser()` so pending users and admin users cannot call them directly.
 
 ### Middleware / Proxy Pattern
 
@@ -129,7 +129,7 @@ Supabase project has **"Enable email confirmations" ON** (default). Confirmation
 
 **Admin registration** (`/auth/admin`):
 
-1. Admin signs up → server action checks no **approved** admin exists → DB trigger creates profile with `status = 'pending'` + updates `app_metadata`
+1. Admin signs up → server action checks no **approved** admin exists and that `getSupabaseRedirectUrl()` is configured → DB trigger creates profile with `status = 'pending'` + updates `app_metadata`
 2. Supabase sends confirmation email → admin clicks link → callback exchanges code → `handle_email_confirmation` DB trigger sets `status = 'approved'` (unique partial index ensures only one admin can be approved) → callback checks profile (admin + approved) → redirects to `/admin`
 3. Subsequent logins: `signInWithPassword` → `router.push('/admin')` → middleware verifies user, email_confirmed_at, profile role/status → `/admin`
 

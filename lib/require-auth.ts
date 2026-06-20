@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { EProfileStatus } from '@/enums';
+import { ERole, EProfileStatus } from '@/enums';
 import { AUTH_MSGS } from '@/messages';
 
 /**
@@ -46,7 +46,7 @@ export async function requireApprovedUser(): Promise<
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('status')
+    .select('status, role')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -56,6 +56,10 @@ export async function requireApprovedUser(): Promise<
 
   if (profile?.status !== EProfileStatus.Approved) {
     return { error: AUTH_MSGS.PENDING_APPROVAL_REQUIRED };
+  }
+
+  if (profile.role === ERole.Admin) {
+    return { error: AUTH_MSGS.ADMIN_ACCESS_DENIED };
   }
 
   return { supabase, userId: user.id };
