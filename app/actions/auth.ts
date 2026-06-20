@@ -80,7 +80,28 @@ export async function signUpAction(input: TSignUpInput): Promise<TAuthResult> {
 }
 
 export async function adminLoginAction(credentials: TLoginInput): Promise<TAuthResult> {
-  return signInAndRedirect(credentials, routes.admin);
+  const parsed = loginSchema.safeParse(credentials);
+  if (!parsed.success) {
+    return { isSuccess: false, error: parsed.error.issues[0].message };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+
+  if (error) {
+    return { isSuccess: false, error: normalizeAuthError(error) };
+  }
+
+  // Only approved/pending admins should ever land on /admin. Non-admin users
+  // that typed their credentials on /auth/admin are redirected straight to
+  // their own dashboard, avoiding the /admin → /dashboard middleware hop and
+  // the possibility of flashing the admin layout/menu.
+  const appMetadata = data.user?.app_metadata as { role?: string } | undefined;
+  if (appMetadata?.role !== ERole.Admin) {
+    redirect(routes.dashboard);
+  }
+
+  redirect(routes.admin);
 }
 
 /**

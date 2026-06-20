@@ -197,7 +197,10 @@ describe('adminLoginAction', () => {
   });
 
   it('should call signInWithPassword and redirect to admin on success', async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({ error: null });
+    mockSignInWithPassword.mockResolvedValueOnce({
+      error: null,
+      data: { user: { app_metadata: { role: 'admin' } } },
+    });
     mockRedirect.mockImplementation(() => {
       throw new Error('NEXT_REDIRECT');
     });
@@ -209,6 +212,22 @@ describe('adminLoginAction', () => {
       email: 'admin@test.com',
       password: 'adminpass123',
     });
+    expect(mockRedirect).toHaveBeenCalledWith('/admin');
+  });
+
+  it('should redirect non-admin users to dashboard', async () => {
+    mockSignInWithPassword.mockResolvedValueOnce({
+      error: null,
+      data: { user: { app_metadata: { role: 'sender' } } },
+    });
+    mockRedirect.mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT');
+    });
+    const { adminLoginAction } = await import('@/app/actions/auth');
+    await expect(
+      adminLoginAction({ email: 'sender@test.com', password: 'senderpass123' })
+    ).rejects.toThrow('NEXT_REDIRECT');
+    expect(mockRedirect).toHaveBeenCalledWith('/dashboard');
   });
 });
 
