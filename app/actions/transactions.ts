@@ -157,8 +157,18 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  // Validate receiverId against approved, non-admin receivers
-  const receiverId = parsed.data.receiverId || authResult.userId;
+  // Validate receiverId against approved, non-admin receivers.
+  // When receiverId is not provided for an update, omit receiver_id from the
+  // payload to preserve the existing value (unlike create, which defaults to
+  // the authenticated user for self-transfers).
+  const updatePayload: Record<string, unknown> = {
+    amount: parsed.data.amount,
+    type: parsed.data.type,
+    date: parsed.data.date,
+    description: parsed.data.description,
+    category_id: parsed.data.categoryId ?? null,
+  };
+
   if (parsed.data.receiverId) {
     const { data: receiver, error: receiverError } = await authResult.supabase
       .from('profiles')
@@ -174,18 +184,12 @@ export async function updateTransactionAction({
     if (!receiver) {
       return { isSuccess: false, error: 'Invalid receiver selected' };
     }
+    updatePayload.receiver_id = parsed.data.receiverId;
   }
 
   const { data: updated, error } = await authResult.supabase
     .from('transactions')
-    .update({
-      amount: parsed.data.amount,
-      type: parsed.data.type,
-      date: parsed.data.date,
-      description: parsed.data.description,
-      category_id: parsed.data.categoryId ?? null,
-      receiver_id: receiverId,
-    })
+    .update(updatePayload)
     .eq('id', id)
     .select('id');
 

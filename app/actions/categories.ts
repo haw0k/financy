@@ -18,6 +18,22 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TAuth
     return { isSuccess: false, error: authResult.error };
   }
 
+  // Validate type_id references an existing category type
+  if (parsed.data.type_id) {
+    const { data: ct, error: ctError } = await authResult.supabase
+      .from('category_types')
+      .select('id')
+      .eq('id', parsed.data.type_id)
+      .maybeSingle();
+
+    if (ctError) {
+      return { isSuccess: false, error: mapSupabaseError(ctError) };
+    }
+    if (!ct) {
+      return { isSuccess: false, error: 'Selected category type does not exist' };
+    }
+  }
+
   const { error } = await authResult.supabase.from('categories').insert([
     {
       name: parsed.data.name,
@@ -49,6 +65,22 @@ export async function updateCategoryAction({
   const authResult = await requireAuth();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
+  }
+
+  // Validate type_id references an existing category type
+  if (parsed.data.type_id) {
+    const { data: ct, error: ctError } = await authResult.supabase
+      .from('category_types')
+      .select('id')
+      .eq('id', parsed.data.type_id)
+      .maybeSingle();
+
+    if (ctError) {
+      return { isSuccess: false, error: mapSupabaseError(ctError) };
+    }
+    if (!ct) {
+      return { isSuccess: false, error: 'Selected category type does not exist' };
+    }
   }
 
   const { data: updated, error } = await authResult.supabase

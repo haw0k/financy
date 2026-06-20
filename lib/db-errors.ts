@@ -5,7 +5,7 @@ interface IPostgrestErrorLike {
 
 const PG_ERROR_MAP: Record<string, string> = {
   '23505': 'Record already exists',
-  '23503': 'Cannot delete: record is linked to other data',
+  '23503': 'Referenced record does not exist or is in use',
   '23502': 'All required fields must be filled',
   '42P01': 'Table not found',
   '42703': 'Field not found',
