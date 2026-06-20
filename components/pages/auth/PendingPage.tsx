@@ -1,23 +1,26 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { Button } from '@/lib/shadcn';
-import { createClient } from '@/lib/supabase/client';
-import { useRole } from '@/hooks';
+import { signOutAction } from '@/app/actions/auth';
+import { useRoleContext } from '@/components/providers';
+import { AUTH_MSGS } from '@/messages';
+import { showError } from '@/components/ui';
 import { ERole } from '@/enums';
-import { routes } from '@/config';
 
 export function PendingPage() {
-  const { role, isLoading } = useRole();
-  const router = useRouter();
+  const { role, isLoaded } = useRoleContext();
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push(routes.login);
+    try {
+      await signOutAction();
+    } catch (error) {
+      if (isRedirectError(error)) throw error;
+      showError('Logout', AUTH_MSGS.TIMEOUT);
+    }
   };
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center p-6">
         <p className="text-muted-foreground">Loading...</p>

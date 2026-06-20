@@ -4,7 +4,7 @@ import { env } from '@/config';
 export function createAdminClient() {
   if (!env.supabaseUrl || !env.supabaseServiceRoleKey) {
     throw new Error(
-      'Missing Supabase admin environment variables. Please configure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.'
+      'Missing Supabase admin environment variables. Please configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.'
     );
   }
 

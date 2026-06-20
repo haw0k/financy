@@ -1,8 +1,11 @@
 'use client';
 
-import { type FC, useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { type FC, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { showError } from '@/components/ui';
+import { deleteTransactionAction } from '@/app/actions/transactions';
+import { withTimeout } from '@/lib/with-timeout';
+import { TRANSACTION_MSGS } from '@/messages';
 import {
   Card,
   CardContent,
@@ -22,58 +25,26 @@ import { Plus, Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layouts';
 import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 
-interface ITransactionsTable {
-  userId: string;
+interface ITransactionsTableClient {
+  initialTransactions: ITransaction[];
+  initialCategories: ICategory[];
+  initialCategoryTypes: ICategoryType[];
 }
 
-export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
+  initialTransactions,
+  initialCategories,
+  initialCategoryTypes,
+}) => {
+  const [transactions, setTransactions] = useState<ITransaction[]>(initialTransactions);
+  const [categories] = useState<ICategory[]>(initialCategories);
+  const [categoryTypes] = useState<ICategoryType[]>(initialCategoryTypes);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const supabase = createClient();
-
-  const fetchTransactions = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setTransactions(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase.from('categories').select('*');
-
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    }
-  };
-
-  const fetchCategoryTypes = async () => {
-    try {
-      const { data, error } = await supabase.from('category_types').select('*');
-
-      if (error) throw error;
-      setCategoryTypes(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    }
-  };
+  const [, startTransition] = useTransition();
+  const router = useRouter();
 
   const getCategoryDisplayName = (categoryId: string | null) => {
     if (!categoryId) return '-';
@@ -84,23 +55,19 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
     return `${category.name} (${categoryType.name})`;
   };
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchTransactions();
-    fetchCategories();
-    fetchCategoryTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase.from('transactions').delete().eq('id', id);
-
-      if (error) throw error;
-      setTransactions(transactions.filter((t) => t.id !== id));
-    } catch (error) {
-      handleSupabaseError(error, 'Transactions');
-    }
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(deleteTransactionAction({ id }));
+        if (result.isSuccess) {
+          setTransactions(transactions.filter((t) => t.id !== id));
+        } else if (result.error) {
+          showError('Transactions', result.error);
+        }
+      } catch {
+        showError('Transactions', TRANSACTION_MSGS.TIMEOUT);
+      }
+    });
   };
 
   const filteredTransactions = transactions.filter((trans) => {
@@ -135,17 +102,53 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
         <CardContent className="flex flex-col gap-6">
           {isShowForm && (
             <TransactionForm
-              userId={userId}
-              onSuccess={() => {
+              onSuccess={async (input) => {
                 setIsShowForm(false);
+                if (editingId) {
+                  setTransactions(
+                    transactions.map((t) =>
+                      t.id === editingId
+                        ? {
+                            ...t,
+                            amount: input.amount,
+                            type: input.type,
+                            date: input.date,
+                            description: input.description,
+                            category_id: input.categoryId ?? null,
+                            receiver_id: input.receiverId || t.receiver_id,
+                          }
+                        : t
+                    )
+                  );
+                } else {
+                  // Optimistic add with temp ID; router.refresh() will correct it
+                  setTransactions([
+                    {
+                      id: `temp-${Date.now()}`,
+                      amount: input.amount,
+                      type: input.type,
+                      date: input.date,
+                      description: input.description,
+                      category_id: null,
+                      sender_id: '',
+                      receiver_id: input.receiverId || '',
+                    },
+                    ...transactions,
+                  ]);
+                }
                 setEditingId(null);
-                fetchTransactions();
+                // Re-render server components to fetch fresh data
+                router.refresh();
               }}
               onCancel={() => {
                 setIsShowForm(false);
                 setEditingId(null);
               }}
               editingId={editingId}
+              editingTransaction={
+                editingId ? (transactions.find((t) => t.id === editingId) ?? null) : null
+              }
+              categories={categories}
             />
           )}
 
@@ -191,9 +194,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
             </div>
           </div>
 
-          {isLoading ? (
-            <div className="text-center text-muted-foreground">Loading...</div>
-          ) : filteredTransactions.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <div className="text-center text-muted-foreground">No transactions found</div>
           ) : (
             <div className="overflow-x-auto">
@@ -244,6 +245,7 @@ export const TransactionsTable: FC<ITransactionsTable> = ({ userId }) => {
                             size="sm"
                             onClick={() => {
                               setEditingId(transaction.id);
+                              setIsShowForm(true);
                             }}
                           >
                             <Edit2 className="h-4 w-4" />

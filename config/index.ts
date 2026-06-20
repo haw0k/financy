@@ -1,5 +1,6 @@
+export { authConfig } from './auth.config';
 export { env, getSupabaseRedirectUrl } from './env.config';
+export { navItems, adminNavItem } from './navigation.config';
 export { routes } from './routes.config';
 export { siteConfig } from './site.config';
-export { navItems, adminNavItems } from './navigation.config';
 export type { INavItem } from './navigation.config';

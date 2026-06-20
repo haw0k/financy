@@ -1,7 +1,6 @@
 'use client';
 
 import { useMobileNav } from '@/components/providers';
-import { useRouter } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,7 +14,10 @@ import {
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
 import { routes, siteConfig } from '@/config';
-import { createClient } from '@/lib/supabase/client';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { signOutAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
+import { showError } from '@/components/ui';
 import { type FC } from 'react';
 
 interface IHeader {
@@ -23,13 +25,15 @@ interface IHeader {
 }
 
 export const Header: FC<IHeader> = ({ user }) => {
-  const router = useRouter();
-  const supabase = createClient();
   const { setIsOpen } = useMobileNav();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push(routes.login);
+    try {
+      await signOutAction();
+    } catch (error) {
+      if (isRedirectError(error)) throw error;
+      showError('Logout', AUTH_MSGS.TIMEOUT);
+    }
   };
 
   return (

@@ -1,11 +1,9 @@
 'use client';
 
-import { type FC, useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { type FC, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import type { ITransaction, IStats, ICategoryData } from '@/interfaces';
+import type { ITransaction, IStats } from '@/interfaces';
 import {
   LineChart,
   Line,
@@ -20,79 +18,44 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-export const DashboardOverview: FC = () => {
-  const [stats, setStats] = useState<IStats | null>(null);
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  const [categoryData, setCategoryData] = useState<ICategoryData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const supabase = createClient();
+const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
-  const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+interface IDashboardOverview {
+  transactions: ITransaction[];
+  stats: IStats | null;
+  statsError?: string;
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch transactions
-        const { data: transData, error: transError } = await supabase
-          .from('transactions')
-          .select('*')
-          .order('date', { ascending: false })
-          .limit(10);
-
-        if (transError) throw transError;
-        setTransactions(transData || []);
-
-        // Calculate stats
-        const { data: statsData, error: statsError } = await supabase.rpc('get_user_stats');
-
-        if (statsError) throw statsError;
-        if (statsData) {
-          setStats(Array.isArray(statsData) ? statsData[0] : statsData);
-        }
-
-        // Prepare category data for pie chart
-        if (transData) {
-          const categoryMap = new Map<string, number>();
-          transData.forEach((trans) => {
-            const type = trans.type === 'income' ? 'Income' : 'Expense';
-            categoryMap.set(type, (categoryMap.get(type) || 0) + Number(trans.amount));
-          });
-          setCategoryData(
-            Array.from(categoryMap, ([name, value]) => ({
-              name,
-              value: Number(value.toFixed(2)),
-            }))
-          );
-        }
-      } catch (error) {
-        handleSupabaseError(error, 'Dashboard');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Prepare data for line chart
-  const chartData = transactions
-    .slice()
-    .reverse()
-    .map((trans, idx) => ({
-      date: new Date(trans.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      amount: trans.amount,
-      cumulative:
-        (idx + 1) * (trans.type === 'income' ? Number(trans.amount) : -Number(trans.amount)),
+export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats, statsError }) => {
+  const incomeExpenseData = useMemo(() => {
+    const typeMap = new Map<string, number>();
+    transactions.forEach((trans) => {
+      const type = trans.type === 'income' ? 'Income' : 'Expense';
+      typeMap.set(type, (typeMap.get(type) || 0) + Number(trans.amount));
+    });
+    return Array.from(typeMap, ([name, value]) => ({
+      name,
+      value: Number(value.toFixed(2)),
     }));
+  }, [transactions]);
 
-  if (isLoading) {
-    return <div className="text-center text-muted-foreground">Loading...</div>;
-  }
+  const chartData = useMemo(
+    () =>
+      transactions
+        .slice()
+        .reverse()
+        .map((trans) => ({
+          date: new Date(trans.date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          }),
+          amount: trans.amount,
+        })),
+    [transactions]
+  );
 
   return (
     <div className="grid gap-6">
-      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -132,7 +95,12 @@ export const DashboardOverview: FC = () => {
         </Card>
       </div>
 
-      {/* Charts */}
+      {statsError && (
+        <div className="rounded-md border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200">
+          {statsError}
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -140,11 +108,11 @@ export const DashboardOverview: FC = () => {
             <CardDescription>Distribution of your transactions</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
-            {categoryData.length > 0 ? (
+            {incomeExpenseData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={categoryData}
+                    data={incomeExpenseData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -153,7 +121,7 @@ export const DashboardOverview: FC = () => {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {incomeExpenseData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

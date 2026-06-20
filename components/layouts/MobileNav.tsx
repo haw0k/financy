@@ -2,15 +2,12 @@
 
 import { usePathname } from 'next/navigation';
 import { useMobileNav } from '@/components/providers';
-import { useRole } from '@/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
 import { navItems, routes, siteConfig, type INavItem } from '@/config';
 import { cn } from '@/lib/utils';
-import { ERole, EProfileStatus } from '@/enums';
 import { type FC } from 'react';
-import { ShieldCheckIcon } from 'lucide-react';
 
 interface IMobileNav {
   items?: INavItem[];
@@ -19,11 +16,7 @@ interface IMobileNav {
 export const MobileNav: FC<IMobileNav> = ({ items }) => {
   const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
-  const { role, status } = useRole();
-
-  const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
   const resolvedItems = items ?? navItems;
-  const isCustomItems = items !== undefined;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -81,21 +74,6 @@ export const MobileNav: FC<IMobileNav> = ({ items }) => {
               </Link>
             );
           })}
-          {!isCustomItems && isAdmin && (
-            <Link
-              href={routes.admin}
-              onClick={() => setIsOpen(false)}
-              className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                pathname === routes.admin
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-              )}
-            >
-              <ShieldCheckIcon className="h-4 w-4" />
-              Admin
-            </Link>
-          )}
         </div>
       </SheetContent>
     </Sheet>

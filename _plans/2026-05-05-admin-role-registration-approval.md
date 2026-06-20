@@ -18,8 +18,8 @@ Link: [Admin Role and Registration Approval](_specs/2026-05-05-admin-role-regist
 - **Status column**: separate from role — `profiles.status` (`ProfileStatus.Pending` | `ProfileStatus.Approved`). Role stays as `Role.Sender`/`Role.Receiver`/`Role.Admin`
 - **User emails**: signup WITHOUT `emailRedirectTo` — no email on signup. Admin approve calls `adminClient.auth.admin.updateUserById(userId, { email_confirm: true })` which triggers Supabase's built-in confirmation email. User clicks → email confirmed → can access dashboard
 - **Admin notification**: none — admin checks the `/admin` page manually. No external email service needed. The only emails are Supabase's built-in confirmation emails
-- **Admin signup**: `handle_new_user()` trigger auto-sets `status = ProfileStatus.Approved` when `role = Role.Admin`. Admin also gets Supabase confirmation email via `emailRedirectTo`
-- **First admin**: `/auth/admin` shows signup form only when no approved admin exists. Trigger auto-approves
+- **Admin signup**: `handle_new_user()` trigger sets `status = ProfileStatus.Pending` when `role = Role.Admin`. The `handle_email_confirmation` trigger then auto-sets `status = ProfileStatus.Approved` once the admin confirms their email. Admin also gets Supabase confirmation email via `emailRedirectTo`
+- **First admin**: `/auth/admin` shows signup form only when no approved admin exists. Trigger auto-approves on email confirmation
 - **Reject**: `admin.deleteUser()` — cascade deletes profile row
 
 ## Implementation Steps
@@ -31,7 +31,7 @@ Link: [Admin Role and Registration Approval](_specs/2026-05-05-admin-role-regist
   - Change `profiles.role` check constraint: `role in ('sender', 'receiver', 'admin')`
   - Add `profiles.status text not null default 'pending'` with check `status in ('pending', 'approved')`
   - Add RLS policies: `profiles_select_admin`, `profiles_update_admin` (admin sees/updates all profiles)
-  - Update `handle_new_user()` trigger to include status: `status = case when role = 'admin' then 'approved' else 'pending' end`
+  - Update `handle_new_user()` trigger to set `status = 'pending'` for all roles. Add `handle_email_confirmation` trigger to set `status = 'approved'` when `role = 'admin'` and the email is confirmed
 
 ### Phase 2 — Config and env
 

@@ -1,38 +1,35 @@
 'use client';
 
-import { useState, type SubmitEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useTransition, type SubmitEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button, Input, Label } from '@/lib/shadcn';
-import { PasswordField } from '@/components/ui';
-import { createClient } from '@/lib/supabase/client';
+import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { loginAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
+import { withTimeout } from '@/lib/with-timeout';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleLogin = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (authError) throw authError;
-      router.push(routes.dashboard);
-    } catch (err: unknown) {
-      handleSupabaseError(err, 'Login');
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(loginAction({ email, password }));
+        if (!result.isSuccess && result.error) {
+          showError('Login', result.error);
+        }
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
+        showError('Login', AUTH_MSGS.TIMEOUT);
+      }
+    });
   };
 
   return (
@@ -71,8 +68,8 @@ export function LoginPage() {
                   setPassword(e.target.value);
                 }}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Logging in...' : 'Login'}
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? 'Logging in...' : 'Login'}
               </Button>
             </form>
             <p className="text-center text-sm mt-4">

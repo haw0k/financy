@@ -6,40 +6,63 @@ import { ERole, EProfileStatus } from '@/enums';
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
 const mockRouter = { push: vi.fn(), replace: vi.fn(), refresh: vi.fn() };
-const mockSignOut = vi.fn();
 
 vi.mock('next/navigation', () => ({
   useRouter: () => mockRouter,
 }));
 
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    auth: { signOut: mockSignOut },
-  }),
+vi.mock('@/app/actions/auth', () => ({
+  signOutAction: vi.fn(() => Promise.resolve({ isSuccess: true })),
 }));
 
-let useRoleReturn: Record<string, unknown> = {
+const mockGetPendingUsersAction = vi.fn(() =>
+  Promise.resolve<
+    | { isSuccess: true; data: { id: string; email: string; role: string; created_at: string }[] }
+    | { isSuccess: false; error: string }
+  >({
+    isSuccess: true,
+    data: [],
+  })
+);
+const mockApproveUserAction = vi.fn(() =>
+  Promise.resolve<{ isSuccess: true }>({ isSuccess: true })
+);
+const mockRejectUserAction = vi.fn(() => Promise.resolve<{ isSuccess: true }>({ isSuccess: true }));
+
+vi.mock('@/app/actions/admin', () => ({
+  getPendingUsersAction: () => mockGetPendingUsersAction(),
+  approveUserAction: () => mockApproveUserAction(),
+  rejectUserAction: () => mockRejectUserAction(),
+}));
+
+let useRoleContextReturn: Record<string, unknown> = {
   role: ERole.Sender,
   status: EProfileStatus.Pending,
-  isLoading: false,
-  error: null,
+  isLoaded: true,
   refetch: vi.fn(),
 };
 
-vi.mock('@/hooks', () => ({
-  useRole: () => useRoleReturn,
-}));
+vi.mock('@/components/providers', async () => {
+  const actual =
+    await vi.importActual<typeof import('@/components/providers')>('@/components/providers');
+  return {
+    ...actual,
+    useRoleContext: () => useRoleContextReturn,
+  };
+});
 
 const mockFetch = vi.fn();
 
 beforeEach(() => {
   vi.clearAllMocks();
   globalThis.fetch = mockFetch;
-  useRoleReturn = {
+  mockGetPendingUsersAction.mockResolvedValue({ isSuccess: true, data: [] });
+  mockApproveUserAction.mockResolvedValue({ isSuccess: true });
+  mockRejectUserAction.mockResolvedValue({ isSuccess: true });
+  useRoleContextReturn = {
     role: ERole.Sender,
     status: EProfileStatus.Pending,
-    isLoading: false,
-    error: null,
+    isLoaded: true,
     refetch: vi.fn(),
   };
 });
@@ -98,28 +121,40 @@ describe('Route constants', () => {
 
 describe('PendingPage', () => {
   it('should show loading state', async () => {
-    useRoleReturn = { ...useRoleReturn, isLoading: true };
+    useRoleContextReturn = { ...useRoleContextReturn, isLoaded: false };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText('Loading...')).toBeDefined();
   });
 
   it('should show admin pending message for admin role', async () => {
-    useRoleReturn = { ...useRoleReturn, role: ERole.Admin, status: EProfileStatus.Pending };
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
+      role: ERole.Admin,
+      status: EProfileStatus.Pending,
+    };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Check your email to confirm your admin account/)).toBeDefined();
   });
 
   it('should show approval pending message for sender role', async () => {
-    useRoleReturn = { ...useRoleReturn, role: ERole.Sender, status: EProfileStatus.Pending };
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
+      role: ERole.Sender,
+      status: EProfileStatus.Pending,
+    };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
   });
 
   it('should show approval pending message for receiver role', async () => {
-    useRoleReturn = { ...useRoleReturn, role: ERole.Receiver, status: EProfileStatus.Pending };
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
+      role: ERole.Receiver,
+      status: EProfileStatus.Pending,
+    };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
     expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
@@ -136,15 +171,12 @@ describe('PendingPage', () => {
 
 describe('AdminPage', () => {
   it('should show empty state when no pending users', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ data: [] }),
-    });
+    mockGetPendingUsersAction.mockResolvedValueOnce({ isSuccess: true, data: [] });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
@@ -154,20 +186,17 @@ describe('AdminPage', () => {
   });
 
   it('should render table with pending users', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          data: [
-            { id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' },
-            { id: '2', email: 'b@test.com', role: 'receiver', created_at: '2026-01-02T00:00:00Z' },
-          ],
-        }),
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [
+        { id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' },
+        { id: '2', email: 'b@test.com', role: 'receiver', created_at: '2026-01-02T00:00:00Z' },
+      ],
     });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
@@ -179,26 +208,16 @@ describe('AdminPage', () => {
     expect(screen.getByText('receiver')).toBeDefined();
   });
 
-  it('should call approve API on approve button click', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+  it('should call approve action on approve button click', async () => {
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            data: [
-              { id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' },
-            ],
-          }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      });
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [{ id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' }],
+    });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
@@ -206,40 +225,27 @@ describe('AdminPage', () => {
     });
     fireEvent.click(screen.getByText('Approve'));
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/admin/pending-users/approve', {
-        method: 'POST',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: '1' }),
-      });
+      expect(mockApproveUserAction).toHaveBeenCalled();
     });
   });
 
-  it('should call reject API on reject button click', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+  it('should call reject action on reject button click', async () => {
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            data: [
-              {
-                id: '2',
-                email: 'b@test.com',
-                role: 'receiver',
-                created_at: '2026-01-02T00:00:00Z',
-              },
-            ],
-          }),
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      });
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [
+        {
+          id: '2',
+          email: 'b@test.com',
+          role: 'receiver',
+          created_at: '2026-01-02T00:00:00Z',
+        },
+      ],
+    });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
     await waitFor(() => {
@@ -247,18 +253,13 @@ describe('AdminPage', () => {
     });
     fireEvent.click(screen.getByText('Reject'));
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/admin/pending-users/reject', {
-        method: 'POST',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: '2' }),
-      });
+      expect(mockRejectUserAction).toHaveBeenCalled();
     });
   });
 
   it('should redirect non-admin to dashboard', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Sender,
       status: EProfileStatus.Approved,
     };
@@ -268,14 +269,14 @@ describe('AdminPage', () => {
   });
 
   it('should show empty state on fetch error', async () => {
-    useRoleReturn = {
-      ...useRoleReturn,
+    useRoleContextReturn = {
+      ...useRoleContextReturn,
       role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: () => Promise.resolve({}),
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: false,
+      error: 'Failed to fetch pending users',
     });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
@@ -301,15 +302,5 @@ describe('Admin client', () => {
     const { createAdminClient } = await import('@/lib/supabase/admin');
     expect(createAdminClient).toBeDefined();
     expect(typeof createAdminClient).toBe('function');
-  });
-});
-
-/* ── useRole hook exports ──────────────────────────────────────── */
-
-describe('useRole hook', () => {
-  it('should be exported from hooks barrel', async () => {
-    const hooks = await import('@/hooks');
-    expect(hooks.useRole).toBeDefined();
-    expect(typeof hooks.useRole).toBe('function');
   });
 });

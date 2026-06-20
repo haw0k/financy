@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Badge,
@@ -22,10 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
-import { useRole } from '@/hooks';
+import { useRoleContext } from '@/components/providers';
 import { ERole, EProfileStatus } from '@/enums';
 import { routes } from '@/config';
 import { showError, showSuccess } from '@/components/ui/ToastNotification';
+import { getPendingUsersAction, approveUserAction, rejectUserAction } from '@/app/actions/admin';
+import { withTimeout } from '@/lib/with-timeout';
 
 interface IPendingUser {
   id: string;
@@ -36,92 +38,94 @@ interface IPendingUser {
 
 export function AdminPage() {
   const router = useRouter();
-  const { role, status, isLoading: isRoleLoading } = useRole();
+  const { role, status, isLoaded, isError } = useRoleContext();
   const [users, setUsers] = useState<IPendingUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(
+    !isLoaded || role !== ERole.Admin || status !== EProfileStatus.Approved
+  );
+  const [isPending, startTransition] = useTransition();
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
+    if (isLoaded && isError) {
+      router.replace(routes.dashboard);
+      return;
+    }
+
+    if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
+      router.replace(routes.dashboard);
+      return;
+    }
+
     let isCancelled = false;
 
     const loadUsers = async () => {
-      const res = await fetch('/api/admin/pending-users');
+      const result = await getPendingUsersAction();
       if (isCancelled) return;
-      if (!res.ok) {
-        showError('Admin', 'Failed to fetch pending users');
+      if (!result.isSuccess) {
+        showError('Admin', result.error);
         if (!isCancelled) setIsLoading(false);
         return;
       }
-      const { data } = await res.json();
       if (!isCancelled) {
-        setUsers(data ?? []);
+        setUsers(result.data ?? []);
         setIsLoading(false);
       }
     };
 
-    if (!isRoleLoading && role === ERole.Admin && status === EProfileStatus.Approved) {
+    if (isLoaded && role === ERole.Admin && status === EProfileStatus.Approved) {
       loadUsers();
-    } else if (!isRoleLoading) {
-      setIsLoading(false);
     }
 
     return () => {
       isCancelled = true;
     };
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, [isRoleLoading, role, status]);
+  }, [isLoaded, isError, role, status, router]);
 
-  const handleApprove = async (userId: string) => {
+  const handleApprove = (userId: string) => {
     setProcessingIds((prev) => new Set(prev).add(userId));
-    try {
-      const res = await fetch('/api/admin/pending-users/approve', {
-        method: 'POST',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
-      if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(approveUserAction({ userId }));
+        if (!result.isSuccess) {
+          throw new Error(result.error);
+        }
+        router.refresh();
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+        showSuccess('Admin', 'User approved');
+      } catch (err: unknown) {
+        showError('Admin', err instanceof Error ? err.message : 'Failed to approve user');
+      } finally {
+        setProcessingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(userId);
+          return next;
+        });
       }
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
-      showSuccess('Admin', 'User approved');
-    } catch (err: unknown) {
-      showError('Admin', err instanceof Error ? err.message : 'Failed to approve user');
-    } finally {
-      setProcessingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(userId);
-        return next;
-      });
-    }
+    });
   };
 
-  const handleReject = async (userId: string) => {
+  const handleReject = (userId: string) => {
     setProcessingIds((prev) => new Set(prev).add(userId));
-    try {
-      const res = await fetch('/api/admin/pending-users/reject', {
-        method: 'POST',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
-      if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(rejectUserAction({ userId }));
+        if (!result.isSuccess) {
+          throw new Error(result.error);
+        }
+        router.refresh();
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+        showSuccess('Admin', 'User rejected');
+      } catch (err: unknown) {
+        showError('Admin', err instanceof Error ? err.message : 'Failed to reject user');
+      } finally {
+        setProcessingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(userId);
+          return next;
+        });
       }
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
-      showSuccess('Admin', 'User rejected');
-    } catch (err: unknown) {
-      showError('Admin', err instanceof Error ? err.message : 'Failed to reject user');
-    } finally {
-      setProcessingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(userId);
-        return next;
-      });
-    }
+    });
   };
 
   const formatDate = (dateStr: string) => {
@@ -132,17 +136,12 @@ export function AdminPage() {
     });
   };
 
-  if (isRoleLoading || isLoading) {
+  if (!isLoaded || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <Spinner className="size-8" />
       </div>
     );
-  }
-
-  if (!isRoleLoading && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
-    router.replace(routes.dashboard);
-    return null;
   }
 
   return (
@@ -189,7 +188,7 @@ export function AdminPage() {
                       <div className="flex justify-end gap-2">
                         <Button
                           size="sm"
-                          disabled={processingIds.has(user.id)}
+                          disabled={isPending || processingIds.has(user.id)}
                           onClick={() => {
                             handleApprove(user.id);
                           }}
@@ -199,7 +198,7 @@ export function AdminPage() {
                         <Button
                           size="sm"
                           variant="destructive"
-                          disabled={processingIds.has(user.id)}
+                          disabled={isPending || processingIds.has(user.id)}
                           onClick={() => {
                             handleReject(user.id);
                           }}

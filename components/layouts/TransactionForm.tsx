@@ -1,9 +1,14 @@
 'use client';
 
-import { type FC, useState, useEffect, type SubmitEvent } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
-import { DatePicker } from '@/components/ui';
+import { type FC, useState, useEffect, type SubmitEvent, useTransition } from 'react';
+import {
+  getReceiversAction,
+  createTransactionAction,
+  updateTransactionAction,
+} from '@/app/actions/transactions';
+import { DatePicker, showError } from '@/components/ui';
+import { withTimeout } from '@/lib/with-timeout';
+import { TRANSACTION_MSGS } from '@/messages';
 import {
   Button,
   Input,
@@ -18,83 +23,99 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/shadcn';
+import type { ITransaction, ICategory } from '@/interfaces';
 
 interface ITransactionForm {
-  userId: string;
-  onSuccess: () => void;
+  onSuccess: (input: {
+    amount: number;
+    type: 'income' | 'expense';
+    description: string | null;
+    date: string;
+    receiverId?: string;
+    categoryId?: string | null;
+  }) => void;
   onCancel: () => void;
   editingId: string | null;
+  editingTransaction?: ITransaction | null;
+  categories: ICategory[];
 }
 
 export const TransactionForm: FC<ITransactionForm> = ({
-  userId,
   onSuccess,
   onCancel,
   editingId,
+  editingTransaction,
+  categories,
 }) => {
   const [formData, setFormData] = useState({
-    amount: '',
-    type: 'expense' as 'income' | 'expense',
-    description: '',
-    date: new Date().toISOString().split('T')[0],
-    receiverId: '',
+    amount: editingTransaction ? String(editingTransaction.amount) : '',
+    type: editingTransaction?.type ?? ('expense' as 'income' | 'expense'),
+    description: editingTransaction?.description ?? '',
+    date: editingTransaction?.date ?? new Date().toISOString().split('T')[0],
+    receiverId: editingTransaction?.receiver_id ?? '',
+    categoryId: editingTransaction?.category_id ?? '',
   });
   const [users, setUsers] = useState<Array<{ id: string; email: string }>>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    // Fetch other users
-    const fetchUsers = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, email')
-          .neq('id', userId);
+    let isCancelled = false;
 
-        if (error) throw error;
-        setUsers(data || []);
-      } catch (error) {
-        handleSupabaseError(error, 'Transaction');
+    (async () => {
+      const result = await getReceiversAction();
+      if (isCancelled) return;
+      if (result.isSuccess) {
+        setUsers(result.data);
+      } else if (result.error) {
+        showError('Transaction', result.error);
       }
+    })();
+
+    return () => {
+      isCancelled = true;
     };
+  }, []);
 
-    fetchUsers();
-  }, [userId, supabase]);
-
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const transactionData = {
-        sender_id: userId,
-        receiver_id: formData.receiverId || userId,
-        amount: parseFloat(formData.amount),
-        type: formData.type,
-        description: formData.description || null,
-        date: formData.date,
-      };
-
-      if (editingId) {
-        const { error } = await supabase
-          .from('transactions')
-          .update(transactionData)
-          .eq('id', editingId);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('transactions').insert([transactionData]);
-
-        if (error) throw error;
-      }
-
-      onSuccess();
-    } catch (error) {
-      handleSupabaseError(error, 'Transaction');
-    } finally {
-      setIsLoading(false);
+    const input: {
+      amount: number;
+      type: 'income' | 'expense';
+      description: string | null;
+      date: string;
+      receiverId?: string;
+      categoryId?: string | null;
+    } = {
+      amount: parseFloat(formData.amount),
+      type: formData.type,
+      description: formData.description || null,
+      date: formData.date,
+    };
+    if (formData.receiverId) {
+      input.receiverId = formData.receiverId;
     }
+    if (formData.categoryId) {
+      input.categoryId = formData.categoryId;
+    }
+
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(
+          editingId
+            ? updateTransactionAction({ id: editingId, input })
+            : createTransactionAction(input)
+        );
+
+        if (result.isSuccess) {
+          onSuccess(input);
+        } else if (result.error) {
+          showError('Transaction', result.error);
+        }
+      } catch {
+        showError('Transaction', TRANSACTION_MSGS.TIMEOUT);
+      }
+    });
   };
 
   return (
@@ -172,6 +193,29 @@ export const TransactionForm: FC<ITransactionForm> = ({
               </div>
             )}
 
+            {categories.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <Select
+                  value={formData.categoryId}
+                  onValueChange={(v) => {
+                    setFormData({ ...formData, categoryId: v });
+                  }}
+                >
+                  <SelectTrigger className="w-full" id="category">
+                    <SelectValue placeholder="Select category (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="description">Description</Label>
               <Input
@@ -186,8 +230,8 @@ export const TransactionForm: FC<ITransactionForm> = ({
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" disabled={isLoading || !formData.amount}>
-              {isLoading ? 'Saving...' : editingId ? 'Update' : 'Add'} Transaction
+            <Button type="submit" disabled={isPending || !formData.amount}>
+              {isPending ? 'Saving...' : editingId ? 'Update' : 'Add'} Transaction
             </Button>
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel

@@ -1,4 +1,4 @@
-import { CategoriesTable } from '@/components/layouts';
+import { CategoriesTableServer } from '@/components/layouts';
 
 export async function CategoriesPage() {
   return (
@@ -7,7 +7,7 @@ export async function CategoriesPage() {
         <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
         <p className="text-muted-foreground">Manage your expense categories</p>
       </div>
-      <CategoriesTable />
+      <CategoriesTableServer />
     </div>
   );
 }

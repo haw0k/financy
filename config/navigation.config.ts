@@ -1,4 +1,11 @@
-import { LayoutDashboard, TrendingUp, TrendingDown, Settings, type LucideIcon } from 'lucide-react';
+import {
+  LayoutDashboard,
+  TrendingUp,
+  TrendingDown,
+  Settings,
+  ShieldCheckIcon,
+  type LucideIcon,
+} from 'lucide-react';
 import { routes } from './routes.config';
 
 export interface INavItem {
@@ -14,8 +21,4 @@ export const navItems: INavItem[] = [
   { href: routes.settings, label: 'Settings', icon: Settings },
 ];
 
-export const adminNavItems: INavItem[] = [
-  { href: routes.adminDashboard, label: 'Dashboard', icon: LayoutDashboard },
-  { href: routes.adminCategories, label: 'Categories', icon: TrendingDown },
-  { href: routes.adminSettings, label: 'Settings', icon: Settings },
-];
+export const adminNavItem: INavItem = { href: routes.admin, label: 'Admin', icon: ShieldCheckIcon };

@@ -16,6 +16,11 @@ create table if not exists public.profiles (
 
 alter table public.profiles disable row level security;
 
+-- Enforce single approved admin at the database level (closes TOCTOU race in adminSignUpAction)
+create unique index if not exists idx_profiles_single_approved_admin
+  on public.profiles (role)
+  where role = 'admin' and status = 'approved';
+
 -- Create category_types table (global reference, not user-specific)
 create table if not exists public.category_types (
   id uuid primary key default gen_random_uuid(),
@@ -55,24 +60,41 @@ create table if not exists public.transactions (
 alter table public.transactions disable row level security;
 
 -- Create trigger for auto-creating profile on signup
+-- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  user_role text;
+  user_status text;
 begin
+  user_role := coalesce(new.raw_user_meta_data ->> 'role', 'sender');
+  user_status := 'pending';
+
   insert into public.profiles (id, email, role, status)
   values (
     new.id,
     new.email,
-    coalesce(new.raw_user_meta_data ->> 'role', 'sender'),
-    case
-      when new.raw_user_meta_data ->> 'role' = 'admin' then 'approved'
-      else 'pending'
-    end
+    user_role,
+    user_status
   )
   on conflict (id) do nothing;
+
+  -- Update app_metadata to include role and status for JWT claims
+  -- Safe: auth.users has no user-defined triggers that could cause recursion
+  begin
+    update auth.users
+    set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || jsonb_build_object(
+      'role', user_role,
+      'status', user_status
+    )
+    where id = new.id;
+  exception when others then
+    raise warning 'Failed to update app_metadata for user %: %', new.id, sqlerrm;
+  end;
 
   return new;
 end;
@@ -84,6 +106,63 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row
   execute function public.handle_new_user();
+
+-- Create trigger for updating app_metadata when profile role/status changes
+-- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
+create or replace function public.handle_profile_update()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Update app_metadata only if role or status changed
+  if new.role is distinct from old.role or new.status is distinct from old.status then
+    update auth.users
+    set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || jsonb_build_object(
+      'role', new.role,
+      'status', new.status
+    )
+    where id = new.id;
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists on_profile_updated on public.profiles;
+
+create trigger on_profile_updated
+  after update of role, status on public.profiles
+  for each row
+  execute function public.handle_profile_update();
+
+-- Create trigger for auto-approving admin on email confirmation
+-- When an admin confirms their email, the profile status transitions from 'pending' to 'approved'.
+-- The unique partial index idx_profiles_single_approved_admin ensures only one admin can be approved.
+-- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
+create or replace function public.handle_email_confirmation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if old.email_confirmed_at is null and new.email_confirmed_at is not null then
+    update public.profiles
+    set status = 'approved', updated_at = now()
+    where id = new.id and role = 'admin' and status = 'pending';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_email_confirmed on auth.users;
+
+create trigger on_auth_user_email_confirmed
+  after update of email_confirmed_at on auth.users
+  for each row
+  execute function public.handle_email_confirmation();
 
 -- Create function to get user statistics
 create or replace function public.get_user_stats()
@@ -119,6 +198,17 @@ select
 from auth.users au
 left join public.profiles p on p.id = au.id
 where p.id is null;
+
+-- Backfill app_metadata for existing users (populate role/status in JWT)
+-- Uses COALESCE to handle NULL raw_app_meta_data (NULL || jsonb = NULL in PostgreSQL)
+update auth.users au
+set raw_app_meta_data = coalesce(au.raw_app_meta_data, '{}'::jsonb) || jsonb_build_object(
+  'role', coalesce(p.role, 'sender'),
+  'status', coalesce(p.status, 'pending')
+)
+from public.profiles p
+where p.id = au.id
+and (au.raw_app_meta_data ->> 'role' is null or au.raw_app_meta_data ->> 'status' is null);
 
 -- Notify PostgREST to reload schema cache (run manually if needed)
 -- NOTIFY pgrst, 'reload schema';

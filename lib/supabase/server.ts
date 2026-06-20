@@ -12,7 +12,7 @@ export async function createClient() {
 
   if (!env.supabaseUrl || !env.supabaseAnonKey) {
     throw new Error(
-      'Missing Supabase environment variables. Please configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+      'Missing Supabase environment variables. Please configure SUPABASE_URL and SUPABASE_ANON_KEY.'
     );
   }
 

@@ -4,7 +4,7 @@
 
 Built with Next.js 16, Supabase (PostgreSQL + Auth), and React 19. Features secure email/OAuth authentication, category management, interactive charts, and a dark/light theme.
 
-> This project also serves as a testbed for spec-driven development workflows with AI coding assistants (Claude Code and OpenCode). See [_specs/](./_specs/) for feature specifications and implementation plans.
+> This project also serves as a testbed for spec-driven development workflows with AI coding assistants (Claude Code and OpenCode). See [\_specs/](./_specs/) for feature specifications and implementation plans.
 
 ## Quick Start
 
@@ -23,8 +23,8 @@ pnpm install
 4. Create `.env.local`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_URL=your_project_url
+SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
@@ -83,11 +83,65 @@ Visit `http://localhost:3000` and create your account!
 
 ✅ **Security**
 
-- Row Level Security (RLS)
-- Password hashing
-- Protected routes
-- User data isolation
+- Password hashing by Supabase
+- Protected routes with auth checks
+- CSRF protection via Next.js middleware
+- Email verification and admin approval
 - Server-side admin guards
+
+### Server Actions Architecture
+
+All database operations go through **Next.js Server Actions** in `app/actions/`:
+
+- `auth.ts` — login, signUp, adminLogin, adminSignUp, signOut
+- `admin.ts` — getPendingUsers, approveUser, rejectUser
+- `categories.ts` — CRUD for categories and category types
+- `transactions.ts` — CRUD for transactions, get receivers list
+- `dashboard.ts` — get transactions + stats for dashboard overview
+
+**Benefits of Server Actions:**
+
+| Benefit                       | Description                                                                       |
+| ----------------------------- | --------------------------------------------------------------------------------- |
+| **No API boilerplate**        | No need for separate API routes — actions are called directly from components     |
+| **Automatic request context** | Server actions have access to cookies, headers, and session without passing props |
+| **Type safety end-to-end**    | Input/output types are inferred; no manual serialization                          |
+| **Progressive enhancement**   | Forms work without JavaScript; actions degrade gracefully                         |
+| **Security by default**       | Actions run on server; sensitive logic never exposed to client                    |
+| **Simplified data flow**      | No need for `useEffect` + `useState` for data fetching — call action directly     |
+
+**Pattern:**
+
+```typescript
+// Client component
+'use client';
+import { createTransactionAction } from '@/app/actions/transactions';
+
+async function handleSubmit(formData: FormData) {
+  const result = await createTransactionAction({ amount: 100, type: 'expense' });
+  if (!result.isSuccess) {
+    showError('Error', result.error);
+  }
+}
+```
+
+```typescript
+// Server Action
+'use server'
+import { requireApprovedUser } from '@/lib/require-auth'
+
+export async function createTransactionAction(input: TInput): Promise<TAuthResult> {
+  const authResult = await requireApprovedUser() // Rejects pending users and admins
+  if ('error' in authResult) {
+    return { isSuccess: false, error: authResult.error }
+  }
+
+  const { error } = await authResult.supabase.from('transactions').insert({...})
+  // ...
+}
+```
+
+**Note on RLS:** Row Level Security is intentionally disabled for this pet project. All authenticated users share the same data pool without ownership checks. See _Security & Permissions Model_ in [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md).
 
 ## Tech Stack
 
@@ -110,22 +164,24 @@ Visit `http://localhost:3000` and create your account!
 
 ```
 ├── app/                  # Next.js pages (thin re-exports)
-│   ├── auth/             # Authentication pages (/login, /sign-up, /admin, /pending)
-│   ├── admin/            # Admin dashboard (/admin)
-│   ├── api/              # API routes (/api/admin/*, /api/auth/*)
-│   └── dashboard/        # Protected dashboard routes
+│   ├── (auth)/           # Authentication pages (/login, /sign-up, /admin, /pending)
+│   ├── (app)/            # Protected routes (dashboard/*, admin/*)
+│   │   ├── admin/        # Admin dashboard (/admin)
+│   │   └── dashboard/    # Dashboard routes
+│   ├── api/              # API routes (/api/auth/check-admin)
+│   └── actions/          # Server Actions for auth, admin, categories, transactions
 ├── components/
 │   ├── pages/            # Page components (HomePage, auth/*, dashboard/*, admin/*)
 │   ├── layouts/          # Layout components (DashboardNav, Header, MobileNav)
-│   ├── providers/        # React context providers
+│   ├── providers/        # React context providers (ThemeProvider, RoleProvider)
 │   └── ui/               # Reusable UI components
 ├── config/               # Centralized configuration
 ├── enums/                # TypeScript enums (ERole, EProfileStatus)
 ├── interfaces/           # TypeScript interfaces
-├── hooks/                # Custom hooks (useRole, useToast, useMobile)
+├── hooks/                # Custom hooks (useMobile, useHandler)
 ├── lib/
 │   ├── shadcn/           # shadcn/ui component library
-│   └── supabase/         # Supabase clients (client, server, middleware, admin)
+│   └── supabase/         # Supabase clients (server, middleware, admin) — no browser client
 ├── _specs/               # Feature specs
 ├── _plans/               # Implementation plans
 ├── scripts/              # SQL migration scripts
@@ -149,11 +205,11 @@ See `scripts/001_init_database.sql` for full schema with triggers and policies.
 ## Environment Variables
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=                # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=           # Public anon key
-SUPABASE_SERVICE_ROLE_KEY=               # Secret service_role key (admin API)
-NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL=   # Dev-only redirect override (optional)
-NEXT_PUBLIC_SUPABASE_REDIRECT_URL=       # Production redirect URL
+SUPABASE_URL=                # Supabase project URL
+SUPABASE_ANON_KEY=           # Public anon key
+SUPABASE_SERVICE_ROLE_KEY=   # Secret service_role key (admin API)
+DEV_SUPABASE_REDIRECT_URL=   # Dev-only redirect override (optional)
+SUPABASE_REDIRECT_URL=       # Production redirect URL
 ```
 
 ## Development

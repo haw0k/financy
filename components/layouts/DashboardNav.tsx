@@ -1,13 +1,10 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useRole } from '@/hooks';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { navItems, routes, siteConfig, type INavItem } from '@/config';
-import { ERole, EProfileStatus } from '@/enums';
-import { ShieldCheckIcon } from 'lucide-react';
 import { type FC } from 'react';
 
 interface IDashboardNav {
@@ -16,11 +13,7 @@ interface IDashboardNav {
 
 export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
   const pathname = usePathname();
-  const { role, status } = useRole();
-
-  const isAdmin = role === ERole.Admin && status === EProfileStatus.Approved;
   const resolvedItems = items ?? navItems;
-  const isCustomItems = items !== undefined;
 
   return (
     <nav className="hidden bg-card md:flex md:flex-col md:w-64">
@@ -69,20 +62,6 @@ export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
             </Link>
           );
         })}
-        {!isCustomItems && isAdmin && (
-          <Link
-            href={routes.admin}
-            className={cn(
-              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-              pathname === routes.admin
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-            )}
-          >
-            <ShieldCheckIcon className="h-4 w-4" />
-            Admin
-          </Link>
-        )}
       </div>
     </nav>
   );

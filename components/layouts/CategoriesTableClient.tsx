@@ -1,8 +1,18 @@
 'use client';
 
-import { type FC, useEffect, useState, type SubmitEvent } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { type FC, useState, useTransition, type SubmitEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { showError } from '@/components/ui';
+import {
+  createCategoryAction,
+  updateCategoryAction,
+  deleteCategoryAction,
+  createCategoryTypeAction,
+  updateCategoryTypeAction,
+  deleteCategoryTypeAction,
+} from '@/app/actions/categories';
+import { withTimeout } from '@/lib/with-timeout';
+import { CATEGORY_MSGS } from '@/messages';
 import {
   Card,
   CardContent,
@@ -35,10 +45,17 @@ import {
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
 
-export const CategoriesTable: FC = () => {
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface ICategoriesTableClient {
+  initialCategories: ICategory[];
+  initialCategoryTypes: ICategoryType[];
+}
+
+export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
+  initialCategories,
+  initialCategoryTypes,
+}) => {
+  const [categories, setCategories] = useState<ICategory[]>(initialCategories);
+  const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>(initialCategoryTypes);
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -51,56 +68,46 @@ export const CategoriesTable: FC = () => {
   const [ctEditingId, setCtEditingId] = useState<string | null>(null);
   const [isCtShowForm, setCtIsShowForm] = useState(false);
   const [ctDeleteId, setCtDeleteId] = useState<string | null>(null);
-  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase.from('categories').select('*').order('name');
-
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCategoryTypes = async () => {
-    try {
-      const { data, error } = await supabase.from('category_types').select('*').order('name');
-
-      if (error) throw error;
-      setCategoryTypes(data || []);
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
-  };
-
-  const handleCtSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleCtSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      if (ctEditingId) {
-        const { error } = await supabase
-          .from('category_types')
-          .update({ name: ctFormData.name })
-          .eq('id', ctEditingId);
+    startTransition(async () => {
+      try {
+        const isEdit = !!ctEditingId;
+        const result = await withTimeout(
+          isEdit
+            ? updateCategoryTypeAction({ id: ctEditingId, input: { name: ctFormData.name } })
+            : createCategoryTypeAction({ name: ctFormData.name })
+        );
 
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('category_types').insert([{ name: ctFormData.name }]);
-
-        if (error) throw error;
+        if (result.isSuccess) {
+          if (isEdit) {
+            setCategoryTypes(
+              categoryTypes.map((ct) =>
+                ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct
+              )
+            );
+          } else {
+            // Optimistic add with temp ID; router.refresh() will correct it
+            setCategoryTypes([
+              ...categoryTypes,
+              { id: `temp-${Date.now()}`, name: ctFormData.name },
+            ]);
+          }
+          setCtFormData({ name: '' });
+          setCtEditingId(null);
+          setCtIsShowForm(false);
+          router.refresh();
+        } else if (result.error) {
+          showError('Categories', result.error);
+        }
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
       }
-
-      setCtFormData({ name: '' });
-      setCtEditingId(null);
-      setCtIsShowForm(false);
-      fetchCategoryTypes();
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+    });
   };
 
   const handleCtEdit = (ct: ICategoryType) => {
@@ -109,72 +116,95 @@ export const CategoriesTable: FC = () => {
     setCtIsShowForm(true);
   };
 
-  const handleCtDelete = async (id: string) => {
-    try {
-      const { error } = await supabase.from('category_types').delete().eq('id', id);
-
-      if (error) throw error;
-      setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
-      setCtDeleteId(null);
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+  const handleCtDelete = (id: string) => {
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(deleteCategoryTypeAction({ id }));
+        if (result.isSuccess) {
+          setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
+          setCtDeleteId(null);
+        } else if (result.error) {
+          showError('Categories', result.error);
+        }
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
+      }
+    });
   };
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCategories();
-    fetchCategoryTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      if (editingId) {
-        const { error } = await supabase
-          .from('categories')
-          .update({
-            name: formData.name,
-            type: formData.type,
-            color: formData.color,
-            type_id: formData.type_id || null,
-          })
-          .eq('id', editingId);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('categories').insert([
-          {
-            name: formData.name,
-            type: formData.type,
-            color: formData.color,
-            type_id: formData.type_id || null,
-          },
-        ]);
-
-        if (error) throw error;
-      }
-
-      setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
-      setEditingId(null);
-      setIsShowForm(false);
-      fetchCategories();
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
+    const input: { name: string; type: 'income' | 'expense'; color: string; type_id?: string } = {
+      name: formData.name,
+      type: formData.type,
+      color: formData.color,
+    };
+    if (formData.type_id) {
+      input.type_id = formData.type_id;
     }
+
+    startTransition(async () => {
+      try {
+        const isEdit = !!editingId;
+        const result = await withTimeout(
+          isEdit ? updateCategoryAction({ id: editingId, input }) : createCategoryAction(input)
+        );
+
+        if (result.isSuccess) {
+          if (isEdit) {
+            setCategories(
+              categories.map((c) =>
+                c.id === editingId
+                  ? {
+                      ...c,
+                      name: formData.name,
+                      type: formData.type,
+                      color: formData.color,
+                      type_id: formData.type_id || undefined,
+                    }
+                  : c
+              )
+            );
+          } else {
+            // Optimistic add with temp ID; router.refresh() will correct it
+            setCategories([
+              ...categories,
+              {
+                id: `temp-${Date.now()}`,
+                name: formData.name,
+                type: formData.type,
+                color: formData.color,
+                type_id: formData.type_id || undefined,
+              },
+            ]);
+          }
+          setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
+          setEditingId(null);
+          setIsShowForm(false);
+          router.refresh();
+        } else if (result.error) {
+          showError('Categories', result.error);
+        }
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
+      }
+    });
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase.from('categories').delete().eq('id', id);
-
-      if (error) throw error;
-      setCategories(categories.filter((c) => c.id !== id));
-    } catch (error) {
-      handleSupabaseError(error, 'Categories');
-    }
+  const handleDelete = (id: string) => {
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(deleteCategoryAction({ id }));
+        if (result.isSuccess) {
+          setCategories(categories.filter((c) => c.id !== id));
+        } else if (result.error) {
+          showError('Categories', result.error);
+        }
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
+      }
+    });
   };
 
   return (
@@ -286,12 +316,13 @@ export const CategoriesTable: FC = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button type="submit" disabled={!formData.name}>
-                      {editingId ? 'Update' : 'Add'} Category
+                    <Button type="submit" disabled={isPending || !formData.name}>
+                      {isPending ? 'Saving...' : editingId ? 'Update' : 'Add'} Category
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
+                      disabled={isPending}
                       onClick={() => {
                         setIsShowForm(false);
                         setEditingId(null);
@@ -306,9 +337,7 @@ export const CategoriesTable: FC = () => {
             </Card>
           )}
 
-          {isLoading ? (
-            <div className="text-center text-muted-foreground">Loading...</div>
-          ) : categories.length === 0 ? (
+          {categories.length === 0 ? (
             <div className="text-center text-muted-foreground">No categories yet</div>
           ) : (
             <div className="overflow-x-auto">
@@ -437,12 +466,13 @@ export const CategoriesTable: FC = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button type="submit" disabled={!ctFormData.name}>
-                      {ctEditingId ? 'Update' : 'Add'} Type
+                    <Button type="submit" disabled={isPending || !ctFormData.name}>
+                      {isPending ? 'Saving...' : ctEditingId ? 'Update' : 'Add'} Type
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
+                      disabled={isPending}
                       onClick={() => {
                         setCtIsShowForm(false);
                         setCtEditingId(null);

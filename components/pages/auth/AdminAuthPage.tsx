@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, type SubmitEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useTransition, type SubmitEvent } from 'react';
 import Image from 'next/image';
 import {
   Button,
@@ -13,71 +12,95 @@ import {
   Input,
   Label,
 } from '@/lib/shadcn';
-import { PasswordField } from '@/components/ui';
-import { createClient } from '@/lib/supabase/client';
-import { routes, getSupabaseRedirectUrl, siteConfig } from '@/config';
-import { ERole } from '@/enums';
-import { handleSupabaseError } from '@/lib/handle-supabase-error';
+import { showError, PasswordField } from '@/components/ui';
+import { siteConfig } from '@/config';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { adminLoginAction, adminSignUpAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
+import { withTimeout } from '@/lib/with-timeout';
 
 export function AdminAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAdminExist, setAdminExists] = useState<boolean | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [isAdminExist, setIsAdminExist] = useState<boolean | null>(null);
+  const [isCheckError, setIsCheckError] = useState(false);
   const [isSignUpSuccess, setSignUpSuccess] = useState(false);
-  const router = useRouter();
+
+  const checkAdmin = () => {
+    setIsCheckError(false);
+    setIsAdminExist(null);
+
+    fetch('/api/auth/check-admin')
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setIsAdminExist(data.exists);
+      })
+      .catch(() => {
+        setIsCheckError(true);
+      });
+  };
 
   useEffect(() => {
-    fetch('/api/auth/check-admin')
-      .then((res) => res.json())
-      .then((data) => setAdminExists(data.exists))
-      .catch(() => setAdminExists(true));
+    // Defer the fetch so the state update does not happen synchronously inside the effect body.
+    const timer = setTimeout(() => {
+      checkAdmin();
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
-  const handleSignUp = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSignUp = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const supabase = createClient();
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo:
-            getSupabaseRedirectUrl() ?? `${window.location.origin}${routes.authCallback}`,
-          data: { role: ERole.Admin },
-        },
-      });
-
-      if (signUpError) throw signUpError;
-      setSignUpSuccess(true);
-    } catch (err: unknown) {
-      handleSupabaseError(err, 'Admin');
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(adminSignUpAction({ email, password }));
+        if (result.isSuccess) {
+          setSignUpSuccess(true);
+        } else if (result.error) {
+          showError('Admin', result.error);
+        }
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
+        showError('Admin', AUTH_MSGS.TIMEOUT);
+      }
+    });
   };
 
-  const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleLogin = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      const supabase = createClient();
-      const { error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (loginError) throw loginError;
-      router.push(routes.admin);
-    } catch (err: unknown) {
-      handleSupabaseError(err, 'Admin');
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        const result = await withTimeout(adminLoginAction({ email, password }));
+        if (!result.isSuccess && result.error) {
+          showError('Admin', result.error);
+        }
+      } catch (error) {
+        if (isRedirectError(error)) throw error;
+        showError('Admin', AUTH_MSGS.TIMEOUT);
+      }
+    });
   };
+
+  if (isCheckError) {
+    return (
+      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+        <div className="flex max-w-sm flex-col items-center gap-4 text-center">
+          <p className="text-muted-foreground">
+            Failed to check admin status. Please check your connection and try again.
+          </p>
+          <Button onClick={checkAdmin}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (isAdminExist === null) {
     return (
@@ -137,8 +160,8 @@ export function AdminAuthPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? 'Loading...' : isAdminExist ? 'Login' : 'Sign up'}
+                    <Button type="submit" className="w-full" disabled={isPending}>
+                      {isPending ? 'Loading...' : isAdminExist ? 'Login' : 'Sign up'}
                     </Button>
                   </div>
                 </form>

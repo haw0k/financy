@@ -1,0 +1,1 @@
+export type TActionResult<T> = { isSuccess: true; data: T } | { isSuccess: false; error: string };

@@ -1,5 +1,8 @@
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { siteConfig } from '@/config';
+import { routes } from '@/config';
+import { ERole, EProfileStatus } from '@/enums';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { ThemeSelect } from '@/components/ui/ThemeSelect';
 
@@ -9,11 +12,19 @@ export async function SettingsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect(routes.login);
+  }
+
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
-    .eq('id', user?.id)
+    .select('role, status')
+    .eq('id', user.id)
     .maybeSingle();
+
+  if (!profile || profile.status !== EProfileStatus.Approved || profile.role === ERole.Admin) {
+    redirect(profile?.role === ERole.Admin ? routes.admin : routes.pending);
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">
@@ -44,7 +55,7 @@ export async function SettingsPage() {
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Account Type</label>
-              <p className="text-sm font-medium capitalize">{profile?.role}</p>
+              <p className="text-sm font-medium capitalize">{profile.role}</p>
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Member Since</label>

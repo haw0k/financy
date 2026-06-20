@@ -79,13 +79,13 @@ export async function updateSession(request: NextRequest) {
   if (isDashboardPath && user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('status')
+      .select('status, role')
       .eq('id', user.id)
       .maybeSingle();
 
-    if (!profile || profile.status !== EProfileStatus.Approved) {
+    if (!profile || profile.status !== EProfileStatus.Approved || profile.role === ERole.Admin) {
       const url = request.nextUrl.clone();
-      url.pathname = routes.pending;
+      url.pathname = profile?.role === ERole.Admin ? routes.admin : routes.pending;
       return NextResponse.redirect(url);
     }
   }

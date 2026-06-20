@@ -3,8 +3,9 @@
 import { usePathname } from 'next/navigation';
 import { User } from '@supabase/supabase-js';
 import { DashboardNav, Header, MobileNav } from '@/components/layouts';
-import { DashboardShell } from '@/components/providers';
-import { navItems, adminNavItems } from '@/config';
+import { DashboardShell, useRoleContext } from '@/components/providers';
+import { navItems, adminNavItem, routes } from '@/config';
+import { ERole, EProfileStatus } from '@/enums';
 import type { FC, ReactNode } from 'react';
 
 interface IAppShell {
@@ -14,8 +15,16 @@ interface IAppShell {
 
 export const AppShell: FC<IAppShell> = ({ user, children }) => {
   const pathname = usePathname();
-  const isAdmin = pathname.startsWith('/admin');
-  const resolvedItems = isAdmin ? adminNavItems : navItems;
+  const { role, status } = useRoleContext();
+
+  // Prefer the server-provided role/status so the menu matches the authenticated
+  // user even when pathname-based detection lags during redirects/hydration.
+  // pathname is used as a fallback when the role context has not resolved yet,
+  // or when the user navigates directly to an admin route before the server-provided
+  // role is refreshed.
+  const isAdminByRole = role === ERole.Admin && status === EProfileStatus.Approved;
+  const isAdminByPath = pathname.startsWith(routes.admin);
+  const resolvedItems = isAdminByRole || isAdminByPath ? [adminNavItem] : navItems;
 
   return (
     <DashboardShell>
