@@ -28,13 +28,13 @@ pnpm test:run        # Run Vitest tests (single run)
 ### Data Flow
 
 ```
-Browser → Supabase Auth → middleware.ts → Protected Routes (dashboard/*, admin/*)
+Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (dashboard/*, admin/*)
                 ↓
-         lib/supabase/         config/             enums/
-         ├── client.ts         ├── env.config.ts   ├── role.enum.ts
-         ├── server.ts         ├── routes.config.ts├── profile-status.enum.ts
-         ├── middleware.ts     ├── site.config.ts  └── index.ts
-         └── admin.ts          └── navigation.config.ts
+         lib/supabase/         app/actions/        config/             enums/
+         ├── client.ts         ├── auth.ts         ├── env.config.ts   ├── role.enum.ts
+         ├── server.ts         ├── categories.ts   ├── routes.config.ts├── profile-status.enum.ts
+         ├── middleware.ts     ├── dashboard.ts    ├── site.config.ts  └── index.ts
+         └── admin.ts          └── transactions.ts └── navigation.config.ts
 ```
 
 ### Configuration Pattern
@@ -51,19 +51,20 @@ The optional `DEV_SUPABASE_REDIRECT_URL` env var provides a local development re
 ### Key Directories
 
 - `app/` - Next.js App Router pages (thin re-exports)
-  - `app/auth/` - Login, sign-up, admin auth, pending, OAuth callback, error pages
-  - `app/dashboard/` - Protected routes (transactions, categories, settings)
-  - `app/admin/` - Admin dashboard (pending user management)
+  - `app/(auth)/` - Login, sign-up, admin auth, pending, OAuth callback, error pages
+  - `app/(app)/dashboard/` - Protected routes (transactions, categories, settings)
+  - `app/(app)/admin/` - Admin dashboard (pending user management)
+  - `app/actions/` - Next.js Server Actions (auth, categories, transactions, dashboard)
   - `app/api/` - API routes (admin pending-users CRUD, check-admin)
-  - `app/layout.tsx` - Root layout with ThemeProvider
+  - `app/layout.tsx` - Root layout with ThemeProvider + RoleProvider
 - `components/pages/` - Page components (HomePage, auth/_, dashboard/_, admin/\*)
 - `components/layouts/` - Dashboard layout components (DashboardNav, Header, MobileNav)
-- `components/providers/` - React context providers (ThemeProvider, MobileNavContext)
+- `components/providers/` - React context providers (ThemeProvider, MobileNavContext, RoleProvider)
 - `components/ui/` - Reusable UI components (PasswordField, DatePicker)
 - `lib/shadcn/` - shadcn/ui component library (~50 components)
 - `lib/supabase/` - Supabase clients (client, server, middleware, admin)
 - `config/` - Centralized configuration (env, routes, site, navigation)
-- `hooks/` - Custom hooks (useRole, useMobile, useHandler)
+- `hooks/` - Custom hooks (useMobile, useHandler)
 - `enums/` - TypeScript enums (ERole, EProfileStatus)
 - `interfaces/` - TypeScript interfaces (transactions, categories, stats)
 - `scripts/001_init_database.sql` - Database schema + RLS policies
@@ -94,7 +95,7 @@ Middleware checks:
 
 ### Authentication Strategy
 
-Middleware handles session refresh via `supabase.auth.getUser()`. Protected routes use server-side client with cookie-based session. Client-side uses `createBrowserClient` with public anon key.
+Middleware handles session refresh via `supabase.auth.getUser()`. Protected routes and Server Actions use the server-side client with cookie-based session. Authentication forms submit via Server Actions in `app/actions/auth.ts` instead of the browser Supabase client.
 
 ### Registration & Approval Flow
 
@@ -171,24 +172,28 @@ These are enforced by `@typescript-eslint/naming-convention`. Failing to follow 
 
 Tests use Vitest + `@testing-library/react` + jsdom. A setup file at `tests/setup.ts` calls `cleanup()` after each test.
 
-When testing components that use `useRole()`:
+When testing components that use `useRoleContext()` from `@/components/providers`:
 
 ```ts
 // Module-level mock state — mutate in tests before dynamic import
-let useRoleReturn = {
+let useRoleContextReturn = {
   role: ERole.Admin,
   status: EProfileStatus.Approved,
-  isLoading: false,
-  error: null,
+  isLoaded: true,
   refetch: vi.fn(),
 };
 
-vi.mock('@/hooks', () => ({
-  useRole: () => useRoleReturn,
-}));
+vi.mock('@/components/providers', async () => {
+  const actual =
+    await vi.importActual<typeof import('@/components/providers')>('@/components/providers');
+  return {
+    ...actual,
+    useRoleContext: () => useRoleContextReturn,
+  };
+});
 
 // Use dynamic import AFTER setting mock state to avoid hoisting issues:
-const { default: AdminPage } = await import('@/components/pages/admin/AdminPage');
+const { AdminPage } = await import('@/components/pages/admin/AdminPage');
 ```
 
 Mock `next/navigation` and Supabase clients similarly at module level. Always use `vi.clearAllMocks()` in `beforeEach`.

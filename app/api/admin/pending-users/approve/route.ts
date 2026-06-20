@@ -42,26 +42,33 @@ export async function POST(request: NextRequest) {
 
     const adminClient = createAdminClient();
 
-    // Update profile status first (trigger will update app_metadata)
+    // 1. Confirm email first. If this fails the user stays pending — safe state.
+    const { error: confirmError } = await adminClient.auth.admin.updateUserById(userId, {
+      email_confirm: true,
+    });
+
+    if (confirmError) {
+      return NextResponse.json({ error: confirmError.message }, { status: 500 });
+    }
+
+    // 2. Approve profile. The DB trigger updates app_metadata so the next JWT
+    // refresh contains the new status. If this fails the user is confirmed but
+    // still pending in profiles; the admin can retry approval because the user
+    // remains in the pending list.
     const { error: statusError } = await supabase
       .from('profiles')
       .update({ status: EProfileStatus.Approved })
       .eq('id', userId);
 
     if (statusError) {
-      return NextResponse.json({ error: 'Failed to update profile status' }, { status: 500 });
-    }
-
-    // Confirm email (this also refreshes the JWT with updated app_metadata)
-    const { error: updateError } = await adminClient.auth.admin.updateUserById(userId, {
-      email_confirm: true,
-    });
-
-    if (updateError) {
-      // Rollback: set status back to pending if email confirmation fails
-      await supabase.from('profiles').update({ status: EProfileStatus.Pending }).eq('id', userId);
-
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
+      console.error('Failed to approve profile after email confirmation:', {
+        userId,
+        error: statusError,
+      });
+      return NextResponse.json(
+        { error: 'Email confirmed, but failed to update profile status. Please retry approval.' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true });

@@ -7,6 +7,8 @@ import {
   updateTransactionAction,
 } from '@/app/actions/transactions';
 import { DatePicker, showError } from '@/components/ui';
+import { withTimeout } from '@/lib/with-timeout';
+import { TRANSACTION_MSGS } from '@/messages';
 import {
   Button,
   Input,
@@ -98,14 +100,20 @@ export const TransactionForm: FC<ITransactionForm> = ({
     }
 
     startTransition(async () => {
-      const result = editingId
-        ? await updateTransactionAction({ id: editingId, input })
-        : await createTransactionAction(input);
+      try {
+        const result = await withTimeout(
+          editingId
+            ? updateTransactionAction({ id: editingId, input })
+            : createTransactionAction(input)
+        );
 
-      if (result.isSuccess) {
-        onSuccess(input);
-      } else if (result.error) {
-        showError('Transaction', result.error);
+        if (result.isSuccess) {
+          onSuccess(input);
+        } else if (result.error) {
+          showError('Transaction', result.error);
+        }
+      } catch {
+        showError('Transaction', TRANSACTION_MSGS.TIMEOUT);
       }
     });
   };

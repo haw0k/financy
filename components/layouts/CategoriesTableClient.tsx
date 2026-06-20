@@ -11,6 +11,8 @@ import {
   updateCategoryTypeAction,
   deleteCategoryTypeAction,
 } from '@/app/actions/categories';
+import { withTimeout } from '@/lib/with-timeout';
+import { CATEGORY_MSGS } from '@/messages';
 import {
   Card,
   CardContent,
@@ -73,28 +75,37 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
     e.preventDefault();
 
     startTransition(async () => {
-      const isEdit = !!ctEditingId;
-      const result = isEdit
-        ? await updateCategoryTypeAction({ id: ctEditingId, input: { name: ctFormData.name } })
-        : await createCategoryTypeAction({ name: ctFormData.name });
+      try {
+        const isEdit = !!ctEditingId;
+        const result = await withTimeout(
+          isEdit
+            ? updateCategoryTypeAction({ id: ctEditingId, input: { name: ctFormData.name } })
+            : createCategoryTypeAction({ name: ctFormData.name })
+        );
 
-      if (result.isSuccess) {
-        if (isEdit) {
-          setCategoryTypes(
-            categoryTypes.map((ct) =>
-              ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct
-            )
-          );
-        } else {
-          // Optimistic add with temp ID; router.refresh() will correct it
-          setCategoryTypes([...categoryTypes, { id: `temp-${Date.now()}`, name: ctFormData.name }]);
+        if (result.isSuccess) {
+          if (isEdit) {
+            setCategoryTypes(
+              categoryTypes.map((ct) =>
+                ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct
+              )
+            );
+          } else {
+            // Optimistic add with temp ID; router.refresh() will correct it
+            setCategoryTypes([
+              ...categoryTypes,
+              { id: `temp-${Date.now()}`, name: ctFormData.name },
+            ]);
+          }
+          setCtFormData({ name: '' });
+          setCtEditingId(null);
+          setCtIsShowForm(false);
+          router.refresh();
+        } else if (result.error) {
+          showError('Categories', result.error);
         }
-        setCtFormData({ name: '' });
-        setCtEditingId(null);
-        setCtIsShowForm(false);
-        router.refresh();
-      } else if (result.error) {
-        showError('Categories', result.error);
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
       }
     });
   };
@@ -107,12 +118,16 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
 
   const handleCtDelete = (id: string) => {
     startTransition(async () => {
-      const result = await deleteCategoryTypeAction({ id });
-      if (result.isSuccess) {
-        setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
-        setCtDeleteId(null);
-      } else if (result.error) {
-        showError('Categories', result.error);
+      try {
+        const result = await withTimeout(deleteCategoryTypeAction({ id }));
+        if (result.isSuccess) {
+          setCategoryTypes(categoryTypes.filter((ct) => ct.id !== id));
+          setCtDeleteId(null);
+        } else if (result.error) {
+          showError('Categories', result.error);
+        }
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
       }
     });
   };
@@ -130,56 +145,64 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
     }
 
     startTransition(async () => {
-      const isEdit = !!editingId;
-      const result = isEdit
-        ? await updateCategoryAction({ id: editingId, input })
-        : await createCategoryAction(input);
+      try {
+        const isEdit = !!editingId;
+        const result = await withTimeout(
+          isEdit ? updateCategoryAction({ id: editingId, input }) : createCategoryAction(input)
+        );
 
-      if (result.isSuccess) {
-        if (isEdit) {
-          setCategories(
-            categories.map((c) =>
-              c.id === editingId
-                ? {
-                    ...c,
-                    name: formData.name,
-                    type: formData.type,
-                    color: formData.color,
-                    type_id: formData.type_id || undefined,
-                  }
-                : c
-            )
-          );
-        } else {
-          // Optimistic add with temp ID; router.refresh() will correct it
-          setCategories([
-            ...categories,
-            {
-              id: `temp-${Date.now()}`,
-              name: formData.name,
-              type: formData.type,
-              color: formData.color,
-              type_id: formData.type_id || undefined,
-            },
-          ]);
+        if (result.isSuccess) {
+          if (isEdit) {
+            setCategories(
+              categories.map((c) =>
+                c.id === editingId
+                  ? {
+                      ...c,
+                      name: formData.name,
+                      type: formData.type,
+                      color: formData.color,
+                      type_id: formData.type_id || undefined,
+                    }
+                  : c
+              )
+            );
+          } else {
+            // Optimistic add with temp ID; router.refresh() will correct it
+            setCategories([
+              ...categories,
+              {
+                id: `temp-${Date.now()}`,
+                name: formData.name,
+                type: formData.type,
+                color: formData.color,
+                type_id: formData.type_id || undefined,
+              },
+            ]);
+          }
+          setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
+          setEditingId(null);
+          setIsShowForm(false);
+          router.refresh();
+        } else if (result.error) {
+          showError('Categories', result.error);
         }
-        setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
-        setEditingId(null);
-        setIsShowForm(false);
-        router.refresh();
-      } else if (result.error) {
-        showError('Categories', result.error);
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
       }
     });
   };
 
   const handleDelete = (id: string) => {
     startTransition(async () => {
-      const result = await deleteCategoryAction({ id });
-      if (result.isSuccess) {
-        setCategories(categories.filter((c) => c.id !== id));
-      } else if (result.error) {
-        showError('Categories', result.error);
+      try {
+        const result = await withTimeout(deleteCategoryAction({ id }));
+        if (result.isSuccess) {
+          setCategories(categories.filter((c) => c.id !== id));
+        } else if (result.error) {
+          showError('Categories', result.error);
+        }
+      } catch {
+        showError('Categories', CATEGORY_MSGS.TIMEOUT);
       }
     });
   };

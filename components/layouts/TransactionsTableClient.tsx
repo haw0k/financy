@@ -4,6 +4,8 @@ import { type FC, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { showError } from '@/components/ui';
 import { deleteTransactionAction } from '@/app/actions/transactions';
+import { withTimeout } from '@/lib/with-timeout';
+import { TRANSACTION_MSGS } from '@/messages';
 import {
   Card,
   CardContent,
@@ -55,11 +57,15 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
 
   const handleDelete = (id: string) => {
     startTransition(async () => {
-      const result = await deleteTransactionAction({ id });
-      if (result.isSuccess) {
-        setTransactions(transactions.filter((t) => t.id !== id));
-      } else if (result.error) {
-        showError('Transactions', result.error);
+      try {
+        const result = await withTimeout(deleteTransactionAction({ id }));
+        if (result.isSuccess) {
+          setTransactions(transactions.filter((t) => t.id !== id));
+        } else if (result.error) {
+          showError('Transactions', result.error);
+        }
+      } catch {
+        showError('Transactions', TRANSACTION_MSGS.TIMEOUT);
       }
     });
   };
