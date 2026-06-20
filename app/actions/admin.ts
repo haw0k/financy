@@ -2,41 +2,13 @@
 
 import { createAdminClient } from '@/lib/supabase/admin';
 import { ERole, EProfileStatus } from '@/enums';
-import { requireAuth } from '@/lib/require-auth';
+import { requireApprovedAdmin } from '@/lib/require-auth';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { ADMIN_MSGS } from '@/messages';
 import type { TActionResult } from '@/types';
 import { z } from 'zod';
 
 const userIdSchema = z.string().uuid({ message: ADMIN_MSGS.INVALID_USER_ID });
-
-function isAdminApproved(profile: { role: string; status: string } | null): boolean {
-  return !!profile && profile.role === ERole.Admin && profile.status === EProfileStatus.Approved;
-}
-
-async function requireAdmin(authResult: Awaited<ReturnType<typeof requireAuth>>): Promise<
-  | {
-      supabase: Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>;
-      userId: string;
-    }
-  | { error: string }
-> {
-  if ('error' in authResult) {
-    return { error: authResult.error };
-  }
-
-  const { data: adminProfile } = await authResult.supabase
-    .from('profiles')
-    .select('role, status')
-    .eq('id', authResult.userId)
-    .maybeSingle();
-
-  if (!isAdminApproved(adminProfile)) {
-    return { error: ADMIN_MSGS.FORBIDDEN };
-  }
-
-  return { supabase: authResult.supabase, userId: authResult.userId };
-}
 
 async function validateTargetUser(
   supabase: Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>,
@@ -75,12 +47,7 @@ async function validateTargetUser(
 export async function getPendingUsersAction(): Promise<
   TActionResult<{ id: string; email: string; role: string; created_at: string }[]>
 > {
-  const authResult = await requireAuth();
-  if ('error' in authResult) {
-    return { isSuccess: false, error: authResult.error };
-  }
-
-  const adminResult = await requireAdmin(authResult);
+  const adminResult = await requireApprovedAdmin();
   if ('error' in adminResult) {
     return { isSuccess: false, error: adminResult.error };
   }
@@ -100,12 +67,7 @@ export async function getPendingUsersAction(): Promise<
 }
 
 export async function approveUserAction({ userId }: { userId: string }): Promise<TActionResult<void>> {
-  const authResult = await requireAuth();
-  if ('error' in authResult) {
-    return { isSuccess: false, error: authResult.error };
-  }
-
-  const adminResult = await requireAdmin(authResult);
+  const adminResult = await requireApprovedAdmin();
   if ('error' in adminResult) {
     return { isSuccess: false, error: adminResult.error };
   }
@@ -146,12 +108,7 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
 }
 
 export async function rejectUserAction({ userId }: { userId: string }): Promise<TActionResult<void>> {
-  const authResult = await requireAuth();
-  if ('error' in authResult) {
-    return { isSuccess: false, error: authResult.error };
-  }
-
-  const adminResult = await requireAdmin(authResult);
+  const adminResult = await requireApprovedAdmin();
   if ('error' in adminResult) {
     return { isSuccess: false, error: adminResult.error };
   }

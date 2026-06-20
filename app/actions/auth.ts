@@ -108,17 +108,28 @@ export async function adminLoginAction(credentials: TLoginInput): Promise<TAuthR
   // Fall back to the profiles table if the JWT app_metadata is stale or missing
   // (e.g. sessions created before the metadata migration).
   let resolvedRole = roleFromJwt;
+  let resolvedStatus: EProfileStatus | null | undefined;
   if (resolvedRole !== ERole.Admin) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, status')
       .eq('id', data.user.id)
       .maybeSingle();
     resolvedRole = profile?.role ?? resolvedRole;
+    resolvedStatus = profile?.status as EProfileStatus | undefined;
   }
 
   if (resolvedRole !== ERole.Admin) {
     redirect(routes.dashboard);
+  }
+
+  // Pending admins (email not yet confirmed) should land on /auth/pending,
+  // not on /admin, because middleware would reject them anyway.
+  const isPendingAdmin =
+    resolvedStatus === EProfileStatus.Pending ||
+    (resolvedRole === ERole.Admin && !data.user.email_confirmed_at);
+  if (isPendingAdmin) {
+    redirect(routes.pending);
   }
 
   redirect(routes.admin);

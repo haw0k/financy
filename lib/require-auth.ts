@@ -1,6 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { ERole, EProfileStatus } from '@/enums';
-import { AUTH_MSGS } from '@/messages';
+import { AUTH_MSGS, ADMIN_MSGS } from '@/messages';
+
+type TRequireAuthResult =
+  | { supabase: Awaited<ReturnType<typeof createClient>>; userId: string }
+  | { error: string };
 
 /**
  * Verifies that the current user is authenticated and returns the Supabase client along with the user ID.
@@ -9,9 +13,7 @@ import { AUTH_MSGS } from '@/messages';
  *
  * @returns `{ supabase, userId }` if authenticated, or `{ error: string }` if not.
  */
-export async function requireAuth(): Promise<
-  { supabase: Awaited<ReturnType<typeof createClient>>; userId: string } | { error: string }
-> {
+export async function requireAuth(): Promise<TRequireAuthResult> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -32,9 +34,7 @@ export async function requireAuth(): Promise<
  *
  * @returns `{ supabase, userId }` if authenticated and approved, or `{ error: string }` if not.
  */
-export async function requireApprovedUser(): Promise<
-  { supabase: Awaited<ReturnType<typeof createClient>>; userId: string } | { error: string }
-> {
+export async function requireApprovedUser(): Promise<TRequireAuthResult> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -60,6 +60,45 @@ export async function requireApprovedUser(): Promise<
 
   if (profile.role === ERole.Admin) {
     return { error: AUTH_MSGS.ADMIN_ACCESS_DENIED };
+  }
+
+  return { supabase, userId: user.id };
+}
+
+/**
+ * Verifies that the current user is an authenticated, email-confirmed, approved admin.
+ *
+ * This guard is shared between middleware, Server Components, and Server Actions to
+ * keep the admin-authorization logic in one place.
+ *
+ * @returns `{ supabase, userId }` if the caller is an approved admin, or `{ error: string }` if not.
+ */
+export async function requireApprovedAdmin(): Promise<TRequireAuthResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.id) {
+    return { error: AUTH_MSGS.AUTH_FAILED };
+  }
+
+  if (!user.email_confirmed_at) {
+    return { error: AUTH_MSGS.PENDING_APPROVAL_REQUIRED };
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    return { error: AUTH_MSGS.AUTH_FAILED };
+  }
+
+  if (!profile || profile.role !== ERole.Admin || profile.status !== EProfileStatus.Approved) {
+    return { error: ADMIN_MSGS.FORBIDDEN };
   }
 
   return { supabase, userId: user.id };

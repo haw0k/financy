@@ -19,14 +19,12 @@ export const AppShell: FC<IAppShell> = ({ user, children }) => {
 
   // Prefer the server-provided role/status so the menu matches the authenticated
   // user even when pathname-based detection lags during redirects/hydration.
-  // Fall back to the pathname prefix as a safety net for edge cases.
+  // pathname is used as a fallback when the role context has not resolved yet,
+  // or when the user navigates directly to an admin route before the server-provided
+  // role is refreshed.
   const isAdminByRole = role === ERole.Admin && status === EProfileStatus.Approved;
   const isAdminByPath = pathname.startsWith(routes.admin);
   const resolvedItems = isAdminByRole || isAdminByPath ? [adminNavItem] : navItems;
-
-  // If the server-side role lookup failed, avoid showing the wrong menu by falling
-  // back to pathname. A null role on an admin path keeps the admin item visible.
-  // A null role on a dashboard path keeps the dashboard items visible.
 
   return (
     <DashboardShell>

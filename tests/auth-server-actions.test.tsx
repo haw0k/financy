@@ -202,7 +202,7 @@ describe('adminLoginAction', () => {
   it('should call signInWithPassword and redirect to admin on success', async () => {
     mockSignInWithPassword.mockResolvedValueOnce({
       error: null,
-      data: { user: { app_metadata: { role: 'admin' } } },
+      data: { user: { id: 'admin-1', email_confirmed_at: '2026-01-01', app_metadata: { role: 'admin' } } },
     });
     mockRedirect.mockImplementation(() => {
       throw new Error('NEXT_REDIRECT');
@@ -216,6 +216,23 @@ describe('adminLoginAction', () => {
       password: 'adminpass123',
     });
     expect(mockRedirect).toHaveBeenCalledWith('/admin');
+  });
+
+  it('should redirect pending admin to pending page', async () => {
+    mockSignInWithPassword.mockResolvedValueOnce({
+      error: null,
+      data: {
+        user: { id: 'admin-1', email_confirmed_at: null, app_metadata: { role: 'admin' } },
+      },
+    });
+    mockRedirect.mockImplementation(() => {
+      throw new Error('NEXT_REDIRECT');
+    });
+    const { adminLoginAction } = await import('@/app/actions/auth');
+    await expect(
+      adminLoginAction({ email: 'admin@test.com', password: 'adminpass123' })
+    ).rejects.toThrow('NEXT_REDIRECT');
+    expect(mockRedirect).toHaveBeenCalledWith('/auth/pending');
   });
 
   it('should redirect non-admin users to dashboard', async () => {

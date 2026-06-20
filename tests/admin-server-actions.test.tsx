@@ -3,9 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
 const mockUser = { id: '11111111-1111-1111-1111-111111111111' };
+let mockUserEmailConfirmedAt: string | null = '2026-01-01T00:00:00Z';
 const mockGetUser = vi.fn(() =>
-  Promise.resolve<{ data: { user: { id: string } | null }; error: null }>({
-    data: { user: mockUser },
+  Promise.resolve<{ data: { user: { id: string; email_confirmed_at?: string | null } | null }; error: null }>({
+    data: { user: { ...mockUser, email_confirmed_at: mockUserEmailConfirmedAt } },
     error: null,
   })
 );
@@ -58,7 +59,13 @@ function createQueryBuilder<T>(data: T, error: unknown = null) {
 beforeEach(() => {
   vi.clearAllMocks();
   mockFrom.mockReset();
-  mockGetUser.mockReturnValue(Promise.resolve({ data: { user: mockUser }, error: null }));
+  mockUserEmailConfirmedAt = '2026-01-01T00:00:00Z';
+  mockGetUser.mockReturnValue(
+    Promise.resolve({
+      data: { user: { ...mockUser, email_confirmed_at: mockUserEmailConfirmedAt } },
+      error: null,
+    })
+  );
   mockUpdateUserById.mockResolvedValue({ error: null });
   mockDeleteUser.mockResolvedValue({ error: null });
 });
@@ -81,6 +88,25 @@ describe('approveUserAction', () => {
     expect(result.isSuccess).toBe(false);
     if (!result.isSuccess) {
       expect(result.error).toBe('Forbidden');
+    }
+  });
+
+  it('should reject unconfirmed admin callers', async () => {
+    const { approveUserAction } = await import('@/app/actions/admin');
+
+    mockUserEmailConfirmedAt = null;
+    mockGetUser.mockReturnValueOnce(
+      Promise.resolve({
+        data: { user: { ...mockUser, email_confirmed_at: null } },
+        error: null,
+      })
+    );
+
+    const result = await approveUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toContain('pending');
     }
   });
 
@@ -177,6 +203,25 @@ describe('rejectUserAction', () => {
     expect(result.isSuccess).toBe(false);
     if (!result.isSuccess) {
       expect(result.error).toBe('Forbidden');
+    }
+  });
+
+  it('should reject unconfirmed admin callers', async () => {
+    const { rejectUserAction } = await import('@/app/actions/admin');
+
+    mockUserEmailConfirmedAt = null;
+    mockGetUser.mockReturnValueOnce(
+      Promise.resolve({
+        data: { user: { ...mockUser, email_confirmed_at: null } },
+        error: null,
+      })
+    );
+
+    const result = await rejectUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toContain('pending');
     }
   });
 
