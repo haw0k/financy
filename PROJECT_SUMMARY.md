@@ -293,7 +293,7 @@ updated_at (TIMESTAMPTZ)
 
 2. **Initialize Database**
    - Copy `scripts/001_init_database.sql` to Supabase SQL Editor
-   - Run the script to create tables, triggers, and RLS policies
+   - Run the script to create tables and triggers (RLS is intentionally disabled)
 
 3. **Run Application**
 

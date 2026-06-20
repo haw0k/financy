@@ -69,7 +69,7 @@ The optional `DEV_SUPABASE_REDIRECT_URL` env var provides a local development re
 - `hooks/` - Custom hooks (useMobile, useHandler)
 - `enums/` - TypeScript enums (ERole, EProfileStatus)
 - `interfaces/` - TypeScript interfaces (transactions, categories, stats)
-- `scripts/001_init_database.sql` - Database schema + RLS policies
+- `scripts/001_init_database.sql` - Database schema + triggers (RLS intentionally disabled)
 - `tests/` - Vitest test files
 - `_specs/` - Feature specification documents
 - `_plans/` - Implementation plans

@@ -57,7 +57,7 @@ Visit `http://localhost:3000` and create your account!
 - Sender (send money, track expenses)
 - Receiver (receive money, track income)
 - Admin (manage user registrations, approve/reject)
-- Role-specific dashboards and RLS policies
+- Role-specific dashboards and access control
 
 ✅ **Admin Panel**
 
@@ -88,6 +88,7 @@ Visit `http://localhost:3000` and create your account!
 - CSRF protection via Next.js middleware
 - Email verification and admin approval
 - Server-side admin guards
+- **Note:** Row Level Security (RLS) is intentionally disabled; access is controlled by middleware and Server Actions
 
 ### Server Actions Architecture
 
@@ -191,16 +192,16 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 
 ## Database Schema
 
-Four main tables with Row Level Security:
+Four main tables. Access control is handled by middleware and Server Actions, not by Row Level Security (RLS is intentionally disabled for this pet project):
 
-| Table            | Purpose                     | RLS                                          |
-| ---------------- | --------------------------- | -------------------------------------------- |
-| `profiles`       | User profiles, role, status | Users see own profile; admins see all        |
-| `category_types` | Global category types       | All authenticated users                      |
-| `categories`     | Income/expense categories   | All authenticated users                      |
-| `transactions`   | Financial transactions      | Users see own transactions (sender/receiver) |
+| Table            | Purpose                                  |
+| ---------------- | ---------------------------------------- |
+| `profiles`       | User profiles, role, status              |
+| `category_types` | Global shared category types             |
+| `categories`     | Global shared income/expense categories  |
+| `transactions`   | Global shared financial transactions     |
 
-See `scripts/001_init_database.sql` for full schema with triggers and policies.
+See `scripts/001_init_database.sql` for full schema with triggers.
 
 ## Environment Variables
 
