@@ -31,3 +31,4 @@
 - [x] feat: Move Theme Toggle to Settings Page — { 2026-05-21-move-theme-toggle-to-settings.md }
 - [x] refactor: Migrate Auth Forms to Server Actions — { 2026-05-25-migrate-auth-forms-to-server-actions.md }
 - [x] docs: Document React Server Components Practical Patterns — { 2026-06-20-document-rsc-patterns.md }
+- [ ] feat: Polish Application Styling With Frontend-Design Plugin - { 2026-06-21-frontend-design-styling.md }
