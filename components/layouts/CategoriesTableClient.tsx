@@ -19,6 +19,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Badge,
   Button,
   Input,
   Label,
@@ -61,7 +62,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
   const [formData, setFormData] = useState({
     name: '',
     type: 'expense' as 'income' | 'expense',
-    color: '#3b82f6',
+    color: 'var(--chart-3)',
     type_id: '',
   });
   const [ctFormData, setCtFormData] = useState<ICategoryTypeInput>({ name: '' });
@@ -358,20 +359,19 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       <TableRow key={category.id}>
                         <TableCell className="font-medium">{category.name}</TableCell>
                         <TableCell>
-                          <span
-                            className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
+                          <Badge
+                            variant="outline"
+                            className={
                               category.type === 'income'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                            }`}
+                                ? 'bg-primary/15 text-primary border-primary/20 dark:bg-primary/25'
+                                : 'bg-destructive/15 text-destructive border-destructive/20 dark:bg-destructive/25'
+                            }
                           >
                             {category.type === 'income' ? 'Income' : 'Expense'}
-                          </span>
+                          </Badge>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-muted-foreground">
-                            {categoryType?.name || '-'}
-                          </span>
+                          <Badge variant="secondary">{categoryType?.name || '-'}</Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">

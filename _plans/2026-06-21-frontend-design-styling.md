@@ -35,54 +35,54 @@ The `frontend-design` plugin should drive the visual direction: it can propose a
 
 ### Phase 1 — Audit current styling
 
-- [ ] Read and document current `app/globals.css` variable values for both light and dark themes.
-- [ ] Inspect `lib/shadcn/Button.tsx` variants and identify inconsistencies (size, radius, transitions, focus ring).
-- [ ] Inspect `lib/shadcn/Card.tsx` spacing, border, shadow usage.
-- [ ] List all direct `className` overrides in auth/dashboard/admin page components that could conflict with new tokens.
-- [ ] Confirm `frontend-design` plugin inputs and output format.
+- [x] Read and document current `app/globals.css` variable values for both light and dark themes.
+- [x] Inspect `lib/shadcn/Button.tsx` variants and identify inconsistencies (size, radius, transitions, focus ring).
+- [x] Inspect `lib/shadcn/Card.tsx` spacing, border, shadow usage.
+- [x] List all direct `className` overrides in auth/dashboard/admin page components that could conflict with new tokens.
+- [x] Confirm `frontend-design` plugin inputs and output format.
 
 ### Phase 2 — Generate design direction with frontend-design plugin
 
-- [ ] Run the `frontend-design` plugin against the current Financy UI screenshots or component list.
-- [ ] Capture proposed color palette, font scale, radius scale, shadow scale, and button/card recommendations.
-- [ ] Validate that proposed colors map cleanly to existing CSS variable slots (`--primary`, `--secondary`, `--card`, etc.).
-- [ ] Decide whether to adopt the full proposal or a subset; document the decision.
+- [x] Run the `frontend-design` plugin against the current Financy UI screenshots or component list.
+- [x] Capture proposed color palette, font scale, radius scale, shadow scale, and button/card recommendations.
+- [x] Validate that proposed colors map cleanly to existing CSS variable slots (`--primary`, `--secondary`, `--card`, etc.).
+- [x] Decide whether to adopt the full proposal or a subset; document the decision.
 
 ### Phase 3 — Update global theme tokens
 
-- [ ] Adjust `:root` CSS variables for background, foreground, card, primary, secondary, muted, accent, border, input, ring.
-- [ ] Adjust corresponding `.dark` CSS variables.
-- [ ] Update radius scale if the design direction recommends a different base radius.
-- [ ] Verify autofill fix still matches updated `--background` / `--foreground`.
-- [ ] Add or refine transition utilities if needed (e.g., color, shadow transitions).
+- [x] Adjust `:root` CSS variables for background, foreground, card, primary, secondary, muted, accent, border, input, ring.
+- [x] Adjust corresponding `.dark` CSS variables.
+- [x] Update radius scale if the design direction recommends a different base radius.
+- [x] Verify autofill fix still matches updated `--background` / `--foreground`.
+- [x] Add or refine transition utilities if needed (e.g., color, shadow transitions).
 
 ### Phase 4 — Refine Button and Card components
 
-- [ ] Update `lib/shadcn/Button.tsx` base and variant class names for improved sizing, radius, and hover/focus states.
-- [ ] Update `lib/shadcn/Card.tsx` header, content, footer, and title spacing/shadows/borders.
-- [ ] Ensure destructive and outline variants remain accessible after color changes.
-- [ ] Keep the component API unchanged so existing imports continue to work.
+- [x] Update `lib/shadcn/Button.tsx` base and variant class names for improved sizing, radius, and hover/focus states.
+- [x] Update `lib/shadcn/Card.tsx` header, content, footer, and title spacing/shadows/borders.
+- [x] Ensure destructive and outline variants remain accessible after color changes.
+- [x] Keep the component API unchanged so existing imports continue to work.
 
 ### Phase 5 — Page-level consistency pass
 
-- [ ] Review auth page wrappers and cards for visual consistency with new tokens.
-- [ ] Review dashboard stat cards, tables, and forms for spacing regressions.
-- [ ] Review admin pending-users cards/buttons for spacing regressions.
-- [ ] Remove any hardcoded color/shadow class names that now duplicate or fight with the theme.
+- [x] Review auth page wrappers and cards for visual consistency with new tokens.
+- [x] Review dashboard stat cards, tables, and forms for spacing regressions.
+- [x] Review admin pending-users cards/buttons for spacing regressions.
+- [x] Remove any hardcoded color/shadow class names that now duplicate or fight with the theme.
 
 ### Phase 6 — Verification and tests
 
-- [ ] Run `pnpm lint` and fix any class-order or formatting issues.
-- [ ] Run `pnpm type-check`.
-- [ ] Run `pnpm build`.
-- [ ] Manual smoke test: light theme auth flow, dashboard navigation, dark theme toggle.
-- [ ] Add or update visual regression tests for Button and Card variants in both themes.
+- [x] Run `pnpm lint` and fix any class-order or formatting issues.
+- [x] Run `pnpm type-check`.
+- [x] Run `pnpm build`.
+- [x] Manual smoke test: light theme auth flow, dashboard navigation, dark theme toggle.
+- [x] Add or update visual regression tests for Button and Card variants in both themes.
 
 ### Phase 7 — Update project indexes
 
-- [ ] Mark `_specs/_description.md` item complete.
-- [ ] Mark `_plans/_description.md` item complete.
-- [ ] Mark `TODO.md` Styling item complete.
+- [x] Mark `_specs/_description.md` item complete.
+- [x] Mark `_plans/_description.md` item complete.
+- [x] Mark `TODO.md` Styling item complete.
 
 ## Files Summary
 

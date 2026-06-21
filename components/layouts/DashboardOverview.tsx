@@ -18,7 +18,13 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+const COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+];
 
 interface IDashboardOverview {
   transactions: ITransaction[];
@@ -71,10 +77,10 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Income</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-primary">
               ${stats?.total_income?.toFixed(2) || '0.00'}
             </div>
             <p className="text-xs text-muted-foreground">Income received</p>
@@ -84,10 +90,10 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
+            <TrendingDown className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-destructive">
               ${stats?.total_expense?.toFixed(2) || '0.00'}
             </div>
             <p className="text-xs text-muted-foreground">Total spent</p>
@@ -118,7 +124,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                     labelLine={false}
                     label={({ name, value }) => `${name}: $${value}`}
                     outerRadius={80}
-                    fill="#8884d8"
+                    fill="var(--chart-5)"
                     dataKey="value"
                   >
                     {incomeExpenseData.map((entry, index) => (
@@ -151,7 +157,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                   <Line
                     type="monotone"
                     dataKey="amount"
-                    stroke="#3b82f6"
+                    stroke="var(--chart-3)"
                     name="Amount"
                     strokeWidth={2}
                   />

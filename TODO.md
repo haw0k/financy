@@ -12,7 +12,7 @@
 
 ## Styling
 
-- [ ] **Polish application styling**: Improve button styles, card styles, fonts, and colors.
+- [x] **Polish application styling**: Improve button styles, card styles, fonts, and colors.
 
 ## Production deployment
 

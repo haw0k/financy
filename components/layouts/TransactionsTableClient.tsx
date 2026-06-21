@@ -12,6 +12,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Badge,
   Button,
   Input,
   Table,
@@ -218,20 +219,21 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                         {getCategoryDisplayName(transaction.category_id)}
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
+                        <Badge
+                          variant="outline"
+                          className={
                             transaction.type === 'income'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                          }`}
+                              ? 'bg-primary/15 text-primary border-primary/20 dark:bg-primary/25'
+                              : 'bg-destructive/15 text-destructive border-destructive/20 dark:bg-destructive/25'
+                          }
                         >
                           {transaction.type === 'income' ? 'Income' : 'Expense'}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         <span
                           className={
-                            transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                            transaction.type === 'income' ? 'text-primary' : 'text-destructive'
                           }
                         >
                           {transaction.type === 'income' ? '+' : '-'}$

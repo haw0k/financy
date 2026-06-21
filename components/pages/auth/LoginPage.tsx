@@ -3,7 +3,7 @@
 import { useState, useTransition, type SubmitEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button, Input, Label } from '@/lib/shadcn';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@/lib/shadcn';
 import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
@@ -42,43 +42,49 @@ export function LoginPage() {
               {siteConfig.name}
             </h1>
           </div>
-          <div className="border rounded-lg p-8 bg-card text-card-foreground shadow">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="m@example.com"
+          <Card className="border">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Login</CardTitle>
+              <CardDescription>Enter your credentials to continue</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="m@example.com"
+                    required
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                    className="mt-1"
+                  />
+                </div>
+                <PasswordField
+                  id="password"
+                  autoComplete="current-password"
                   required
-                  value={email}
+                  value={password}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setPassword(e.target.value);
                   }}
-                  className="mt-1"
                 />
-              </div>
-              <PasswordField
-                id="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? 'Logging in...' : 'Login'}
-              </Button>
-            </form>
-            <p className="text-center text-sm mt-4">
-              Don&apos;t have an account?{' '}
-              <Link href={routes.signUp} className="text-blue-600 hover:underline">
-                Sign up
-              </Link>
-            </p>
-          </div>
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? 'Logging in...' : 'Login'}
+                </Button>
+              </form>
+              <p className="text-center text-sm mt-4 text-muted-foreground">
+                Don&apos;t have an account?{' '}
+                <Link href={routes.signUp} className="text-primary hover:underline">
+                  Sign up
+                </Link>
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

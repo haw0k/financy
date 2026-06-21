@@ -1,7 +1,7 @@
 'use client';
 
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { Button } from '@/lib/shadcn';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
 import { signOutAction } from '@/app/actions/auth';
 import { useRoleContext } from '@/components/providers';
 import { AUTH_MSGS } from '@/messages';
@@ -30,23 +30,21 @@ export function PendingPage() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-6">
-      <div className="w-full max-w-md text-center border rounded-lg p-8 bg-card text-card-foreground shadow">
-        <h1 className="text-2xl font-bold mb-4">Account Status</h1>
-        {role === ERole.Admin ? (
-          <p className="text-muted-foreground mb-6">
-            Check your email to confirm your admin account. Once confirmed, you can access the admin
-            dashboard.
-          </p>
-        ) : (
-          <p className="text-muted-foreground mb-6">
-            Your account is pending admin approval. You will receive a confirmation email once
-            approved.
-          </p>
-        )}
-        <Button onClick={handleLogout} variant="outline">
-          Log out
-        </Button>
-      </div>
+      <Card className="w-full max-w-md text-center border">
+        <CardHeader>
+          <CardTitle className="text-2xl">Account Status</CardTitle>
+          <CardDescription>
+            {role === ERole.Admin
+              ? "Check your email to confirm your admin account. Once confirmed, you can access the admin dashboard."
+              : "Your account is pending admin approval. You will receive a confirmation email once approved."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={handleLogout} variant="outline">
+            Log out
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
