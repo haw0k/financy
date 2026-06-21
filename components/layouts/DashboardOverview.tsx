@@ -122,7 +122,18 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: $${value}`}
+                    label={(props: { name?: string; value?: number; fill?: string; x?: number; y?: number; textAnchor?: 'start' | 'middle' | 'end' | 'inherit'; dominantBaseline?: 'auto' | 'middle' | 'hanging' }) => (
+                      <text
+                        x={props.x}
+                        y={props.y}
+                        fill="var(--foreground)"
+                        textAnchor={props.textAnchor}
+                        dominantBaseline={props.dominantBaseline}
+                        className="text-xs font-medium"
+                      >
+                        {props.name ?? ''}: ${props.value ?? 0}
+                      </text>
+                    )}
                     outerRadius={80}
                     fill="var(--chart-5)"
                     dataKey="value"
