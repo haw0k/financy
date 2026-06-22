@@ -75,10 +75,10 @@ export const Header: FC<IHeader> = ({ user }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon-sm" className="rounded-full px-0">
                 <div
-                  className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-white border flex items-center justify-center text-xs font-semibold"
+                  className="relative isolate h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-white border flex items-center justify-center text-xs font-semibold transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] after:absolute after:inset-0 after:-z-10 after:translate-x-[-100%] after:bg-[linear-gradient(105deg,transparent_30%,rgba(255,255,255,.35)_50%,transparent_70%)] after:transition-transform after:duration-500 hover:after:translate-x-[100%]"
                   style={{ borderColor: siteConfig.accentColor }}
                 >
-                  {user?.email?.[0]?.toUpperCase()}
+                  <span className="relative">{user?.email?.[0]?.toUpperCase()}</span>
                 </div>
               </Button>
             </DropdownMenuTrigger>
