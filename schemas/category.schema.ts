@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 import { CATEGORY_MSGS } from '@/messages';
 
 export const categorySchema = z.object({

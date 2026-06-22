@@ -2,12 +2,11 @@
 
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
-
 import { EProfileStatus, ERole } from '@/enums';
-import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
+import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
 import type { TTransactionInput } from '@/schemas';
-import { transactionSchema } from '@/schemas';
+import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
 import type { TActionResult } from '@/types';
 
 export async function getTransactionsDataAction(): Promise<

@@ -1,6 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
-
 import { env, routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 

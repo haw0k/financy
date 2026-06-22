@@ -1,9 +1,7 @@
 'use client';
 
 import { createContext, type FC, type PropsWithChildren, useCallback, useContext } from 'react';
-
 import { useRouter } from 'next/navigation';
-
 import { EProfileStatus, ERole } from '@/enums';
 
 interface IRoleContext {

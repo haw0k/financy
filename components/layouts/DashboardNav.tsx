@@ -1,11 +1,8 @@
 'use client';
 
 import { type FC } from 'react';
-
 import { usePathname } from 'next/navigation';
-
 import { LogoLink, NavItemLink } from '@/components/ui';
-
 import { type INavItem, navItems } from '@/config';
 
 interface IDashboardNav {

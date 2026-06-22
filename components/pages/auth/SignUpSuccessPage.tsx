@@ -1,5 +1,4 @@
 import Link from 'next/link';
-
 import { routes } from '@/config';
 
 export function SignUpSuccessPage() {

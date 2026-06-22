@@ -1,11 +1,8 @@
-import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-
 import { AdminPage } from '@/components/pages/admin';
-
 import { requireApprovedAdmin } from '@/lib/require-auth';
-
 import { routes, siteConfig } from '@/config';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: `Admin Dashboard — ${siteConfig.name}`,

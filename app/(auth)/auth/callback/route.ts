@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
 import { createClient } from '@/lib/supabase/server';
-
 import { routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 

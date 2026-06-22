@@ -1,20 +1,16 @@
 'use client';
 
 import * as React from 'react';
-
+import { useIsMobile } from '@/hooks/useMobile';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
-
 import { Button } from '@/lib/shadcn/Button';
 import { Input } from '@/lib/shadcn/Input';
 import { Separator } from '@/lib/shadcn/Separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/lib/shadcn/Sheet';
 import { Skeleton } from '@/lib/shadcn/Skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/lib/shadcn/Tooltip';
-
-import { useIsMobile } from '@/hooks/useMobile';
-
 import { cn } from '@/lib/utils';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';

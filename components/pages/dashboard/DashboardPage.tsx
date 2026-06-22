@@ -1,5 +1,4 @@
 import { DashboardOverview } from '@/components/layouts';
-
 import { getDashboardDataAction } from '@/app/actions/dashboard';
 
 export async function DashboardPage() {

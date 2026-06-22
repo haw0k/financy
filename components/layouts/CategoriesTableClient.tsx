@@ -1,10 +1,8 @@
 'use client';
 
 import { type FC, type SubmitEvent, useState, useTransition } from 'react';
-
 import { Edit2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,14 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
-
 import { NewButton, showError } from '@/components/ui';
-
 import { withTimeout } from '@/lib/with-timeout';
-
-import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
-import { CATEGORY_MSGS } from '@/messages';
-
 import {
   createCategoryAction,
   createCategoryTypeAction,
@@ -50,6 +42,8 @@ import {
   updateCategoryAction,
   updateCategoryTypeAction,
 } from '@/app/actions/categories';
+import { CATEGORY_MSGS } from '@/messages';
+import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
 
 interface ICategoriesTableClient {
   initialCategories: ICategory[];

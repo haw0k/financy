@@ -1,9 +1,7 @@
 'use client';
 
 import { type FC, useMemo } from 'react';
-
 import { DollarSign, TrendingDown, TrendingUp } from 'lucide-react';
-import type { PieLabelRenderProps } from 'recharts';
 import {
   CartesianGrid,
   Cell,
@@ -17,9 +15,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
-
+import type { PieLabelRenderProps } from 'recharts';
 import type { IStats, ITransaction } from '@/interfaces';
 
 const COLORS = [

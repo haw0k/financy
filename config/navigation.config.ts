@@ -6,7 +6,6 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
-
 import { routes } from './routes.config';
 
 export interface INavItem {

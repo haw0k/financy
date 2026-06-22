@@ -1,6 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import { EProfileStatus, ERole } from '@/enums';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */

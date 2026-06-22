@@ -76,21 +76,43 @@
           "level": "on",
           "options": {
             "groups": [
-              "react*",
-              ":BLANK_LINE:",
-              [":NODE:", ":BUN:", ":PACKAGE:"],
-              ":BLANK_LINE:",
-              ["@/lib/shadcn", "@/lib/shadcn/**"],
-              ":BLANK_LINE:",
-              ["@/components/**"],
-              ":BLANK_LINE:",
-              ["@/hooks/**"],
-              ":BLANK_LINE:",
-              ["@/lib/**", "!@/lib/shadcn", "!@/lib/shadcn/**"],
-              ":BLANK_LINE:",
-              ["@/config", "@/enums", "@/interfaces", "@/messages", "@/schemas", "@/types"],
-              ":BLANK_LINE:",
-              [":PATH:"]
+              { "source": "react*", "type": false },
+              [
+                { "source": "@/hooks/**", "type": false },
+                { "source": "@/components/providers", "type": false }
+              ],
+              [":NODE:", ":BUN:", { "source": ":PACKAGE:", "type": false }],
+              [{ "source": "@/lib/shadcn", "type": false }, "@/lib/shadcn/**"],
+              { "source": "@/components/**", "type": false },
+              [{ "source": "@/lib/**", "type": false }, "!@/lib/shadcn", "!@/lib/shadcn/**"],
+              [{ "source": "@/config", "type": false }, { "source": "@/enums", "type": false }],
+              { "source": "@/schemas", "type": false },
+              [":ALIAS:", "!@/types", "!@/interfaces"],
+              { "source": "@/messages", "type": false },
+              { "source": "@/app/**", "type": false },
+              [":PATH:", "**/*.css"],
+              { "source": "react*", "type": true },
+              [
+                { "source": "@/hooks/**", "type": true },
+                { "source": "@/components/providers", "type": true }
+              ],
+              [":NODE:", ":BUN:", { "source": ":PACKAGE:", "type": true }],
+              [
+                { "source": "@/lib/shadcn", "type": true },
+                { "source": "@/lib/shadcn/**", "type": true }
+              ],
+              { "source": "@/components/**", "type": true },
+              [
+                { "source": "@/lib/**", "type": true },
+                { "source": "!@/lib/shadcn", "type": true },
+                { "source": "!@/lib/shadcn/**", "type": true }
+              ],
+              [{ "source": "@/config", "type": true }, { "source": "@/enums", "type": true }],
+              { "source": "@/schemas", "type": true },
+              [{ "source": "@/interfaces", "type": true }, { "source": "@/types", "type": true }],
+              { "source": "@/messages", "type": true },
+              { "source": "@/app/**", "type": true },
+              [{ "source": ":PATH:", "type": true }]
             ]
           }
         }

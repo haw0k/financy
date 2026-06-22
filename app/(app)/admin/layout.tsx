@@ -1,11 +1,8 @@
-import type { PropsWithChildren } from 'react';
-
 import { redirect } from 'next/navigation';
-
 import { createClient } from '@/lib/supabase/server';
-
 import { routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
+import type { PropsWithChildren } from 'react';
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
   const supabase = await createClient();

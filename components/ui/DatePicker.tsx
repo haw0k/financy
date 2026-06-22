@@ -1,17 +1,13 @@
 'use client';
 
 import { type FC, useState } from 'react';
-
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-
 import { Button } from '@/lib/shadcn';
 import { Calendar } from '@/lib/shadcn/Calendar';
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/lib/shadcn/Drawer';
 import { Popover, PopoverContent, PopoverTrigger } from '@/lib/shadcn/Popover';
-
 import { cn } from '@/lib/utils';
-
 import { useIsMobile } from '@/hooks';
 
 interface IDatePicker {

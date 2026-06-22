@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-
 import { EProfileStatus, ERole } from '@/enums';
 import { ADMIN_MSGS, AUTH_MSGS } from '@/messages';
 

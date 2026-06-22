@@ -1,14 +1,12 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-
 import { createClient } from '@/lib/supabase/server';
-
 import { getSupabaseRedirectUrl, routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
+import { loginSchema, signUpSchema } from '@/schemas';
 import { AUTH_MSGS } from '@/messages';
 import type { TLoginInput, TSignUpInput } from '@/schemas';
-import { loginSchema, signUpSchema } from '@/schemas';
 import type { TAuthResult } from '@/types';
 
 /**

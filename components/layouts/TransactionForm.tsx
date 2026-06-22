@@ -1,7 +1,6 @@
 'use client';
 
 import { type FC, type SubmitEvent, useEffect, useState, useTransition } from 'react';
-
 import {
   Button,
   Card,
@@ -16,19 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/shadcn';
-
 import { DatePicker, showError } from '@/components/ui';
-
 import { withTimeout } from '@/lib/with-timeout';
-
-import type { ICategory, ITransaction } from '@/interfaces';
-import { TRANSACTION_MSGS } from '@/messages';
-
 import {
   createTransactionAction,
   getReceiversAction,
   updateTransactionAction,
 } from '@/app/actions/transactions';
+import { TRANSACTION_MSGS } from '@/messages';
+import type { ICategory, ITransaction } from '@/interfaces';
 
 interface ITransactionForm {
   onSuccess: (input: {

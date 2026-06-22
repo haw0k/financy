@@ -1,15 +1,12 @@
 'use client';
 
-import type { FC, ReactNode } from 'react';
-
+import { DashboardShell, useRoleContext } from '@/components/providers';
 import { User } from '@supabase/supabase-js';
 import { usePathname } from 'next/navigation';
-
 import { DashboardNav, Header, MobileNav } from '@/components/layouts';
-import { DashboardShell, useRoleContext } from '@/components/providers';
-
 import { adminNavItem, navItems, routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
+import type { FC, ReactNode } from 'react';
 
 interface IAppShell {
   user: User;

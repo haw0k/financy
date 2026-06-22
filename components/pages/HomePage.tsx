@@ -1,7 +1,5 @@
 import { redirect } from 'next/navigation';
-
 import { createClient } from '@/lib/supabase/server';
-
 import { routes } from '@/config';
 
 export async function HomePage() {

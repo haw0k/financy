@@ -1,5 +1,4 @@
 import { z } from 'zod';
-
 import { authConfig } from '@/config';
 import { ERole } from '@/enums';
 import { AUTH_MSGS } from '@/messages';

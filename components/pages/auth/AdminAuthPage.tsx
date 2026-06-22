@@ -1,10 +1,8 @@
 'use client';
 
 import { type SubmitEvent, useEffect, useState, useTransition } from 'react';
-
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import Image from 'next/image';
-
 import {
   Button,
   Card,
@@ -15,15 +13,11 @@ import {
   Input,
   Label,
 } from '@/lib/shadcn';
-
 import { PasswordField, showError } from '@/components/ui';
-
 import { withTimeout } from '@/lib/with-timeout';
-
 import { siteConfig } from '@/config';
-import { AUTH_MSGS } from '@/messages';
-
 import { adminLoginAction, adminSignUpAction } from '@/app/actions/auth';
+import { AUTH_MSGS } from '@/messages';
 
 export function AdminAuthPage() {
   const [email, setEmail] = useState('');

@@ -1,8 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
 import { SignUpSuccessPage } from '@/components/pages/auth';
-
 import { EProfileStatus, ERole } from '@/enums';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */

@@ -1,8 +1,6 @@
-import type { Metadata } from 'next';
-
 import { TransactionsPage } from '@/components/pages/dashboard';
-
 import { siteConfig } from '@/config';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: `Transactions — ${siteConfig.name}`,

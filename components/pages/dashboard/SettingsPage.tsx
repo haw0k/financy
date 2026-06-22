@@ -1,11 +1,7 @@
 import { redirect } from 'next/navigation';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
-
 import { ThemeSelect } from '@/components/ui/ThemeSelect';
-
 import { createClient } from '@/lib/supabase/server';
-
 import { routes, siteConfig } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 

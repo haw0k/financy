@@ -1,11 +1,8 @@
 'use client';
 
 import { type FC } from 'react';
-
 import Link from 'next/link';
-
 import { cn } from '@/lib/utils';
-
 import { type INavItem } from '@/config';
 
 interface INavItemLink {
