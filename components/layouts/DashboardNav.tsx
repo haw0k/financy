@@ -41,7 +41,7 @@ export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
           </span>
         </Link>
       </div>
-      <div className="flex-1 space-y-1 p-4 border-r border-border">
+      <div className="flex-1 border-r border-border">
         {resolvedItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -51,10 +51,10 @@ export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'relative isolate flex items-center gap-3 overflow-hidden px-4 py-2 text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] after:absolute after:inset-0 after:-z-10 after:translate-x-[-100%] after:bg-[linear-gradient(105deg,transparent_30%,rgba(255,255,255,.2)_50%,transparent_70%)] after:transition-transform after:duration-500 hover:after:translate-x-[100%]',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-primary text-primary-foreground w-full rounded-none'
+                  : 'text-muted-foreground hover:bg-primary/25 hover:text-foreground dark:hover:bg-primary/35 dark:hover:text-white'
               )}
             >
               <Icon className="h-4 w-4" />
