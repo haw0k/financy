@@ -153,6 +153,7 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 - **Charts**: Recharts
 - **Testing**: Vitest + React Testing Library
 - **Dates**: date-fns
+- **Linting/Formatting**: Biome
 
 ## Documentation
 
@@ -229,8 +230,12 @@ pnpm build
 # Start production server
 pnpm start
 
-# Lint and check types
+# Lint and check formatting
 pnpm lint
+pnpm format:check
+
+# Auto-fix linting and formatting
+pnpm check:fix
 
 # Run tests
 pnpm test          # Watch mode

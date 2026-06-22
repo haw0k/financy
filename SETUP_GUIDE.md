@@ -77,6 +77,8 @@ pnpm lint:fix    # Auto-fix lint issues
 pnpm type-check  # TypeScript check
 pnpm format:check # Check formatting
 pnpm format:fix  # Fix formatting
+pnpm check       # Combined lint + format check
+pnpm check:fix   # Combined lint + format auto-fix
 pnpm clean       # Clean build cache
 ```
 
