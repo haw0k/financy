@@ -3,11 +3,6 @@ import { Skeleton } from '@/lib/shadcn';
 export default function CategoriesLoading() {
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">
-      <div className="flex flex-col gap-2">
-        <Skeleton className="h-9 w-40" />
-        <Skeleton className="h-5 w-64" />
-      </div>
-
       {/* Categories Table Skeleton */}
       <div className="rounded-lg border">
         <div className="p-4">

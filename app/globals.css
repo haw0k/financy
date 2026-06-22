@@ -186,7 +186,7 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-roboto);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -238,12 +238,7 @@
   }
   select,
   option {
-    font-family:
-      'Geist Mono',
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
+    font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
       sans-serif;
   }
   button:not(:disabled),

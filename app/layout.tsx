@@ -1,5 +1,5 @@
 import Script from 'next/script';
-import { Geist, Geist_Mono, Roboto } from 'next/font/google';
+import { Geist_Mono, Roboto } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider, RoleProvider } from '@/components/providers';
 import { SonnerToaster } from '@/lib/shadcn';
@@ -9,8 +9,8 @@ import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 import './globals.css';
 
-const geist = Geist({ subsets: ['latin', 'cyrillic'] });
-const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'] });
+const roboto = Roboto({ subsets: ['latin', 'cyrillic'], weight: ['400', '500', '700'], variable: '--font-roboto' });
+const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'], variable: '--font-mono' });
 const robotoHeading = Roboto({ subsets: ['latin', 'cyrillic'], variable: '--font-heading' });
 
 export const metadata: Metadata = {
@@ -80,7 +80,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geist.className} ${geistMono.className} ${robotoHeading.variable} bg-background font-sans antialiased`}
+        className={`${roboto.className} ${roboto.variable} ${geistMono.variable} ${robotoHeading.variable} bg-background font-sans antialiased`}
       >
         <Script id="theme-init" strategy="beforeInteractive">
           {`

@@ -3,11 +3,6 @@ import { Skeleton } from '@/lib/shadcn';
 export default function DashboardLoading() {
   return (
     <div className="flex flex-col gap-8 p-6 md:p-8">
-      <div className="flex flex-col gap-2">
-        <Skeleton className="h-9 w-40" />
-        <Skeleton className="h-5 w-64" />
-      </div>
-
       {/* Stats Cards Skeleton */}
       <div className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
