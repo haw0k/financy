@@ -1,12 +1,12 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMobileNav } from '@/components/providers';
-import Image from 'next/image';
 import Link from 'next/link';
+import { useMobileNav } from '@/components/providers';
 import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { navItems, routes, siteConfig, type INavItem } from '@/config';
+import { navItems, type INavItem } from '@/config';
 import { cn } from '@/lib/utils';
+import { LogoLink } from './LogoLink';
 import { type FC } from 'react';
 
 interface IMobileNav {
@@ -22,33 +22,13 @@ export const MobileNav: FC<IMobileNav> = ({ items }) => {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
-        <div className="flex h-[57px] items-center border-b border-border px-4">
-          <Link
-            href={routes.dashboard}
-            className="flex items-center gap-4 font-semibold"
-            onClick={() => {
-              setIsOpen(false);
-            }}
-          >
-            <Image
-              src="/icon.svg"
-              alt={siteConfig.name}
-              width={32}
-              height={32}
-              className="h-8 w-8"
-              loading="eager"
-            />
-            <span
-              className="font-semibold"
-              style={{
-                color: siteConfig.accentColor,
-                fontSize: siteConfig.logoFontSize,
-                fontWeight: siteConfig.logoFontWeight,
-              }}
-            >
-              {siteConfig.name}
-            </span>
-          </Link>
+        <div
+          className="flex h-[57px] items-center border-b border-border px-4"
+          onClick={() => {
+            setIsOpen(false);
+          }}
+        >
+          <LogoLink />
         </div>
         <div>
           {resolvedItems.map((item) => {

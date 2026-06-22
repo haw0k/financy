@@ -22,7 +22,6 @@ export * from './Empty';
 export * from './Field';
 export * from './Form';
 export * from './HoverCard';
-export * from './InputGroup';
 export * from './InputOtp';
 export * from './Input';
 export * from './Item';

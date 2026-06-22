@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 beforeEach(() => {
-  // Ensure a clean DOM for each visual regression-style test.
+  // Ensure a clean DOM for each styling test.
   document.body.className = '';
   document.documentElement.classList.remove('dark');
 });
@@ -72,18 +72,19 @@ describe('Card styling', () => {
     expect(screen.getByText('Footer')).toBeDefined();
   });
 
-  it('applies hover shadow transition class to card', async () => {
+  it('applies base card styling classes', async () => {
     const { Card, CardTitle } = await import('@/lib/shadcn/Card');
 
     const { container } = render(
       <Card>
-        <CardTitle>Hover</CardTitle>
+        <CardTitle>Styled</CardTitle>
       </Card>
     );
 
     const card = container.querySelector('[data-slot="card"]');
-    expect(card?.className).toContain('hover:shadow-md');
-    expect(card?.className).toContain('transition-all');
+    expect(card?.className).toContain('rounded-md');
+    expect(card?.className).toContain('border');
+    expect(card?.className).toContain('shadow-sm');
   });
 });
 

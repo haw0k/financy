@@ -17,6 +17,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import type { PieLabelRenderProps } from 'recharts';
 
 const COLORS = [
   'var(--chart-1)',
@@ -122,18 +123,22 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={(props: { name?: string; value?: number; fill?: string; x?: number; y?: number; textAnchor?: 'start' | 'middle' | 'end' | 'inherit'; dominantBaseline?: 'auto' | 'middle' | 'hanging' }) => (
-                      <text
-                        x={props.x}
-                        y={props.y}
-                        fill="var(--foreground)"
-                        textAnchor={props.textAnchor}
-                        dominantBaseline={props.dominantBaseline}
-                        className="text-xs font-medium"
-                      >
-                        {props.name ?? ''}: ${props.value ?? 0}
-                      </text>
-                    )}
+                    label={(props: PieLabelRenderProps) => {
+                      const textAnchor = props.textAnchor as 'start' | 'middle' | 'end' | 'inherit' | undefined;
+
+                      return (
+                        <text
+                          x={props.x}
+                          y={props.y}
+                          fill="var(--foreground)"
+                          textAnchor={textAnchor}
+                          dominantBaseline="middle"
+                          className="text-xs font-medium"
+                        >
+                          {props.name ?? ''}: ${props.value ?? 0}
+                        </text>
+                      );
+                    }}
                     outerRadius={80}
                     fill="var(--chart-5)"
                     dataKey="value"

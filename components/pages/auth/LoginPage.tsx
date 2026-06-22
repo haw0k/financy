@@ -3,7 +3,7 @@
 import { useState, useTransition, type SubmitEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from '@/lib/shadcn';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/lib/shadcn';
 import { showError, PasswordField } from '@/components/ui';
 import { routes, siteConfig } from '@/config';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
@@ -45,11 +45,10 @@ export function LoginPage() {
           <Card className="border">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Login</CardTitle>
-              <CardDescription>Enter your credentials to continue</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
-                <div>
+                <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
@@ -61,7 +60,6 @@ export function LoginPage() {
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
-                    className="mt-1"
                   />
                 </div>
                 <PasswordField

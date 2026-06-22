@@ -1,10 +1,10 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { navItems, routes, siteConfig, type INavItem } from '@/config';
+import { navItems, type INavItem } from '@/config';
+import { LogoLink } from './LogoLink';
 import { type FC } from 'react';
 
 interface IDashboardNav {
@@ -18,27 +18,7 @@ export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
   return (
     <nav className="hidden bg-card md:flex md:flex-col md:w-64">
       <div className="flex h-14 items-center border-b border-border px-4">
-        <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
-          <Image
-            src="/icon.svg"
-            alt={siteConfig.name}
-            width={32}
-            height={32}
-            className="h-8 w-8"
-            loading="eager"
-          />
-          <span
-            className="logo-hover inline-block font-semibold"
-            data-text={siteConfig.name}
-            style={{
-              color: siteConfig.accentColor,
-              fontSize: siteConfig.logoFontSize,
-              fontWeight: siteConfig.logoFontWeight,
-            }}
-          >
-            {siteConfig.name}
-          </span>
-        </Link>
+        <LogoLink />
       </div>
       <div className="flex-1 border-r border-border">
         {resolvedItems.map((item) => {

@@ -58,10 +58,12 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
   const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>(initialCategoryTypes);
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const DEFAULT_CATEGORY_COLOR = 'var(--chart-3)';
+
   const [formData, setFormData] = useState({
     name: '',
     type: 'expense' as 'income' | 'expense',
-    color: 'var(--chart-3)',
+    color: DEFAULT_CATEGORY_COLOR,
     type_id: '',
   });
   const [ctFormData, setCtFormData] = useState<ICategoryTypeInput>({ name: '' });
@@ -179,7 +181,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
               },
             ]);
           }
-          setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
+          setFormData({ name: '', type: 'expense', color: DEFAULT_CATEGORY_COLOR, type_id: '' });
           setEditingId(null);
           setIsShowForm(false);
           router.refresh();
@@ -320,7 +322,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       onClick={() => {
                         setIsShowForm(false);
                         setEditingId(null);
-                        setFormData({ name: '', type: 'expense', color: '#3b82f6', type_id: '' });
+                        setFormData({ name: '', type: 'expense', color: DEFAULT_CATEGORY_COLOR, type_id: '' });
                       }}
                     >
                       Cancel

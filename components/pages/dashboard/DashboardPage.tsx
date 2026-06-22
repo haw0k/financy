@@ -1,13 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
 import { DashboardOverview } from '@/components/layouts';
 import { getDashboardDataAction } from '@/app/actions/dashboard';
 
 export async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const result = await getDashboardDataAction();
 
   if (!result.isSuccess) {

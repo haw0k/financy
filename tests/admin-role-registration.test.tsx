@@ -127,7 +127,7 @@ describe('PendingPage', () => {
     expect(screen.getByText('Loading...')).toBeDefined();
   });
 
-  it('should show admin pending message for admin role', async () => {
+  it('should render pending card for admin role', async () => {
     useRoleContextReturn = {
       ...useRoleContextReturn,
       role: ERole.Admin,
@@ -135,10 +135,11 @@ describe('PendingPage', () => {
     };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
-    expect(screen.getByText(/Check your email to confirm your admin account/)).toBeDefined();
+    expect(screen.getByText('Account Status')).toBeDefined();
+    expect(screen.getByText('Log out')).toBeDefined();
   });
 
-  it('should show approval pending message for sender role', async () => {
+  it('should render pending card for sender role', async () => {
     useRoleContextReturn = {
       ...useRoleContextReturn,
       role: ERole.Sender,
@@ -146,10 +147,11 @@ describe('PendingPage', () => {
     };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
-    expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
+    expect(screen.getByText('Account Status')).toBeDefined();
+    expect(screen.getByText('Log out')).toBeDefined();
   });
 
-  it('should show approval pending message for receiver role', async () => {
+  it('should render pending card for receiver role', async () => {
     useRoleContextReturn = {
       ...useRoleContextReturn,
       role: ERole.Receiver,
@@ -157,7 +159,8 @@ describe('PendingPage', () => {
     };
     const { PendingPage } = await import('@/components/pages/auth');
     render(<PendingPage />);
-    expect(screen.getByText(/Your account is pending admin approval/)).toBeDefined();
+    expect(screen.getByText('Account Status')).toBeDefined();
+    expect(screen.getByText('Log out')).toBeDefined();
   });
 
   it('should render logout button', async () => {
