@@ -1,9 +1,11 @@
 'use client';
 
+import { type FC, useSyncExternalStore } from 'react';
+
+import { ChevronDown, Moon, Sun, SunMoon } from 'lucide-react';
 import { useTheme } from 'next-themes';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/lib/shadcn';
-import { SunMoon, Sun, Moon, ChevronDown } from 'lucide-react';
-import { useSyncExternalStore, type FC } from 'react';
 
 function getIsServerSnapshot() {
   return false;

@@ -72,7 +72,28 @@
     "enabled": true,
     "actions": {
       "source": {
-        "organizeImports": "off"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              "react*",
+              ":BLANK_LINE:",
+              [":NODE:", ":BUN:", ":PACKAGE:"],
+              ":BLANK_LINE:",
+              ["@/lib/shadcn", "@/lib/shadcn/**"],
+              ":BLANK_LINE:",
+              ["@/components/**"],
+              ":BLANK_LINE:",
+              ["@/hooks/**"],
+              ":BLANK_LINE:",
+              ["@/lib/**", "!@/lib/shadcn", "!@/lib/shadcn/**"],
+              ":BLANK_LINE:",
+              ["@/config", "@/enums", "@/interfaces", "@/messages", "@/schemas", "@/types"],
+              ":BLANK_LINE:",
+              [":PATH:"]
+            ]
+          }
+        }
       }
     }
   },

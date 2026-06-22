@@ -160,7 +160,7 @@ Admin actions (`admin.ts`) validate that the caller is an approved admin and tha
 
 - **Formatting**: 100 char line width, single quotes, semicolons, trailing commas (es5), LF line endings
 - **Biome**: Unified linter and formatter configured in `biome.json`
-- **Import order**: Biome's automatic import organization is disabled to preserve the existing order. Maintain the convention manually: react first, then externals, then `@/lib/shadcn` internals, then `@/components/*`, `@/hooks/*`, `@/lib/*`
+- **Import order**: Enforced by Biome's `organizeImports` assist action in `biome.json`. Order is: `react*` first, then Node/Bun/npm packages, then `@/lib/shadcn`, `@/components/*`, `@/hooks/*`, `@/lib/*`, remaining `@/*` aliases, and relative imports last. Blank lines separate each group. Run `pnpm format:fix` (or `pnpm check:fix`) to auto-sort.
 - shadcn/ui components imported from `@/lib/shadcn` — `import { Button } from "@/lib/shadcn"`
 
 ### Hungarian Notation (strict lint rules)

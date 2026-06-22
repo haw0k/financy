@@ -1,15 +1,21 @@
 'use client';
 
-import { useState, useTransition, type SubmitEvent } from 'react';
+import { type SubmitEvent, useState, useTransition } from 'react';
+
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/lib/shadcn';
-import { showError, PasswordField } from '@/components/ui';
-import { routes, siteConfig } from '@/config';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { loginAction } from '@/app/actions/auth';
-import { AUTH_MSGS } from '@/messages';
+
+import { PasswordField, showError } from '@/components/ui';
+
 import { withTimeout } from '@/lib/with-timeout';
+
+import { routes, siteConfig } from '@/config';
+import { AUTH_MSGS } from '@/messages';
+
+import { loginAction } from '@/app/actions/auth';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');

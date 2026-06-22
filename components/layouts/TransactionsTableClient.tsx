@@ -1,18 +1,17 @@
 'use client';
 
 import { type FC, useState, useTransition } from 'react';
+
+import { Edit2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { showError, NewButton } from '@/components/ui';
-import { deleteTransactionAction } from '@/app/actions/transactions';
-import { withTimeout } from '@/lib/with-timeout';
-import { TRANSACTION_MSGS } from '@/messages';
+
 import {
+  Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
-  Button,
   Input,
   Table,
   TableBody,
@@ -21,9 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
-import { Trash2, Edit2 } from 'lucide-react';
+
 import { TransactionForm } from '@/components/layouts';
-import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
+import { NewButton, showError } from '@/components/ui';
+
+import { withTimeout } from '@/lib/with-timeout';
+
+import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
+import { TRANSACTION_MSGS } from '@/messages';
+
+import { deleteTransactionAction } from '@/app/actions/transactions';
 
 interface ITransactionsTableClient {
   initialTransactions: ITransaction[];

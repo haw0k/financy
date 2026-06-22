@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, type FC, type ComponentProps } from 'react';
+import { type ComponentProps, type FC, useState } from 'react';
+
 import { Eye, EyeOff } from 'lucide-react';
+
 import { Button, Input, Label } from '@/lib/shadcn';
+
 import { cn } from '@/lib/utils';
 
 interface IPasswordField extends ComponentProps<'input'> {

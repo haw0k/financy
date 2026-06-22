@@ -1,8 +1,12 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { AppShell } from '@/components/layouts';
-import { routes } from '@/config';
 import type { PropsWithChildren } from 'react';
+
+import { redirect } from 'next/navigation';
+
+import { AppShell } from '@/components/layouts';
+
+import { createClient } from '@/lib/supabase/server';
+
+import { routes } from '@/config';
 
 export default async function AppLayout({ children }: PropsWithChildren) {
   const supabase = await createClient();

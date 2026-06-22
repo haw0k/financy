@@ -31,4 +31,4 @@
 - [x] refactor: Migrate Auth Forms to Server Actions — { 2026-05-25-migrate-auth-forms-to-server-actions.md }
 - [x] docs: Document React Server Components Practical Patterns — { 2026-06-20-document-rsc-patterns.md }
 - [x] feat: Polish Application Styling With Frontend-Design Plugin - { 2026-06-21-frontend-design-styling.md }
-- [ ] chore: Replace ESLint and Prettier with Biome - { 2026-06-22-replace-eslint-prettier-with-biome.md }
+- [x] chore: Replace ESLint and Prettier with Biome - { 2026-06-22-replace-eslint-prettier-with-biome.md }

@@ -1,12 +1,14 @@
 'use server';
 
-import { createAdminClient } from '@/lib/supabase/admin';
-import { ERole, EProfileStatus } from '@/enums';
-import { requireApprovedAdmin } from '@/lib/require-auth';
+import { z } from 'zod';
+
 import { mapSupabaseError } from '@/lib/db-errors';
+import { requireApprovedAdmin } from '@/lib/require-auth';
+import { createAdminClient } from '@/lib/supabase/admin';
+
+import { EProfileStatus, ERole } from '@/enums';
 import { ADMIN_MSGS } from '@/messages';
 import type { TActionResult } from '@/types';
-import { z } from 'zod';
 
 const userIdSchema = z.string().uuid({ message: ADMIN_MSGS.INVALID_USER_ID });
 

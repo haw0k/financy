@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useTransition, type SubmitEvent } from 'react';
+import { type SubmitEvent, useState, useTransition } from 'react';
+
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import {
   Button,
   Card,
@@ -18,13 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/lib/shadcn';
-import { showError, PasswordField } from '@/components/ui';
+
+import { PasswordField, showError } from '@/components/ui';
+
+import { withTimeout } from '@/lib/with-timeout';
+
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { signUpAction } from '@/app/actions/auth';
 import { AUTH_MSGS } from '@/messages';
-import { withTimeout } from '@/lib/with-timeout';
+
+import { signUpAction } from '@/app/actions/auth';
 
 export function SignUpPage() {
   const [email, setEmail] = useState('');

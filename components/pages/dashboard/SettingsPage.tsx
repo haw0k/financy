@@ -1,10 +1,13 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { siteConfig } from '@/config';
-import { routes } from '@/config';
-import { ERole, EProfileStatus } from '@/enums';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
+
 import { ThemeSelect } from '@/components/ui/ThemeSelect';
+
+import { createClient } from '@/lib/supabase/server';
+
+import { routes, siteConfig } from '@/config';
+import { EProfileStatus, ERole } from '@/enums';
 
 export async function SettingsPage() {
   const supabase = await createClient();

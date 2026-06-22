@@ -1,9 +1,11 @@
 'use client';
 
+import { type FC, type MouseEventHandler } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { routes, siteConfig } from '@/config';
-import { type FC, type MouseEventHandler } from 'react';
 
 interface ILogoLink {
   onClick?: MouseEventHandler<HTMLAnchorElement>;

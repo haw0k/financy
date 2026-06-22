@@ -1,25 +1,25 @@
 'use client';
 
-import { type FC, useState, useTransition, type SubmitEvent } from 'react';
+import { type FC, type SubmitEvent, useState, useTransition } from 'react';
+
+import { Edit2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { showError, NewButton } from '@/components/ui';
+
 import {
-  createCategoryAction,
-  updateCategoryAction,
-  deleteCategoryAction,
-  createCategoryTypeAction,
-  updateCategoryTypeAction,
-  deleteCategoryTypeAction,
-} from '@/app/actions/categories';
-import { withTimeout } from '@/lib/with-timeout';
-import { CATEGORY_MSGS } from '@/messages';
-import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
-  Button,
   Input,
   Label,
   Select,
@@ -33,17 +33,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
 } from '@/lib/shadcn';
-import { Trash2, Edit2 } from 'lucide-react';
+
+import { NewButton, showError } from '@/components/ui';
+
+import { withTimeout } from '@/lib/with-timeout';
+
 import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
+import { CATEGORY_MSGS } from '@/messages';
+
+import {
+  createCategoryAction,
+  createCategoryTypeAction,
+  deleteCategoryAction,
+  deleteCategoryTypeAction,
+  updateCategoryAction,
+  updateCategoryTypeAction,
+} from '@/app/actions/categories';
 
 interface ICategoriesTableClient {
   initialCategories: ICategory[];

@@ -1,11 +1,12 @@
 'use server';
 
-import type { ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
-import { categorySchema, categoryTypeSchema } from '@/schemas';
+
+import type { ICategory, ICategoryType } from '@/interfaces';
 import { CATEGORY_MSGS } from '@/messages';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
+import { categorySchema, categoryTypeSchema } from '@/schemas';
 import type { TActionResult } from '@/types';
 
 export async function createCategoryAction(input: TCategoryInput): Promise<TActionResult<void>> {

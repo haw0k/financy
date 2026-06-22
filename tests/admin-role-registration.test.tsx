@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { SignUpSuccessPage } from '@/components/pages/auth';
-import { ERole, EProfileStatus } from '@/enums';
+
+import { EProfileStatus, ERole } from '@/enums';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 

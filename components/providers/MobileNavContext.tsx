@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, createContext, useContext, type FC, type ReactNode } from 'react';
+import { createContext, type FC, type ReactNode, useContext, useState } from 'react';
 
 interface IMobileNavContext {
   isOpen: boolean;

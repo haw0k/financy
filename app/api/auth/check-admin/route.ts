@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+
 import { createAdminClient } from '@/lib/supabase/admin';
-import { ERole, EProfileStatus } from '@/enums';
+
+import { EProfileStatus, ERole } from '@/enums';
 
 export async function GET() {
   try {

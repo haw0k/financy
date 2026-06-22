@@ -1,6 +1,6 @@
 'use client';
 
-import { TriangleAlert, CircleCheck, Info } from 'lucide-react';
+import { CircleCheck, Info, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
 const iconClass = 'size-4 shrink-0';
@@ -49,4 +49,4 @@ function showNotification(title: string, description: string) {
   });
 }
 
-export { showError, showWarning, showSuccess, showNotification };
+export { showError, showNotification, showSuccess, showWarning };

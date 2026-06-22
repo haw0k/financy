@@ -1,5 +1,6 @@
-import { updateSession } from './lib/supabase/update-session';
 import { NextRequest } from 'next/server';
+
+import { updateSession } from './lib/supabase/update-session';
 
 // Next.js expects a function named `proxy` in this file when using proxy mode
 export async function proxy(request: NextRequest) {

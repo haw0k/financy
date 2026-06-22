@@ -1,12 +1,13 @@
 'use server';
 
-import { ERole, EProfileStatus } from '@/enums';
-import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
-import { transactionSchema } from '@/schemas';
+
+import { EProfileStatus, ERole } from '@/enums';
+import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
 import { TRANSACTION_MSGS } from '@/messages';
 import type { TTransactionInput } from '@/schemas';
+import { transactionSchema } from '@/schemas';
 import type { TActionResult } from '@/types';
 
 export async function getTransactionsDataAction(): Promise<

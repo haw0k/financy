@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-import { routes, env } from '@/config';
-import { ERole, EProfileStatus } from '@/enums';
+import { type NextRequest, NextResponse } from 'next/server';
+
+import { env, routes } from '@/config';
+import { EProfileStatus, ERole } from '@/enums';
 
 function getRoleFromUser(user: { app_metadata?: Record<string, unknown> } | null): string | null {
   const role = user?.app_metadata?.role;

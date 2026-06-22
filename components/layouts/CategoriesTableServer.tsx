@@ -1,5 +1,5 @@
-import { getCategoriesDataAction } from '@/app/actions/categories';
 import { CategoriesTableClient } from './CategoriesTableClient';
+import { getCategoriesDataAction } from '@/app/actions/categories';
 
 export async function CategoriesTableServer() {
   const result = await getCategoriesDataAction();

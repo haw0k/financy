@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
-import { ERole, EProfileStatus } from '@/enums';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { EProfileStatus, ERole } from '@/enums';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 

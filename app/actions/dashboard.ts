@@ -1,8 +1,9 @@
 'use server';
 
-import type { ITransaction } from '@/interfaces';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
+
+import type { ITransaction } from '@/interfaces';
 import type { TActionResult } from '@/types';
 
 export async function getDashboardDataAction(): Promise<

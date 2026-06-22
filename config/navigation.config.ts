@@ -1,11 +1,12 @@
 import {
   LayoutDashboard,
-  TrendingUp,
-  TrendingDown,
+  type LucideIcon,
   Settings,
   ShieldCheckIcon,
-  type LucideIcon,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
+
 import { routes } from './routes.config';
 
 export interface INavItem {

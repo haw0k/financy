@@ -1,11 +1,15 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { useMobileNav } from '@/components/providers';
-import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { LogoLink, NavItemLink } from '@/components/ui';
-import { navItems, type INavItem } from '@/config';
 import { type FC } from 'react';
+
+import { usePathname } from 'next/navigation';
+
+import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
+
+import { useMobileNav } from '@/components/providers';
+import { LogoLink, NavItemLink } from '@/components/ui';
+
+import { type INavItem, navItems } from '@/config';
 
 interface IMobileNav {
   items?: INavItem[];

@@ -1,6 +1,8 @@
-import { SignUpSuccessPage } from '@/components/pages/auth';
-import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
+
+import { SignUpSuccessPage } from '@/components/pages/auth';
+
+import { siteConfig } from '@/config';
 
 export const metadata: Metadata = {
   title: `Check Your Email — ${siteConfig.name}`,

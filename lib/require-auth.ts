@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
-import { ERole, EProfileStatus } from '@/enums';
-import { AUTH_MSGS, ADMIN_MSGS } from '@/messages';
+
+import { EProfileStatus, ERole } from '@/enums';
+import { ADMIN_MSGS, AUTH_MSGS } from '@/messages';
 
 type TRequireAuthResult =
   | { supabase: Awaited<ReturnType<typeof createClient>>; userId: string }

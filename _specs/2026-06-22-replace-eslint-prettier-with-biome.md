@@ -17,7 +17,7 @@ Replace the existing ESLint and Prettier toolchain with Biome to unify linting, 
   - Semicolons
   - Trailing commas (ES5 style)
   - LF line endings
-  - Disable Biome's automatic import organization to preserve the existing import order
+  - Migrate the previous ESLint `import/order` groups into Biome's `organizeImports` assist action with matching groups (react first, then packages, then `@/lib/shadcn`, `@/components/*`, `@/hooks/*`, `@/lib/*`, remaining `@/*` aliases, then relative imports)
   - Hungarian notation rules preserved where applicable
 - Update `package.json` scripts:
   - `pnpm lint` runs Biome lint
@@ -31,7 +31,7 @@ Replace the existing ESLint and Prettier toolchain with Biome to unify linting, 
 
 ## Possible Edge Cases
 
-- Biome does not support custom `import/order` path groups, so automatic import organization must be disabled and the existing order maintained manually.
+- Biome v2 supports custom import groups via `assist.actions.source.organizeImports.options.groups`, so the previous `import/order` path groups can be migrated instead of disabling import organization.
 - Existing files that intentionally violate formatting rules may need explicit ignore comments or `biome.json` overrides.
 - Editor integrations and VS Code settings may need updates to use Biome instead of ESLint/Prettier.
 - CI workflows that reference `pnpm lint` or `pnpm format:check` must be verified after the switch.
@@ -48,7 +48,7 @@ Replace the existing ESLint and Prettier toolchain with Biome to unify linting, 
 
 ## Open Questions
 
-- Should Biome's import organization completely replace the current `import/order` rule, or should import order remain manual? Try to migrate `import/order` rule from ESLint to biome. Requirements for the source code should stay the same.
+- Biome's `organizeImports` now replaces the previous `import/order` rule. The migration is complete and the source-code ordering requirements are preserved.
 - Are there any custom ESLint rules (e.g., from `eslint-config-next/core-web-vitals`) that need equivalent Biome rules or explicit ignore overrides? Try to migrate a rule like `eslint-config-next/core-web-vitals` from ESLint to biome.
 - Should the migration be applied to the entire codebase in one commit, or split into a setup commit and a formatting commit? Split.
 

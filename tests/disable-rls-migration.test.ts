@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { describe, expect, it } from 'vitest';
 
 const sqlPath = path.resolve(__dirname, '../scripts/001_init_database.sql');
 const sql = fs.readFileSync(sqlPath, 'utf-8');

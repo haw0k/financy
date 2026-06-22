@@ -1,12 +1,16 @@
-import Script from 'next/script';
-import { Geist_Mono, Roboto } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import { ThemeProvider, RoleProvider } from '@/components/providers';
-import { SonnerToaster } from '@/lib/shadcn';
-import { createClient } from '@/lib/supabase/server';
-import { ERole, EProfileStatus } from '@/enums';
-import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
+import { Geist_Mono, Roboto } from 'next/font/google';
+import Script from 'next/script';
+
+import { SonnerToaster } from '@/lib/shadcn';
+
+import { RoleProvider, ThemeProvider } from '@/components/providers';
+
+import { createClient } from '@/lib/supabase/server';
+
+import { siteConfig } from '@/config';
+import { EProfileStatus, ERole } from '@/enums';
 import './globals.css';
 
 const roboto = Roboto({

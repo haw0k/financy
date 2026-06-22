@@ -1,13 +1,15 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { routes, getSupabaseRedirectUrl } from '@/config';
-import { ERole, EProfileStatus } from '@/enums';
-import { loginSchema, signUpSchema } from '@/schemas';
-import type { TLoginInput, TSignUpInput } from '@/schemas';
-import type { TAuthResult } from '@/types';
-import { AUTH_MSGS } from '@/messages';
+
 import { createClient } from '@/lib/supabase/server';
+
+import { getSupabaseRedirectUrl, routes } from '@/config';
+import { EProfileStatus, ERole } from '@/enums';
+import { AUTH_MSGS } from '@/messages';
+import type { TLoginInput, TSignUpInput } from '@/schemas';
+import { loginSchema, signUpSchema } from '@/schemas';
+import type { TAuthResult } from '@/types';
 
 /**
  * Normalizes a Supabase Auth error into a user-facing message.

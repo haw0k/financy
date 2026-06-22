@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+
 import { useRouter } from 'next/navigation';
+
 import {
   Badge,
   Button,
@@ -22,12 +24,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
+
 import { useRoleContext } from '@/components/providers';
-import { ERole, EProfileStatus } from '@/enums';
-import { routes } from '@/config';
 import { showError, showSuccess } from '@/components/ui/ToastNotification';
-import { getPendingUsersAction, approveUserAction, rejectUserAction } from '@/app/actions/admin';
+
 import { withTimeout } from '@/lib/with-timeout';
+
+import { routes } from '@/config';
+import { EProfileStatus, ERole } from '@/enums';
+
+import { approveUserAction, getPendingUsersAction, rejectUserAction } from '@/app/actions/admin';
 
 interface IPendingUser {
   id: string;

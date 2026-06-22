@@ -1,12 +1,15 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import type { FC, ReactNode } from 'react';
+
 import { User } from '@supabase/supabase-js';
+import { usePathname } from 'next/navigation';
+
 import { DashboardNav, Header, MobileNav } from '@/components/layouts';
 import { DashboardShell, useRoleContext } from '@/components/providers';
-import { navItems, adminNavItem, routes } from '@/config';
-import { ERole, EProfileStatus } from '@/enums';
-import type { FC, ReactNode } from 'react';
+
+import { adminNavItem, navItems, routes } from '@/config';
+import { EProfileStatus, ERole } from '@/enums';
 
 interface IAppShell {
   user: User;

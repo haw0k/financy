@@ -1,23 +1,26 @@
 'use client';
 
 import { type FC, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import type { ITransaction, IStats } from '@/interfaces';
+
+import { DollarSign, TrendingDown, TrendingUp } from 'lucide-react';
+import type { PieLabelRenderProps } from 'recharts';
 import {
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
+  CartesianGrid,
   Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from 'recharts';
-import type { PieLabelRenderProps } from 'recharts';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
+
+import type { IStats, ITransaction } from '@/interfaces';
 
 const COLORS = [
   'var(--chart-1)',

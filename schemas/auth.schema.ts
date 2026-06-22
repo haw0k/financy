@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { ERole } from '@/enums';
+
 import { authConfig } from '@/config';
+import { ERole } from '@/enums';
 import { AUTH_MSGS } from '@/messages';
 
 export type TLoginInput = { email: string; password: string };

@@ -1,8 +1,11 @@
 'use client';
 
-import { useMobileNav } from '@/components/providers';
+import { type FC } from 'react';
+
 import { User } from '@supabase/supabase-js';
 import { LogOut, Menu } from 'lucide-react';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
+
 import {
   Button,
   DropdownMenu,
@@ -11,12 +14,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/lib/shadcn';
-import { siteConfig } from '@/config';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
-import { signOutAction } from '@/app/actions/auth';
-import { AUTH_MSGS } from '@/messages';
+
+import { useMobileNav } from '@/components/providers';
 import { LogoLink, showError } from '@/components/ui';
-import { type FC } from 'react';
+
+import { siteConfig } from '@/config';
+import { AUTH_MSGS } from '@/messages';
+
+import { signOutAction } from '@/app/actions/auth';
 
 interface IHeader {
   user: User;

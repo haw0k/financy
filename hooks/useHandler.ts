@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 // biome-ignore lint/suspicious/noExplicitAny: generic handler type requires any
 type TAnyFunction = (...args: any[]) => any;
