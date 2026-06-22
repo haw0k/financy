@@ -14,13 +14,14 @@ The project currently uses ESLint with `eslint-config-next/core-web-vitals` and 
 
 - [ ] Remove ESLint, Prettier, and their related plugins and config files from the project.
 - [ ] Install `@biomejs/biome` as a dev dependency.
-- [ ] Create `biome.json` with formatter and linter rules matching the existing style (line width, quotes, semicolons, trailing commas, line endings, import organization).
+- [ ] Create `biome.json` with formatter and linter rules matching the existing style (line width, quotes, semicolons, trailing commas, line endings) and disable automatic import organization.
 - [ ] Update `package.json` scripts to use Biome for lint and format commands.
 - [ ] Update the pre-deploy check command to use the updated scripts.
 
 ### Phase 2 — Codebase Migration
 
 - [ ] Run Biome formatting across the entire codebase and review changes.
+- [ ] Revert any import reordering in `.ts` and `.tsx` files to preserve the existing order.
 - [ ] Run Biome linting across the entire codebase.
 - [ ] Add Biome ignore comments or `biome.json` overrides only where strictly necessary.
 - [ ] Verify all tests pass after formatting changes.
@@ -36,7 +37,7 @@ The project currently uses ESLint with `eslint-config-next/core-web-vitals` and 
 ## Risks & Notes
 
 - Biome may not have exact equivalents for every existing ESLint rule, especially project-specific naming conventions. Some rules may need to be enforced through conventions or alternative tooling.
-- Import ordering behavior may differ slightly from the previous `import/order` rule and should be reviewed manually.
+- Biome cannot replicate the previous `import/order` rule with custom path groups, so automatic import organization is disabled and order must be maintained manually.
 - The initial formatting pass may touch many files; it should be kept as a separate commit for clarity.
 
 ## Definition of Done
@@ -46,6 +47,7 @@ The project currently uses ESLint with `eslint-config-next/core-web-vitals` and 
 - [ ] `pnpm type-check` passes.
 - [ ] `pnpm test:run` passes.
 - [ ] No ESLint or Prettier config files remain in the repository.
+- [ ] `.ts` and `.tsx` import order matches the original ESLint `import/order` convention.
 - [ ] `.vscode/extensions.json` recommends the Biome extension.
 - [ ] `.vscode/settings.json` configures Biome as the default formatter with format-on-save.
-- [ ] `CLAUDE.md` and `package.json` reflect the Biome-based workflow.
+- [ ] `CLAUDE.md` and `package.json` reflect the Biome-based workflow and manual import-order convention.

@@ -1,6 +1,6 @@
 import { useRef, useCallback } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: generic handler type requires any
 type TAnyFunction = (...args: any[]) => any;
 
 export const useHandler = <T extends TAnyFunction>(f: T): T => {

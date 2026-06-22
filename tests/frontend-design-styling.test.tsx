@@ -52,8 +52,9 @@ describe('Button styling', () => {
 
 describe('Card styling', () => {
   it('renders a card with all subcomponents', async () => {
-    const { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } =
-      await import('@/lib/shadcn/Card');
+    const { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } = await import(
+      '@/lib/shadcn/Card'
+    );
 
     render(
       <Card>

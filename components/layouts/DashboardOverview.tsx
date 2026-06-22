@@ -145,7 +145,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                     fill="var(--chart-5)"
                     dataKey="value"
                   >
-                    {incomeExpenseData.map((entry, index) => (
+                    {incomeExpenseData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

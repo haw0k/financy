@@ -17,7 +17,7 @@ Replace the existing ESLint and Prettier toolchain with Biome to unify linting, 
   - Semicolons
   - Trailing commas (ES5 style)
   - LF line endings
-  - Import ordering equivalent to the current `import/order` ESLint rule
+  - Disable Biome's automatic import organization to preserve the existing import order
   - Hungarian notation rules preserved where applicable
 - Update `package.json` scripts:
   - `pnpm lint` runs Biome lint
@@ -31,7 +31,7 @@ Replace the existing ESLint and Prettier toolchain with Biome to unify linting, 
 
 ## Possible Edge Cases
 
-- Biome may not support every custom ESLint rule currently in use (e.g., specific `import/order` behavior or project-specific naming-convention rules).
+- Biome does not support custom `import/order` path groups, so automatic import organization must be disabled and the existing order maintained manually.
 - Existing files that intentionally violate formatting rules may need explicit ignore comments or `biome.json` overrides.
 - Editor integrations and VS Code settings may need updates to use Biome instead of ESLint/Prettier.
 - CI workflows that reference `pnpm lint` or `pnpm format:check` must be verified after the switch.

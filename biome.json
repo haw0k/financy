@@ -1,0 +1,99 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!out",
+      "!build",
+      "!dist",
+      "!.turbo",
+      "!*.mjs",
+      "!next-env.d.ts"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100,
+    "attributePosition": "auto",
+    "bracketSpacing": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error",
+        "useExhaustiveDependencies": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "off",
+        "noRedundantRoles": "off",
+        "noSvgWithoutTitle": "off",
+        "useFocusableInteractive": "off",
+        "useSemanticElements": "off",
+        "useAriaPropsForRole": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "off",
+        "noThenProperty": "off",
+        "useIterableCallbackReturn": "off",
+        "noDocumentCookie": "off"
+      },
+      "style": {
+        "useImportType": "off",
+        "useExportType": "off",
+        "useNodejsImportProtocol": "off",
+        "noNonNullAssertion": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "nursery": {
+        "useSortedClasses": "off"
+      }
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "semicolons": "always",
+      "trailingCommas": "es5",
+      "arrowParentheses": "always",
+      "bracketSameLine": false
+    },
+    "linter": {
+      "enabled": true
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "tailwindDirectives": true
+    }
+  }
+}

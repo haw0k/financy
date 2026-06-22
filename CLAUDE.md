@@ -159,9 +159,8 @@ Admin actions (`admin.ts`) validate that the caller is an approved admin and tha
 ## Code Style
 
 - **Formatting**: 100 char line width, single quotes, semicolons, trailing commas (es5), LF line endings
-- **ESLint**: Flat config with `eslint.config.mjs`, extends `eslint-config-next/core-web-vitals`
-- **Prettier** config in `.prettierrc.json`
-- **Import order**: enforced by `import/order` rule — react first, then externals, then `@/lib/shadcn` internals, then `@/components/*`, `@/hooks/*`, `@/lib/*`
+- **Biome**: Unified linter and formatter configured in `biome.json`
+- **Import order**: Biome's automatic import organization is disabled to preserve the existing order. Maintain the convention manually: react first, then externals, then `@/lib/shadcn` internals, then `@/components/*`, `@/hooks/*`, `@/lib/*`
 - shadcn/ui components imported from `@/lib/shadcn` — `import { Button } from "@/lib/shadcn"`
 
 ### Hungarian Notation (strict lint rules)
@@ -174,7 +173,7 @@ Admin actions (`admin.ts`) validate that the caller is an approved admin and tha
 | Boolean variable | `is` + PascalCase           | `isLoading`, `isAdminExist`    | Prefix `is`  |
 | Boolean property | `is` + PascalCase           | `isOpen`                       | Prefix `is`  |
 
-These are enforced by `@typescript-eslint/naming-convention`. Failing to follow them will cause lint errors. See [Naming Conventions](docs/naming-conventions.md) for full details.
+These are enforced by project conventions and should be maintained consistently. Biome does not replicate all custom naming rules, so reviewers should verify Hungarian notation manually. See [Naming Conventions](docs/naming-conventions.md) for full details.
 
 ## Test Patterns
 
