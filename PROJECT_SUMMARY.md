@@ -219,19 +219,20 @@ financy/
 
 ## Technology Stack
 
-| Layer              | Technology                       |
-| ------------------ | -------------------------------- |
-| **Frontend**       | Next.js 16 (App Router)          |
-| **UI Framework**   | React 19                         |
-| **Language**       | TypeScript                       |
-| **Styling**        | Tailwind CSS v4                  |
-| **UI Components**  | shadcn/ui                        |
-| **Charts**         | Recharts                         |
-| **Testing**        | Vitest (+ React Testing Library) |
-| **Database**       | Supabase (PostgreSQL)            |
-| **Authentication** | Supabase Auth                    |
-| **Icons**          | lucide-react                     |
-| **Toast**          | sonner                           |
+| Layer                  | Technology                       |
+| ---------------------- | -------------------------------- |
+| **Frontend**           | Next.js 16 (App Router)          |
+| **UI Framework**       | React 19                         |
+| **Language**           | TypeScript                       |
+| **Styling**            | Tailwind CSS v4                  |
+| **UI Components**      | shadcn/ui                        |
+| **Charts**             | Recharts                         |
+| **Testing**            | Vitest (+ React Testing Library) |
+| **Database**           | Supabase (PostgreSQL)            |
+| **Authentication**     | Supabase Auth                    |
+| **Icons**              | lucide-react                     |
+| **Toast**              | sonner                           |
+| **Linting/Formatting** | Biome                            |
 | **Date Library**   | date-fns                         |
 | **Deployment**     | Vercel                           |
 

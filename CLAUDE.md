@@ -160,7 +160,20 @@ Admin actions (`admin.ts`) validate that the caller is an approved admin and tha
 
 - **Formatting**: 100 char line width, single quotes, semicolons, trailing commas (es5), LF line endings
 - **Biome**: Unified linter and formatter configured in `biome.json`
-- **Import order**: Enforced by Biome's `organizeImports` assist action in `biome.json`. Order is: `react*` first, then Node/Bun/npm packages, then `@/lib/shadcn`, `@/components/*`, `@/hooks/*`, `@/lib/*`, remaining `@/*` aliases, and relative imports last. Blank lines separate each group. Run `pnpm format:fix` (or `pnpm check:fix`) to auto-sort.
+- **Import order**: Enforced by Biome's `organizeImports` assist action in `biome.json`. The order is:
+  1. `react*`
+  2. Project hooks and providers (`@/hooks/**`, `@/components/providers`)
+  3. Node/Bun/npm packages
+  4. Project components (`@/lib/shadcn`, `@/components/**`)
+  5. Project library functions (`@/lib/*` except `@/lib/shadcn`)
+  6. Config and enum constants (`@/config`, `@/enums`)
+  7. Schemas (`@/schemas`)
+  8. Other aliases (`@/interfaces`, `@/types`)
+  9. Messages (`@/messages`)
+  10. App imports (`@/app/**`)
+  11. Relative imports and styles (`./**`, `*.css`)
+  
+  `import type` imports for each source category follow the same category's value imports, so type-only imports are placed at the end of their respective group. Run `pnpm format:fix` (or `pnpm check:fix`) to auto-sort.
 - shadcn/ui components imported from `@/lib/shadcn` — `import { Button } from "@/lib/shadcn"`
 
 ### Hungarian Notation (strict lint rules)

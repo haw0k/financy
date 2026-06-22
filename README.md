@@ -159,6 +159,7 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 
 - **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Detailed setup instructions
 - **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - Architecture overview
+- **[AGENTS.md](./AGENTS.md)** - Code style, conventions, and rules for AI agents (import order, Hungarian notation, testing patterns)
 - **[React Server Components Guide](./docs/react-server-components-guide.md)** - Practical RSC patterns with auth and SQL database
 - **[Naming Conventions](./docs/naming-conventions.md)** - Convention for naming React components, hooks, and TypeScript types
 - **[Commit Message Convention](./docs/commit-message-convention.md)** - Commit message format and guidelines

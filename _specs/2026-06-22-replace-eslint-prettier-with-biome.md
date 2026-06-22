@@ -17,7 +17,7 @@ Replace the existing ESLint and Prettier toolchain with Biome to unify linting, 
   - Semicolons
   - Trailing commas (ES5 style)
   - LF line endings
-  - Migrate the previous ESLint `import/order` groups into Biome's `organizeImports` assist action with matching groups (react first, then packages, then `@/lib/shadcn`, `@/components/*`, `@/hooks/*`, `@/lib/*`, remaining `@/*` aliases, then relative imports)
+  - Migrate the previous ESLint `import/order` groups into Biome's `organizeImports` assist action with matching groups: `react*` first, then project hooks and providers (`@/hooks/**`, `@/components/providers`), then Node/Bun/npm packages, then project components (`@/lib/shadcn`, `@/components/**`), then project library functions (`@/lib/*` except `@/lib/shadcn`), then `@/config`/`@/enums`, `@/schemas`, `@/interfaces`/`@/types`, `@/messages`, `@/app/**`, and finally relative imports/styles. Type-only imports for each category follow the value imports of the same category.
   - Hungarian notation rules preserved where applicable
 - Update `package.json` scripts:
   - `pnpm lint` runs Biome lint
