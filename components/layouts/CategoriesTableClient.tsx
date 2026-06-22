@@ -16,7 +16,6 @@ import { CATEGORY_MSGS } from '@/messages';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   Badge,
@@ -215,7 +214,6 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Categories</CardTitle>
-              <CardDescription>Manage your expense and income categories</CardDescription>
             </div>
             <Button
               onClick={() => {
@@ -386,7 +384,8 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                           <div className="flex justify-end gap-2">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon-sm"
+                              aria-label="Edit category"
                               onClick={() => {
                                 setEditingId(category.id);
                                 setFormData({
@@ -402,7 +401,8 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                             </Button>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon-sm"
+                              aria-label="Delete category"
                               onClick={() => {
                                 handleDelete(category.id);
                               }}
@@ -426,7 +426,6 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Category Types</CardTitle>
-              <CardDescription>Manage category types</CardDescription>
             </div>
             <Button
               onClick={() => {
@@ -506,7 +505,8 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                         <div className="flex justify-end gap-2">
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon-sm"
+                            aria-label="Edit category type"
                             onClick={() => {
                               handleCtEdit(ct);
                             }}
@@ -515,7 +515,8 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                           </Button>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon-sm"
+                            aria-label="Delete category type"
                             onClick={() => {
                               setCtDeleteId(ct.id);
                             }}

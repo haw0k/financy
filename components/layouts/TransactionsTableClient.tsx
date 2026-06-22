@@ -86,7 +86,6 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Transactions</CardTitle>
-              <CardDescription>View and manage all your transactions</CardDescription>
             </div>
             <Button
               onClick={() => {
@@ -244,7 +243,8 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                         <div className="flex justify-end gap-2">
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon-sm"
+                            aria-label="Edit transaction"
                             onClick={() => {
                               setEditingId(transaction.id);
                               setIsShowForm(true);
@@ -254,7 +254,8 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                           </Button>
                           <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon-sm"
+                            aria-label="Delete transaction"
                             onClick={() => {
                               handleDelete(transaction.id);
                             }}

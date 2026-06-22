@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { siteConfig } from '@/config';
 import { routes } from '@/config';
 import { ERole, EProfileStatus } from '@/enums';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/lib/shadcn';
+import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
 import { ThemeSelect } from '@/components/ui/ThemeSelect';
 
 export async function SettingsPage() {
@@ -33,7 +33,6 @@ export async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>System</CardTitle>
-            <CardDescription>Application preferences</CardDescription>
           </CardHeader>
           <CardContent>
             <ThemeSelect />
@@ -42,7 +41,6 @@ export async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Account Information</CardTitle>
-            <CardDescription>Your account details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
@@ -65,7 +63,6 @@ export async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>About</CardTitle>
-            <CardDescription>Application information</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">

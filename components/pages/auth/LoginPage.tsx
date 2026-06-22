@@ -73,7 +73,7 @@ export function LoginPage() {
                     setPassword(e.target.value);
                   }}
                 />
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="mt-4 w-full" disabled={isPending}>
                   {isPending ? 'Logging in...' : 'Login'}
                 </Button>
               </form>

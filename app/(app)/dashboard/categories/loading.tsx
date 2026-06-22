@@ -7,7 +7,7 @@ export default function CategoriesLoading() {
       <div className="rounded-lg border">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
-            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-7 w-24" />
             <Skeleton className="h-9 w-36" />
           </div>
           <div className="space-y-3">
@@ -31,7 +31,7 @@ export default function CategoriesLoading() {
       <div className="rounded-lg border">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
-            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-7 w-32" />
             <Skeleton className="h-9 w-40" />
           </div>
           <div className="space-y-3">
