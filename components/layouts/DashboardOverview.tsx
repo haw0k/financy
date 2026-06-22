@@ -120,18 +120,20 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                 <PieChart>
                   <Pie
                     data={incomeExpenseData}
-                    cx="50%"
+                    cx="40%"
                     cy="50%"
                     labelLine={false}
                     label={(props: PieLabelRenderProps) => {
-                      const textAnchor = props.textAnchor as 'start' | 'middle' | 'end' | 'inherit' | undefined;
+                      const x = Number(props.x);
+                      const y = Number(props.y);
+                      const cx = Number(props.cx);
 
                       return (
                         <text
-                          x={props.x}
-                          y={props.y}
+                          x={x}
+                          y={y}
                           fill="var(--foreground)"
-                          textAnchor={textAnchor}
+                          textAnchor={x > cx ? 'start' : 'end'}
                           dominantBaseline="middle"
                           className="text-xs font-medium"
                         >
@@ -139,7 +141,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
                         </text>
                       );
                     }}
-                    outerRadius={80}
+                    outerRadius={60}
                     fill="var(--chart-5)"
                     dataKey="value"
                   >
