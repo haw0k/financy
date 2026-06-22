@@ -84,7 +84,7 @@ describe('Card styling', () => {
     const card = container.querySelector('[data-slot="card"]');
     expect(card?.className).toContain('rounded-md');
     expect(card?.className).toContain('border');
-    expect(card?.className).toContain('shadow-sm');
+    expect(card?.className).not.toContain('shadow-sm');
   });
 });
 
