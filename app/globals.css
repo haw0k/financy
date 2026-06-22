@@ -1,3 +1,6 @@
+/* This file uses Tailwind CSS v4 custom syntax. If your editor shows "Unknown at rule"
+   warnings, switch the language mode to "Tailwind CSS" or install the official
+   Tailwind CSS IntelliSense extension for VS Code. */
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
