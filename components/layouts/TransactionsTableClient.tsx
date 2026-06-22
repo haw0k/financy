@@ -2,14 +2,13 @@
 
 import { type FC, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { showError } from '@/components/ui';
+import { showError, NewButton } from '@/components/ui';
 import { deleteTransactionAction } from '@/app/actions/transactions';
 import { withTimeout } from '@/lib/with-timeout';
 import { TRANSACTION_MSGS } from '@/messages';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   Badge,
@@ -22,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Trash2, Edit2 } from 'lucide-react';
 import { TransactionForm } from '@/components/layouts';
 import type { ITransaction, ICategory, ICategoryType } from '@/interfaces';
 
@@ -87,16 +86,11 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
             <div>
               <CardTitle>Transactions</CardTitle>
             </div>
-            <Button
+            <NewButton
               onClick={() => {
                 setIsShowForm(true);
               }}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Transaction
-            </Button>
+            />
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">

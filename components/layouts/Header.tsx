@@ -74,7 +74,10 @@ export const Header: FC<IHeader> = ({ user }) => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon-sm" className="rounded-full px-0">
-                <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
+                <div
+                  className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-white border flex items-center justify-center text-xs font-semibold"
+                  style={{ borderColor: siteConfig.accentColor }}
+                >
                   {user?.email?.[0]?.toUpperCase()}
                 </div>
               </Button>

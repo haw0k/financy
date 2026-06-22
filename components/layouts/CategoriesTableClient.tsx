@@ -2,7 +2,7 @@
 
 import { type FC, useState, useTransition, type SubmitEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { showError } from '@/components/ui';
+import { showError, NewButton } from '@/components/ui';
 import {
   createCategoryAction,
   updateCategoryAction,
@@ -42,7 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/lib/shadcn';
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Trash2, Edit2 } from 'lucide-react';
 import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
 
 interface ICategoriesTableClient {
@@ -215,16 +215,11 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
             <div>
               <CardTitle>Categories</CardTitle>
             </div>
-            <Button
+            <NewButton
               onClick={() => {
                 setIsShowForm(true);
               }}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Category
-            </Button>
+            />
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
@@ -427,16 +422,11 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
             <div>
               <CardTitle>Category Types</CardTitle>
             </div>
-            <Button
+            <NewButton
               onClick={() => {
                 setCtIsShowForm(true);
               }}
-              size="sm"
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Category Type
-            </Button>
+            />
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">

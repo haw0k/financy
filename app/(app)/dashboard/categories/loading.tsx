@@ -8,7 +8,7 @@ export default function CategoriesLoading() {
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="h-7 w-24" />
-            <Skeleton className="h-9 w-36" />
+            <Skeleton className="h-9 w-20" />
           </div>
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -32,7 +32,7 @@ export default function CategoriesLoading() {
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <Skeleton className="h-7 w-32" />
-            <Skeleton className="h-9 w-40" />
+            <Skeleton className="h-9 w-20" />
           </div>
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
