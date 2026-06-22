@@ -3,9 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { useMobileNav } from '@/components/providers';
 import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
-import { NavItemLink } from '@/components/ui';
+import { LogoLink, NavItemLink } from '@/components/ui';
 import { navItems, type INavItem } from '@/config';
-import { LogoLink } from './LogoLink';
 import { type FC } from 'react';
 
 interface IMobileNav {
@@ -21,13 +20,12 @@ export const MobileNav: FC<IMobileNav> = ({ items }) => {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="left" className="w-64 p-0" aria-describedby={undefined}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
-        <div
-          className="flex h-[57px] items-center border-b border-border px-4"
-          onClick={() => {
-            setIsOpen(false);
-          }}
-        >
-          <LogoLink />
+        <div className="flex h-[57px] items-center border-b border-border px-4">
+          <LogoLink
+            onClick={() => {
+              setIsOpen(false);
+            }}
+          />
         </div>
         <div>
           {resolvedItems.map((item) => (

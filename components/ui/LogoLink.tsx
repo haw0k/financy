@@ -3,10 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { routes, siteConfig } from '@/config';
-import { type FC } from 'react';
+import { type FC, type MouseEventHandler } from 'react';
 
-export const LogoLink: FC = () => (
-  <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
+interface ILogoLink {
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+}
+
+export const LogoLink: FC<ILogoLink> = ({ onClick }) => (
+  <Link
+    href={routes.dashboard}
+    className="flex items-center gap-4 font-semibold"
+    onClick={onClick}
+  >
     <Image
       src="/icon.svg"
       alt={siteConfig.name}

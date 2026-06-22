@@ -4,7 +4,6 @@ export * from './CategoriesTableServer';
 export * from './DashboardNav';
 export * from './DashboardOverview';
 export * from './Header';
-export * from './LogoLink';
 export * from './MobileNav';
 export * from './TransactionForm';
 export * from './TransactionsTableClient';

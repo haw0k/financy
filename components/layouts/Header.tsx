@@ -15,8 +15,7 @@ import { siteConfig } from '@/config';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { signOutAction } from '@/app/actions/auth';
 import { AUTH_MSGS } from '@/messages';
-import { showError } from '@/components/ui';
-import { LogoLink } from './LogoLink';
+import { LogoLink, showError } from '@/components/ui';
 import { type FC } from 'react';
 
 interface IHeader {
