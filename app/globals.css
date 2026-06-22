@@ -24,6 +24,16 @@
       height: 0;
     }
   }
+
+  @keyframes shine {
+    from {
+      background-position: 100% center;
+    }
+    to {
+      background-position: -100% center;
+    }
+  }
+
 }
 
 @custom-variant data-open {
@@ -238,6 +248,31 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .logo-hover {
+    position: relative;
+    display: inline-block;
+  }
+
+  .logo-hover::before {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%);
+    background-size: 200% auto;
+    background-position: 100% center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  .logo-hover:hover::before {
+    opacity: 1;
+    animation: shine 4s ease-in-out infinite;
   }
   select,
   option {

@@ -19,18 +19,17 @@ export const DashboardNav: FC<IDashboardNav> = ({ items }) => {
     <nav className="hidden bg-card md:flex md:flex-col md:w-64">
       <div className="flex h-14 items-center border-b border-border px-4">
         <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground">
-            <Image
-              src="/icon.svg"
-              alt={siteConfig.name}
-              width={32}
-              height={32}
-              className="h-8 w-8"
-              loading="eager"
-            />
-          </div>
+          <Image
+            src="/icon.svg"
+            alt={siteConfig.name}
+            width={32}
+            height={32}
+            className="h-8 w-8"
+            loading="eager"
+          />
           <span
-            className="inline-block font-semibold"
+            className="logo-hover inline-block font-semibold"
+            data-text={siteConfig.name}
             style={{
               color: siteConfig.accentColor,
               fontSize: siteConfig.logoFontSize,
