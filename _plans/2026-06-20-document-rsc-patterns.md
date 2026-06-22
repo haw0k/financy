@@ -77,12 +77,12 @@ The goal is to consolidate these patterns into a single practical guide that dem
 
 ## Files Summary
 
-| Action | File |
-| ------ | ---- |
+| Action | File                                    |
+| ------ | --------------------------------------- |
 | CREATE | `docs/react-server-components-guide.md` |
-| MODIFY | `README.md` |
-| MODIFY | `_specs/_description.md` |
-| MODIFY | `_plans/_description.md` |
+| MODIFY | `README.md`                             |
+| MODIFY | `_specs/_description.md`                |
+| MODIFY | `_plans/_description.md`                |
 
 ## Risks & Notes
 

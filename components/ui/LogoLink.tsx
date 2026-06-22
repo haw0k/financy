@@ -10,11 +10,7 @@ interface ILogoLink {
 }
 
 export const LogoLink: FC<ILogoLink> = ({ onClick }) => (
-  <Link
-    href={routes.dashboard}
-    className="flex items-center gap-4 font-semibold"
-    onClick={onClick}
-  >
+  <Link href={routes.dashboard} className="flex items-center gap-4 font-semibold" onClick={onClick}>
     <Image
       src="/icon.svg"
       alt={siteConfig.name}

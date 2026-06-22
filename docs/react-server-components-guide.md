@@ -314,7 +314,9 @@ import { ERole, EProfileStatus } from '@/enums';
 
 export async function requireApprovedUser() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user?.id) {
     return { error: AUTH_MSGS.AUTH_FAILED };
@@ -360,16 +362,16 @@ The rule of thumb: if a component does not need browser APIs, keep it a Server C
 
 ## Decision matrix
 
-| Task | Use | Example in Financy |
-| ---- | --- | ------------------ |
-| Render a page that needs database data | **Server Component** | `components/pages/dashboard/DashboardPage.tsx` fetches transactions and stats |
-| Enforce auth before rendering a page | **Server Component guard** | `app/(app)/admin/page.tsx` calls `requireApprovedAdmin()` |
-| Read global config/session once per request | **Server Component (layout)** | `app/layout.tsx` reads profile and feeds `RoleProvider` |
-| Handle form submission | **Client Component + Server Action** | `LoginPage` calls `loginAction` |
-| Validate input and mutate data | **Server Action** | `app/actions/auth.ts`, `app/actions/transactions.ts` |
-| Reject unapproved users at the API boundary | **Server Action guard** | `requireApprovedUser()` in data actions |
-| Local UI state: loading, errors, controlled inputs | **Client Component** | `useTransition`, `useState` in auth forms |
-| Client-side filtering/sorting of already-fetched data | **Client Component** | `TransactionsTableClient` |
+| Task                                                  | Use                                  | Example in Financy                                                            |
+| ----------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
+| Render a page that needs database data                | **Server Component**                 | `components/pages/dashboard/DashboardPage.tsx` fetches transactions and stats |
+| Enforce auth before rendering a page                  | **Server Component guard**           | `app/(app)/admin/page.tsx` calls `requireApprovedAdmin()`                     |
+| Read global config/session once per request           | **Server Component (layout)**        | `app/layout.tsx` reads profile and feeds `RoleProvider`                       |
+| Handle form submission                                | **Client Component + Server Action** | `LoginPage` calls `loginAction`                                               |
+| Validate input and mutate data                        | **Server Action**                    | `app/actions/auth.ts`, `app/actions/transactions.ts`                          |
+| Reject unapproved users at the API boundary           | **Server Action guard**              | `requireApprovedUser()` in data actions                                       |
+| Local UI state: loading, errors, controlled inputs    | **Client Component**                 | `useTransition`, `useState` in auth forms                                     |
+| Client-side filtering/sorting of already-fetched data | **Client Component**                 | `TransactionsTableClient`                                                     |
 
 ## Trade-offs and intentional simplifications
 

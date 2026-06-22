@@ -127,7 +127,9 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAct
   return { isSuccess: true, data: undefined };
 }
 
-export async function createCategoryTypeAction(input: TCategoryTypeInput): Promise<TActionResult<void>> {
+export async function createCategoryTypeAction(
+  input: TCategoryTypeInput
+): Promise<TActionResult<void>> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -182,7 +184,11 @@ export async function updateCategoryTypeAction({
   return { isSuccess: true, data: undefined };
 }
 
-export async function deleteCategoryTypeAction({ id }: { id: string }): Promise<TActionResult<void>> {
+export async function deleteCategoryTypeAction({
+  id,
+}: {
+  id: string;
+}): Promise<TActionResult<void>> {
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };

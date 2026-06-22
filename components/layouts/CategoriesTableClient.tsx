@@ -322,7 +322,12 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       onClick={() => {
                         setIsShowForm(false);
                         setEditingId(null);
-                        setFormData({ name: '', type: 'expense', color: DEFAULT_CATEGORY_COLOR, type_id: '' });
+                        setFormData({
+                          name: '',
+                          type: 'expense',
+                          color: DEFAULT_CATEGORY_COLOR,
+                          type_id: '',
+                        });
                       }}
                     >
                       Cancel

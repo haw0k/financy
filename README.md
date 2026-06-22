@@ -195,12 +195,12 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 
 Four main tables. Access control is handled by middleware and Server Actions, not by Row Level Security (RLS is intentionally disabled for this pet project):
 
-| Table            | Purpose                                  |
-| ---------------- | ---------------------------------------- |
-| `profiles`       | User profiles, role, status              |
-| `category_types` | Global shared category types             |
-| `categories`     | Global shared income/expense categories  |
-| `transactions`   | Global shared financial transactions     |
+| Table            | Purpose                                 |
+| ---------------- | --------------------------------------- |
+| `profiles`       | User profiles, role, status             |
+| `category_types` | Global shared category types            |
+| `categories`     | Global shared income/expense categories |
+| `transactions`   | Global shared financial transactions    |
 
 See `scripts/001_init_database.sql` for full schema with triggers.
 

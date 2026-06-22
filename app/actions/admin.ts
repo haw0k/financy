@@ -66,7 +66,11 @@ export async function getPendingUsersAction(): Promise<
   return { isSuccess: true, data: data ?? [] };
 }
 
-export async function approveUserAction({ userId }: { userId: string }): Promise<TActionResult<void>> {
+export async function approveUserAction({
+  userId,
+}: {
+  userId: string;
+}): Promise<TActionResult<void>> {
   const adminResult = await requireApprovedAdmin();
   if ('error' in adminResult) {
     return { isSuccess: false, error: adminResult.error };
@@ -108,7 +112,11 @@ export async function approveUserAction({ userId }: { userId: string }): Promise
   return { isSuccess: true, data: undefined };
 }
 
-export async function rejectUserAction({ userId }: { userId: string }): Promise<TActionResult<void>> {
+export async function rejectUserAction({
+  userId,
+}: {
+  userId: string;
+}): Promise<TActionResult<void>> {
   const adminResult = await requireApprovedAdmin();
   if ('error' in adminResult) {
     return { isSuccess: false, error: adminResult.error };

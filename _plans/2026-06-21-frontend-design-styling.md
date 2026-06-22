@@ -86,17 +86,17 @@ The `frontend-design` plugin should drive the visual direction: it can propose a
 
 ## Files Summary
 
-| Action | File |
-| ------ | ---- |
-| MODIFY | `app/globals.css` |
-| MODIFY | `lib/shadcn/Button.tsx` |
-| MODIFY | `lib/shadcn/Card.tsx` |
-| MAYBE MODIFY | `app/layout.tsx` (if font changes) |
+| Action       | File                                             |
+| ------------ | ------------------------------------------------ |
+| MODIFY       | `app/globals.css`                                |
+| MODIFY       | `lib/shadcn/Button.tsx`                          |
+| MODIFY       | `lib/shadcn/Card.tsx`                            |
+| MAYBE MODIFY | `app/layout.tsx` (if font changes)               |
 | MAYBE MODIFY | Various page components in `components/pages/**` |
-| MODIFY | `TODO.md` |
-| MODIFY | `_specs/_description.md` |
-| MODIFY | `_plans/_description.md` |
-| CREATE | Visual/regression tests in `tests/` |
+| MODIFY       | `TODO.md`                                        |
+| MODIFY       | `_specs/_description.md`                         |
+| MODIFY       | `_plans/_description.md`                         |
+| CREATE       | Visual/regression tests in `tests/`              |
 
 ## Risks & Notes
 

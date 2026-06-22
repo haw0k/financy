@@ -9,7 +9,11 @@ import { siteConfig } from '@/config';
 import type { Metadata } from 'next';
 import './globals.css';
 
-const roboto = Roboto({ subsets: ['latin', 'cyrillic'], weight: ['400', '500', '700'], variable: '--font-roboto' });
+const roboto = Roboto({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto',
+});
 const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'], variable: '--font-mono' });
 const robotoHeading = Roboto({ subsets: ['latin', 'cyrillic'], variable: '--font-heading' });
 

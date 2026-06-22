@@ -5,7 +5,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const mockUser = { id: '11111111-1111-1111-1111-111111111111' };
 let mockUserEmailConfirmedAt: string | null = '2026-01-01T00:00:00Z';
 const mockGetUser = vi.fn(() =>
-  Promise.resolve<{ data: { user: { id: string; email_confirmed_at?: string | null } | null }; error: null }>({
+  Promise.resolve<{
+    data: { user: { id: string; email_confirmed_at?: string | null } | null };
+    error: null;
+  }>({
     data: { user: { ...mockUser, email_confirmed_at: mockUserEmailConfirmedAt } },
     error: null,
   })

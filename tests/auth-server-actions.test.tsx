@@ -202,7 +202,9 @@ describe('adminLoginAction', () => {
   it('should call signInWithPassword and redirect to admin on success', async () => {
     mockSignInWithPassword.mockResolvedValueOnce({
       error: null,
-      data: { user: { id: 'admin-1', email_confirmed_at: '2026-01-01', app_metadata: { role: 'admin' } } },
+      data: {
+        user: { id: 'admin-1', email_confirmed_at: '2026-01-01', app_metadata: { role: 'admin' } },
+      },
     });
     mockRedirect.mockImplementation(() => {
       throw new Error('NEXT_REDIRECT');
