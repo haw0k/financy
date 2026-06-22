@@ -6,9 +6,10 @@ import { signOutAction } from '@/app/actions/auth';
 import { useRoleContext } from '@/components/providers';
 import { AUTH_MSGS } from '@/messages';
 import { showError } from '@/components/ui';
+import { ERole } from '@/enums';
 
 export function PendingPage() {
-  const { isLoaded } = useRoleContext();
+  const { role, isLoaded } = useRoleContext();
 
   const handleLogout = async () => {
     try {
@@ -33,7 +34,18 @@ export function PendingPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Account Status</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          {role === ERole.Admin ? (
+            <p className="text-muted-foreground">
+              Check your email to confirm your admin account. Once confirmed, you can access the
+              admin dashboard.
+            </p>
+          ) : (
+            <p className="text-muted-foreground">
+              Your account is pending admin approval. You will receive a confirmation email once
+              approved.
+            </p>
+          )}
           <Button onClick={handleLogout} variant="outline">
             Log out
           </Button>
