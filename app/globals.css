@@ -105,6 +105,42 @@
   }
 }
 
+@utility shine {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255, 255, 255, var(--shine-opacity, 0.35)) 50%,
+      transparent 70%
+    );
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 500ms;
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    transform: translateX(100%);
+  }
+}
+
+@utility shine-subtle {
+  --shine-opacity: 0.2;
+}
+
+@utility shine-strong {
+  --shine-opacity: 0.5;
+}
+
 :root {
   --background: oklch(0.985 0.004 110);
   --foreground: oklch(0.2 0.01 110);

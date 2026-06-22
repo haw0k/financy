@@ -30,22 +30,16 @@ export function PendingPage() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center p-6">
-      <Card className="w-full max-w-md text-center border">
+      <Card className="w-full max-w-md text-center">
         <CardHeader>
           <CardTitle className="text-2xl">Account Status</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {role === ERole.Admin ? (
-            <p className="text-muted-foreground">
-              Check your email to confirm your admin account. Once confirmed, you can access the
-              admin dashboard.
-            </p>
-          ) : (
-            <p className="text-muted-foreground">
-              Your account is pending admin approval. You will receive a confirmation email once
-              approved.
-            </p>
-          )}
+          <p className="text-muted-foreground">
+            {role === ERole.Admin
+              ? 'Check your email to confirm your admin account. Once confirmed, you can access the admin dashboard.'
+              : 'Your account is pending admin approval. You will receive a confirmation email once approved.'}
+          </p>
           <Button onClick={handleLogout} variant="outline">
             Log out
           </Button>
