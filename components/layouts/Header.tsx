@@ -73,7 +73,7 @@ export const Header: FC<IHeader> = ({ user }) => {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-2">
+              <Button variant="ghost" size="icon-sm" className="rounded-full px-0">
                 <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-semibold">
                   {user?.email?.[0]?.toUpperCase()}
                 </div>
