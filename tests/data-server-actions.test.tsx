@@ -1,6 +1,6 @@
 import { revalidateTag } from 'next/cache';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mutationRevalidateProfile } from '@/config';
+import { CACHE_TAGS, mutationRevalidateProfile } from '@/config';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
@@ -52,7 +52,14 @@ function createQueryBuilder<T>(data: T, error: unknown = null) {
   Object.assign(builder, {
     select: method,
     eq: method,
-    neq: method,
+    neq: (_col: string, value: unknown) => {
+      const dataArray = Array.isArray(data) ? data : null;
+      if (dataArray && _col === 'id') {
+        const filtered = dataArray.filter((item: Record<string, unknown>) => item[_col] !== value);
+        return createQueryBuilder(filtered as T, error);
+      }
+      return builder;
+    },
     order: method,
     limit: method,
     maybeSingle: method,
@@ -77,7 +84,7 @@ describe('getDashboardDataAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'transactions') {
+      if (table === CACHE_TAGS.transactions) {
         return createQueryBuilder([{ id: 't1', amount: 100 }]);
       }
       return createQueryBuilder(null);
@@ -108,7 +115,7 @@ describe('getDashboardDataAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'transactions') {
+      if (table === CACHE_TAGS.transactions) {
         return createQueryBuilder([]);
       }
       return createQueryBuilder(null);
@@ -210,6 +217,30 @@ describe('getReceiversAction', () => {
       expect(result.error).toBe('DB error');
     }
   });
+
+  it('should exclude the authenticated user id from receivers', async () => {
+    const { getReceiversAction } = await import('@/app/actions/transactions');
+
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-2' } }, error: null });
+    mockFrom
+      .mockReturnValueOnce(createQueryBuilder({ status: 'approved', role: 'sender' }))
+      .mockReturnValueOnce(
+        createQueryBuilder([
+          { id: 'user-1', email: 'a@test.com' },
+          { id: 'user-2', email: 'self@test.com' },
+          { id: 'user-3', email: 'b@test.com' },
+        ])
+      );
+
+    const result = await getReceiversAction();
+
+    expect(result.isSuccess).toBe(true);
+    if (result.isSuccess) {
+      expect(result.data).toHaveLength(2);
+      expect(result.data.some((r) => r.id === 'user-2')).toBe(false);
+    }
+    expect(mockFrom).toHaveBeenCalledWith('profiles');
+  });
 });
 
 /* ── Categories ──────────────────────────────────────────────────── */
@@ -265,7 +296,7 @@ describe('createCategoryAction', () => {
       if (table === 'category_types') {
         return createQueryBuilder({ id: 'ct1' });
       }
-      if (table === 'categories') {
+      if (table === CACHE_TAGS.categories) {
         return createQueryBuilder(null);
       }
       return createQueryBuilder(null);
@@ -279,7 +310,7 @@ describe('createCategoryAction', () => {
     });
 
     expect(result.isSuccess).toBe(true);
-    expect(mockFrom).toHaveBeenCalledWith('categories');
+    expect(mockFrom).toHaveBeenCalledWith(CACHE_TAGS.categories);
   });
 });
 
@@ -310,7 +341,7 @@ describe('updateCategoryAction', () => {
       if (table === 'category_types') {
         return createQueryBuilder({ id: 'ct1' });
       }
-      if (table === 'categories') {
+      if (table === CACHE_TAGS.categories) {
         return createQueryBuilder([]);
       }
       return createQueryBuilder(null);
@@ -336,7 +367,7 @@ describe('deleteCategoryAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'categories') {
+      if (table === CACHE_TAGS.categories) {
         return createQueryBuilder([{ id: 'cat1' }]);
       }
       return createQueryBuilder(null);
@@ -354,7 +385,7 @@ describe('deleteCategoryAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'categories') {
+      if (table === CACHE_TAGS.categories) {
         return createQueryBuilder([]);
       }
       return createQueryBuilder(null);
@@ -517,7 +548,7 @@ describe('updateTransactionAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
-      if (table === 'transactions') {
+      if (table === CACHE_TAGS.transactions) {
         return createQueryBuilder([]);
       }
       return createQueryBuilder(null);
@@ -549,7 +580,7 @@ describe('deleteTransactionAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'transactions') {
+      if (table === CACHE_TAGS.transactions) {
         return createQueryBuilder([]);
       }
       return createQueryBuilder(null);
@@ -582,7 +613,10 @@ describe('cache revalidation', () => {
 
     await createCategoryAction({ name: 'Food', type: 'expense', color: '#fff', type_id: 'ct1' });
 
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('categories', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.categories,
+      mutationRevalidateProfile
+    );
   });
 
   it('updateCategoryAction revalidates categories', async () => {
@@ -595,7 +629,7 @@ describe('cache revalidation', () => {
       if (table === 'category_types') {
         return createQueryBuilder({ id: 'ct1' });
       }
-      if (table === 'categories') {
+      if (table === CACHE_TAGS.categories) {
         return createQueryBuilder([{ id: 'cat1' }]);
       }
       return createQueryBuilder(null);
@@ -606,7 +640,10 @@ describe('cache revalidation', () => {
       input: { name: 'Food', type: 'expense', color: '#fff', type_id: 'ct1' },
     });
 
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('categories', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.categories,
+      mutationRevalidateProfile
+    );
   });
 
   it('deleteCategoryAction revalidates categories', async () => {
@@ -616,7 +653,7 @@ describe('cache revalidation', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'categories') {
+      if (table === CACHE_TAGS.categories) {
         return createQueryBuilder([{ id: 'cat1' }]);
       }
       return createQueryBuilder(null);
@@ -624,7 +661,10 @@ describe('cache revalidation', () => {
 
     await deleteCategoryAction({ id: 'cat1' });
 
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('categories', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.categories,
+      mutationRevalidateProfile
+    );
   });
 
   it('createCategoryTypeAction revalidates category-types', async () => {
@@ -635,7 +675,7 @@ describe('cache revalidation', () => {
     await createCategoryTypeAction({ name: 'Goods' });
 
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
-      'category-types',
+      CACHE_TAGS.categoryTypes,
       mutationRevalidateProfile
     );
   });
@@ -656,7 +696,7 @@ describe('cache revalidation', () => {
     await updateCategoryTypeAction({ id: 'ct1', input: { name: 'Goods' } });
 
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
-      'category-types',
+      CACHE_TAGS.categoryTypes,
       mutationRevalidateProfile
     );
   });
@@ -677,7 +717,7 @@ describe('cache revalidation', () => {
     await deleteCategoryTypeAction({ id: 'ct1' });
 
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
-      'category-types',
+      CACHE_TAGS.categoryTypes,
       mutationRevalidateProfile
     );
   });
@@ -695,10 +735,13 @@ describe('cache revalidation', () => {
     });
 
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
-      'transactions',
+      CACHE_TAGS.transactions,
       mutationRevalidateProfile
     );
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('dashboard', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.dashboard,
+      mutationRevalidateProfile
+    );
   });
 
   it('updateTransactionAction revalidates transactions and dashboard', async () => {
@@ -708,7 +751,7 @@ describe('cache revalidation', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
-      if (table === 'transactions') {
+      if (table === CACHE_TAGS.transactions) {
         return createQueryBuilder([{ id: 't1' }]);
       }
       return createQueryBuilder(null);
@@ -726,10 +769,13 @@ describe('cache revalidation', () => {
     });
 
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
-      'transactions',
+      CACHE_TAGS.transactions,
       mutationRevalidateProfile
     );
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('dashboard', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.dashboard,
+      mutationRevalidateProfile
+    );
   });
 
   it('deleteTransactionAction revalidates transactions and dashboard', async () => {
@@ -739,7 +785,7 @@ describe('cache revalidation', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
-      if (table === 'transactions') {
+      if (table === CACHE_TAGS.transactions) {
         return createQueryBuilder([{ id: 't1' }]);
       }
       return createQueryBuilder(null);
@@ -748,9 +794,12 @@ describe('cache revalidation', () => {
     await deleteTransactionAction({ id: 't1' });
 
     expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
-      'transactions',
+      CACHE_TAGS.transactions,
       mutationRevalidateProfile
     );
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('dashboard', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.dashboard,
+      mutationRevalidateProfile
+    );
   });
 });

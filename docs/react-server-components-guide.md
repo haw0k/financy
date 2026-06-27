@@ -16,6 +16,8 @@ It is not a general RSC tutorial. Instead, it shows the concrete patterns that a
 8. [Decision matrix](#decision-matrix)
 9. [Trade-offs and intentional simplifications](#trade-offs-and-intentional-simplifications)
 10. [Summary](#summary)
+11. [Caching with "use cache"](#caching-with-use-cache)
+12. [Further reading](#further-reading)
 
 ## Why Server Components here
 
@@ -418,6 +420,15 @@ Financy's architecture is built on three ideas:
 
 The result is a full-stack React application where most files are Server Components, only interactive surfaces are Client Components, and the Supabase client never runs in the browser.
 
+## Further reading
+
+- [Next.js Server Components documentation](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+- [Next.js Server Actions documentation](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
+- [Next.js `use cache` documentation](https://nextjs.org/docs/app/api-reference/directives/use-cache)
+- [Supabase SSR docs](https://supabase.com/docs/guides/auth/server-side/nextjs)
+- `PROJECT_SUMMARY.md` — Financy architecture overview
+- `CLAUDE.md` — project conventions and commands
+
 ## Caching with `"use cache"`
 
 Selected read operations are cached with Next.js 16 `"use cache"` to reduce redundant Supabase queries when users navigate between dashboard pages.
@@ -435,11 +446,11 @@ All cached functions use `"use cache: private"` so the cache is per-user and nev
 
 A single profile is used for all dashboard caches (defined in `config/cache.config.ts`):
 
-| Value     | Seconds |
-| --------- | ------- |
-| `stale`   | 30      |
-| `revalidate` | 30   |
-| `expire`  | 60      |
+| Value        | Seconds |
+| ------------ | ------- |
+| `stale`      | 30      |
+| `revalidate` | 30      |
+| `expire`     | 60      |
 
 ### Cache invalidation
 
@@ -463,12 +474,3 @@ After a successful mutation the affected tags are revalidated with `revalidateTa
 ### Suspense boundaries
 
 Because private caches read cookies/session data, auth-dependent layouts are wrapped in a shared `<AuthSuspense>` fallback (`components/layouts/AuthSuspense.tsx`) so the static shell can prerender while the session/role resolves at request time. Loading skeletons for individual dashboard routes live in `app/(app)/dashboard/**/loading.tsx` and render through Next.js's built-in loading convention.
-
-## Further reading
-
-- [Next.js Server Components documentation](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
-- [Next.js Server Actions documentation](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
-- [Next.js `use cache` documentation](https://nextjs.org/docs/app/api-reference/directives/use-cache)
-- [Supabase SSR docs](https://supabase.com/docs/guides/auth/server-side/nextjs)
-- `PROJECT_SUMMARY.md` — Financy architecture overview
-- `CLAUDE.md` — project conventions and commands

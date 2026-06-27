@@ -1,6 +1,6 @@
 import { revalidateTag } from 'next/cache';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mutationRevalidateProfile } from '@/config';
+import { CACHE_TAGS, mutationRevalidateProfile } from '@/config';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
@@ -285,7 +285,10 @@ describe('cache revalidation', () => {
 
     await approveUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
 
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('receivers', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.receivers,
+      mutationRevalidateProfile
+    );
   });
 
   it('rejectUserAction revalidates receivers', async () => {
@@ -297,6 +300,9 @@ describe('cache revalidation', () => {
 
     await rejectUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
 
-    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('receivers', mutationRevalidateProfile);
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      CACHE_TAGS.receivers,
+      mutationRevalidateProfile
+    );
   });
 });
