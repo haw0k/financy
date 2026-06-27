@@ -20,6 +20,7 @@ const SIDEBAR_WIDTH_MOBILE = '18rem';
 const SIDEBAR_WIDTH_ICON = '3rem';
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
   open: boolean;
@@ -570,10 +571,10 @@ function SidebarMenuBadge({ className, ...props }: React.ComponentProps<'div'>) 
 
 function SidebarMenuSkeleton({
   className,
-  showIcon = false,
+  isShowIcon = false,
   ...props
 }: React.ComponentProps<'div'> & {
-  showIcon?: boolean;
+  isShowIcon?: boolean;
 }) {
   // Random width between 50 to 90%.
   const width = React.useMemo(() => {
@@ -587,7 +588,7 @@ function SidebarMenuSkeleton({
       className={cn('flex h-8 items-center gap-2 rounded-md px-2', className)}
       {...props}
     >
-      {showIcon && <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />}
+      {isShowIcon && <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />}
       <Skeleton
         className="h-4 max-w-(--skeleton-width) flex-1"
         data-sidebar="menu-skeleton-text"

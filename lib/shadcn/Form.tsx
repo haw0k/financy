@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 
 const Form = FormProvider;
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -62,6 +63,7 @@ const useFormField = () => {
   };
 };
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type FormItemContextValue = {
   id: string;
 };

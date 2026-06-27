@@ -6,11 +6,16 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/lib/shadcn/Button';
 import { cn } from '@/lib/utils';
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type CarouselApi = UseEmblaCarouselType[1];
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type CarouselOptions = UseCarouselParameters[0];
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type CarouselPlugin = UseCarouselParameters[1];
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type CarouselProps = {
   opts?: CarouselOptions;
   plugins?: CarouselPlugin;
@@ -18,6 +23,7 @@ type CarouselProps = {
   setApi?: (api: CarouselApi) => void;
 };
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type CarouselContextProps = {
   carouselRef: ReturnType<typeof useEmblaCarousel>[0];
   api: ReturnType<typeof useEmblaCarousel>[1];

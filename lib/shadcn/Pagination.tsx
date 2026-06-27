@@ -29,6 +29,7 @@ function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
   return <li data-slot="pagination-item" {...props} />;
 }
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type PaginationLinkProps = {
   isActive?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, 'size'> &

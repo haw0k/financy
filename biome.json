@@ -58,7 +58,44 @@
         "useImportType": "off",
         "useExportType": "off",
         "useNodejsImportProtocol": "off",
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": false,
+            "conventions": [
+              {
+                "selector": { "kind": "interface" },
+                "match": "I(.*)",
+                "formats": ["PascalCase"]
+              },
+              {
+                "selector": { "kind": "typeAlias" },
+                "match": "T(.*)",
+                "formats": ["PascalCase"]
+              },
+              {
+                "selector": { "kind": "enum" },
+                "match": "E(.*)",
+                "formats": ["PascalCase"]
+              },
+              {
+                "selector": { "kind": "objectLiteralProperty" },
+                "match": "[a-zA-Z_][a-zA-Z0-9_]*",
+                "formats": ["snake_case", "camelCase"]
+              },
+              {
+                "selector": { "kind": "typeMember" },
+                "match": "[a-zA-Z_][a-zA-Z0-9_]*",
+                "formats": ["snake_case", "camelCase"]
+              },
+              {
+                "match": "[a-zA-Z_][a-zA-Z0-9_]*",
+                "formats": ["camelCase", "PascalCase", "CONSTANT_CASE"]
+              }
+            ]
+          }
+        }
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"

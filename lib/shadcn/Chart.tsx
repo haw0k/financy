@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const;
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode;
@@ -17,6 +18,7 @@ export type ChartConfig = {
   );
 };
 
+// biome-ignore lint/style/useNamingConvention: external shadcn/ui component — types follow upstream naming
 type ChartContextProps = {
   config: ChartConfig;
 };
