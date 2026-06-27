@@ -1,4 +1,4 @@
-import { type FC, type PropsWithChildren, Suspense } from 'react'
+import { type FC, type PropsWithChildren, Suspense } from 'react';
 
 /**
  * Wraps auth-dependent children in a Suspense boundary so the static shell can
@@ -6,5 +6,5 @@ import { type FC, type PropsWithChildren, Suspense } from 'react'
  * fallback avoids rendering the real app outside of its providers.
  */
 export const AuthSuspense: FC<PropsWithChildren> = ({ children }) => (
-  <Suspense fallback={<div className='min-h-screen bg-background' />}>{children}</Suspense>
-)
+  <Suspense fallback={<div className="min-h-screen bg-background" />}>{children}</Suspense>
+);
