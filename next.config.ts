@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   reactCompiler: true,
+  cacheComponents: true,
   // Don't log server functions launch with args to console to avoid leaking login and password
   // logging: {
   //   serverFunctions: false,

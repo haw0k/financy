@@ -2,8 +2,10 @@
 
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
+import { CACHE_TAGS, dashboardCacheLife } from '@/config';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
 import { CATEGORY_MSGS } from '@/messages';
+import { cacheLife as nextCacheLife, cacheTag, revalidateTag } from 'next/cache';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
 import type { ICategory, ICategoryType } from '@/interfaces';
 import type { TActionResult } from '@/types';
@@ -47,6 +49,8 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TActi
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
+
+  revalidateTag(CACHE_TAGS.categories, 'max');
 
   return { isSuccess: true, data: undefined };
 }
@@ -102,6 +106,8 @@ export async function updateCategoryAction({
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
+  revalidateTag(CACHE_TAGS.categories, 'max');
+
   return { isSuccess: true, data: undefined };
 }
 
@@ -147,6 +153,8 @@ export async function createCategoryTypeAction(
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
+
+  revalidateTag(CACHE_TAGS.categoryTypes, 'max');
 
   return { isSuccess: true, data: undefined };
 }
@@ -216,6 +224,10 @@ export async function getCategoriesDataAction(): Promise<
     categoryTypes: ICategoryType[];
   }>
 > {
+  'use cache: private';
+  cacheTag(CACHE_TAGS.categories, CACHE_TAGS.categoryTypes);
+  nextCacheLife(dashboardCacheLife);
+
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };

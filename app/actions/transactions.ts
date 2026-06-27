@@ -2,9 +2,11 @@
 
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
+import { CACHE_TAGS, dashboardCacheLife } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
+import { cacheLife as nextCacheLife, cacheTag } from 'next/cache';
 import type { TTransactionInput } from '@/schemas';
 import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
 import type { TActionResult } from '@/types';
@@ -16,6 +18,10 @@ export async function getTransactionsDataAction(): Promise<
     categoryTypes: ICategoryType[];
   }>
 > {
+  'use cache: private';
+  cacheTag(CACHE_TAGS.transactions, CACHE_TAGS.categories, CACHE_TAGS.categoryTypes);
+  nextCacheLife(dashboardCacheLife);
+
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -57,6 +63,10 @@ export async function getTransactionsDataAction(): Promise<
 export async function getReceiversAction(): Promise<
   TActionResult<{ id: string; email: string }[]>
 > {
+  'use cache: private';
+  cacheTag(CACHE_TAGS.receivers);
+  nextCacheLife(dashboardCacheLife);
+
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };

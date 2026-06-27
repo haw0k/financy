@@ -1,7 +1,10 @@
+'use client';
+
+import { use } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
 
-export async function ErrorPage({ searchParams }: { searchParams: Promise<{ error: string }> }) {
-  const params = await searchParams;
+export function ErrorPage({ searchParams }: { searchParams: Promise<{ error: string }> }) {
+  const params = use(searchParams);
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

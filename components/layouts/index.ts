@@ -1,4 +1,5 @@
 export * from './AppShell';
+export * from './CategoriesSkeleton';
 export * from './CategoriesTableClient';
 export * from './CategoriesTableServer';
 export * from './DashboardNav';

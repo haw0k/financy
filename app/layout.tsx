@@ -1,3 +1,4 @@
+import { Suspense, type PropsWithChildren } from 'react';
 import { RoleProvider, ThemeProvider } from '@/components/providers';
 import { Analytics } from '@vercel/analytics/next';
 import { Geist_Mono, Roboto } from 'next/font/google';
@@ -37,9 +38,6 @@ async function getProfile(): Promise<TProfileResult> {
       return { role: null, status: null, isError: false };
     }
 
-    // Prefer role/status from JWT app_metadata (populated by database trigger on signup).
-    // If they are missing or invalid, fall back to the profiles table so the client
-    // UI matches the server-side middleware checks even after email confirmation.
     const appMetadata = user.app_metadata as { role?: string; status?: string } | undefined;
     const rawRole = appMetadata?.role;
     const rawStatus = appMetadata?.status;
@@ -74,13 +72,17 @@ async function getProfile(): Promise<TProfileResult> {
   }
 }
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+async function RoleLoader({ children }: PropsWithChildren) {
   const { role, status, isError } = await getProfile();
 
+  return (
+    <RoleProvider role={role} status={status} isError={isError}>
+      {children}
+    </RoleProvider>
+  );
+}
+
+export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -96,9 +98,9 @@ export default async function RootLayout({
           `}
         </Script>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          <RoleProvider role={role} status={status} isError={isError}>
-            {children}
-          </RoleProvider>
+          <Suspense fallback={children}>
+            <RoleLoader>{children}</RoleLoader>
+          </Suspense>
           <SonnerToaster richColors position="bottom-right" />
         </ThemeProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}

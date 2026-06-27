@@ -418,10 +418,52 @@ Financy's architecture is built on three ideas:
 
 The result is a full-stack React application where most files are Server Components, only interactive surfaces are Client Components, and the Supabase client never runs in the browser.
 
+## Caching with `"use cache"`
+
+Selected read operations are cached with Next.js 16 `"use cache"` to reduce redundant Supabase queries when users navigate between dashboard pages.
+
+### What is cached
+
+- Dashboard overview (`getDashboardDataAction`) — tagged `dashboard` + `transactions`.
+- Transactions list (`getTransactionsDataAction`) — tagged `transactions`, `categories`, `categoryTypes`.
+- Categories list (`getCategoriesDataAction`) — tagged `categories` + `categoryTypes`.
+- Receiver dropdown (`getReceiversAction`) — tagged `receivers`.
+
+All cached functions use `"use cache: private"` so the cache is per-user and never shared across sessions.
+
+### Shared cache lifetime
+
+A single profile is used for all dashboard caches (defined in `config/cache.config.ts`):
+
+| Value     | Seconds |
+| --------- | ------- |
+| `stale`   | 30      |
+| `revalidate` | 30   |
+| `expire`  | 60      |
+
+### Cache invalidation
+
+After a successful mutation the affected tags are revalidated with `revalidateTag(tag, 'max')`:
+
+- `createCategoryAction`, `updateCategoryAction`, `deleteCategoryAction` → `categories`
+- `createCategoryTypeAction`, `updateCategoryTypeAction`, `deleteCategoryTypeAction` → `categoryTypes`
+- Transaction mutations → `transactions` (already covered by the `transactions` tag)
+
+### What is NOT cached
+
+- Authentication, authorization, session, and admin flows are never cached.
+- The `/admin` pending-users list remains uncached so the admin always sees fresh data.
+- Any data operation that depends on real-time accuracy is left dynamic.
+
+### Suspense boundaries
+
+Because private caches read cookies/session data, components that call cached actions must be wrapped in `<Suspense>` so the static shell can prerender while auth resolves at request time. The categories page uses `CategoriesSkeleton` as its fallback.
+
 ## Further reading
 
 - [Next.js Server Components documentation](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
 - [Next.js Server Actions documentation](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
+- [Next.js `use cache` documentation](https://nextjs.org/docs/app/api-reference/directives/use-cache)
 - [Supabase SSR docs](https://supabase.com/docs/guides/auth/server-side/nextjs)
 - `PROJECT_SUMMARY.md` — Financy architecture overview
 - `CLAUDE.md` — project conventions and commands
