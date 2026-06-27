@@ -33,3 +33,4 @@
 - [x] feat: Polish Application Styling With Frontend-Design Plugin - { 2026-06-21-frontend-design-styling.md }
 - [x] chore: Replace ESLint and Prettier with Biome - { 2026-06-22-replace-eslint-prettier-with-biome.md }
 - [x] perf: Simple Backend Query Caching - { 2026-06-27-simple-backend-query-caching.md }
+- [ ] feat: Multi-Currency Support - { 2026-06-27-multi-currency-support.md }
