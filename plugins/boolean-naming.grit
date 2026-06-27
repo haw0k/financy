@@ -1,0 +1,37 @@
+engine biome(1.0)
+language js(typescript, jsx)
+
+or {
+  JsFormalParameter() as $param where {
+    $param <: contains `boolean`,
+    not $param <: contains `{`,
+    not $param <: contains `,`,
+    $param <: contains `$name`,
+    not $name <: r"^(?:is|has|can|should)[A-Z]|^(?:is|has|can|should)$",
+    register_diagnostic(span=$param, message="Boolean parameter should follow Hungarian notation and start with `is`, `has`, `can`, or `should`.", severity="error")
+  },
+  JsFormalParameter() as $param where {
+    or { $param <: contains `true`, $param <: contains `false` },
+    not $param <: contains `{`,
+    not $param <: contains `,`,
+    $param <: contains `$name`,
+    not $name <: r"^(?:is|has|can|should)[A-Z]|^(?:is|has|can|should)$",
+    register_diagnostic(span=$param, message="Boolean parameter should follow Hungarian notation and start with `is`, `has`, `can`, or `should`.", severity="error")
+  },
+  `const $name = $value` as $decl where {
+    $value <: or {
+      `true`,
+      `false`
+    },
+    not $name <: r"^(?:is|has|can|should)[A-Z]|^(?:is|has|can|should)$",
+    register_diagnostic(span=$decl, message="Boolean variable should follow Hungarian notation and start with `is`, `has`, `can`, or `should`.", severity="error")
+  },
+  `let $name = $value` as $decl where {
+    $value <: or {
+      `true`,
+      `false`
+    },
+    not $name <: r"^(?:is|has|can|should)[A-Z]|^(?:is|has|can|should)$",
+    register_diagnostic(span=$decl, message="Boolean variable should follow Hungarian notation and start with `is`, `has`, `can`, or `should`.", severity="error")
+  }
+}

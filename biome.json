@@ -30,6 +30,25 @@
     "attributePosition": "auto",
     "bracketSpacing": true
   },
+  "plugins": [
+    {
+      "path": "./plugins/boolean-naming.grit",
+      "includes": [
+        "**/app/**/*.ts",
+        "**/app/**/*.tsx",
+        "**/components/**/*.tsx",
+        "**/hooks/**/*.ts",
+        "**/config/**/*.ts",
+        "**/schemas/**/*.ts",
+        "**/types/**/*.ts",
+        "**/interfaces/**/*.ts",
+        "**/lib/*.ts",
+        "**/lib/supabase/**/*.ts",
+        "**/tests/**/*.ts",
+        "**/tests/**/*.tsx"
+      ]
+    }
+  ],
   "linter": {
     "enabled": true,
     "rules": {

@@ -4,7 +4,7 @@ import { createContext, type FC, type ReactNode, useContext, useState } from 're
 
 interface IMobileNavContext {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
 const MobileNavContext = createContext<IMobileNavContext>({
