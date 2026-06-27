@@ -487,6 +487,9 @@ describe('createTransactionAction', () => {
 
     const result = await createTransactionAction({
       amount: 0,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1,
+      amountUsd: 0,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -501,12 +504,26 @@ describe('createTransactionAction', () => {
   it('should return error for invalid receiver', async () => {
     const { createTransactionAction } = await import('@/app/actions/transactions');
 
-    mockFrom
-      .mockReturnValueOnce(createQueryBuilder({ status: 'approved' }))
-      .mockReturnValueOnce(createQueryBuilder(null));
+    let callCount = 0;
+    mockFrom.mockImplementation((table: string) => {
+      callCount += 1;
+      if (table === 'profiles') {
+        if (callCount <= 1) {
+          return createQueryBuilder({ id: 'user-1', status: 'approved', role: 'sender' });
+        }
+        return createQueryBuilder([]);
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder(null);
+      }
+      return createQueryBuilder(null);
+    });
 
     const result = await createTransactionAction({
       amount: 100,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1,
+      amountUsd: 100,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -526,11 +543,17 @@ describe('createTransactionAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
+      if (table === 'transactions') {
+        return createQueryBuilder(null);
+      }
       return createQueryBuilder(null);
     });
 
     const result = await createTransactionAction({
       amount: 100,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1,
+      amountUsd: 100,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -548,7 +571,7 @@ describe('updateTransactionAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
-      if (table === CACHE_TAGS.transactions) {
+      if (table === 'transactions') {
         return createQueryBuilder([]);
       }
       return createQueryBuilder(null);
@@ -558,6 +581,9 @@ describe('updateTransactionAction', () => {
       id: 'missing',
       input: {
         amount: 100,
+        currencyId: 'invalid-currency',
+        exchangeRate: 1,
+        amountUsd: 100,
         type: 'expense',
         date: '2026-06-20',
         description: null,
@@ -567,7 +593,7 @@ describe('updateTransactionAction', () => {
 
     expect(result.isSuccess).toBe(false);
     if (!result.isSuccess) {
-      expect(result.error).toBe('Transaction not found');
+      expect(result.error).toBe('Currency is required');
     }
   });
 });
@@ -725,10 +751,21 @@ describe('cache revalidation', () => {
   it('createTransactionAction revalidates transactions and dashboard', async () => {
     const { createTransactionAction } = await import('@/app/actions/transactions');
 
-    mockApprovedProfile();
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder(null);
+      }
+      return createQueryBuilder(null);
+    });
 
     await createTransactionAction({
       amount: 100,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1,
+      amountUsd: 100,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -751,7 +788,7 @@ describe('cache revalidation', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
-      if (table === CACHE_TAGS.transactions) {
+      if (table === 'transactions') {
         return createQueryBuilder([{ id: 't1' }]);
       }
       return createQueryBuilder(null);
@@ -761,6 +798,9 @@ describe('cache revalidation', () => {
       id: 't1',
       input: {
         amount: 100,
+        currencyId: '123e4567-e89b-12d3-a456-426614174000',
+        exchangeRate: 1,
+        amountUsd: 100,
         type: 'expense',
         date: '2026-06-20',
         description: null,

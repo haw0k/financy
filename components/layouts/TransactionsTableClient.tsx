@@ -23,18 +23,20 @@ import { NewButton, showError } from '@/components/ui';
 import { withTimeout } from '@/lib/with-timeout';
 import { deleteTransactionAction } from '@/app/actions/transactions';
 import { TRANSACTION_MSGS } from '@/messages';
-import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
+import type { ICategory, ICategoryType, ICurrency, ITransaction } from '@/interfaces';
 
 interface ITransactionsTableClient {
   initialTransactions: ITransaction[];
   initialCategories: ICategory[];
   initialCategoryTypes: ICategoryType[];
+  currencies: ICurrency[];
 }
 
 export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
   initialTransactions,
   initialCategories,
   initialCategoryTypes,
+  currencies,
 }) => {
   const [transactions, setTransactions] = useState<ITransaction[]>(initialTransactions);
   const [categories] = useState<ICategory[]>(initialCategories);
@@ -105,6 +107,9 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                         ? {
                             ...t,
                             amount: input.amount,
+                            currency_id: input.currencyId,
+                            exchange_rate: input.exchangeRate,
+                            amount_usd: input.amountUsd,
                             type: input.type,
                             date: input.date,
                             description: input.description,
@@ -120,6 +125,9 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                     {
                       id: `temp-${Date.now()}`,
                       amount: input.amount,
+                      currency_id: input.currencyId,
+                      exchange_rate: input.exchangeRate,
+                      amount_usd: input.amountUsd,
                       type: input.type,
                       date: input.date,
                       description: input.description,
@@ -143,6 +151,7 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                 editingId ? (transactions.find((t) => t.id === editingId) ?? null) : null
               }
               categories={categories}
+              currencies={currencies}
             />
           )}
 

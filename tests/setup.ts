@@ -9,4 +9,5 @@ vi.mock('next/cache', () => ({
 
 afterEach(() => {
   cleanup();
+  vi.clearAllMocks();
 });

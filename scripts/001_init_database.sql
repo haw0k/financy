@@ -1,5 +1,6 @@
 -- Drop tables in reverse dependency order (for idempotent re-run)
 drop table if exists public.transactions;
+drop table if exists public.currencies;
 drop table if exists public.categories;
 drop table if exists public.category_types;
 drop table if exists public.profiles cascade;
@@ -43,12 +44,34 @@ create table if not exists public.categories (
 
 alter table public.categories disable row level security;
 
+-- Create currencies table
+create table if not exists public.currencies (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  name text not null,
+  symbol text not null,
+  created_at timestamp with time zone default now()
+);
+
+alter table public.currencies disable row level security;
+
+-- Seed supported currencies
+insert into public.currencies (code, name, symbol)
+values
+  ('UAH', 'Ukrainian hryvnia', '₴'),
+  ('USD', 'US dollar', '$'),
+  ('EUR', 'Euro', '€')
+on conflict (code) do nothing;
+
 -- Create transactions table
 create table if not exists public.transactions (
   id uuid primary key default gen_random_uuid(),
   sender_id uuid not null references public.profiles(id) on delete cascade,
   receiver_id uuid not null references public.profiles(id) on delete cascade,
   amount decimal(12, 2) not null check (amount > 0),
+  currency_id uuid not null references public.currencies(id) on delete restrict,
+  exchange_rate decimal(18, 6) not null check (exchange_rate > 0),
+  amount_usd decimal(12, 2) not null check (amount_usd > 0),
   category_id uuid references public.categories(id) on delete set null,
   type text not null check (type in ('income', 'expense')),
   description text,
@@ -177,11 +200,11 @@ set search_path = public
 as $$
   select
     coalesce(sum(case
-      when type = 'income' then amount
-      else -amount
+      when type = 'income' then amount_usd
+      else -amount_usd
     end), 0) as total_balance,
-    coalesce(sum(case when type = 'income' then amount else 0 end), 0) as total_income,
-    coalesce(sum(case when type = 'expense' then amount else 0 end), 0) as total_expense
+    coalesce(sum(case when type = 'income' then amount_usd else 0 end), 0) as total_income,
+    coalesce(sum(case when type = 'expense' then amount_usd else 0 end), 0) as total_expense
   from transactions;
 $$;
 

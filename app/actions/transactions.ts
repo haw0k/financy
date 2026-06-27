@@ -123,7 +123,7 @@ export async function createTransactionAction(
     if (receiverError) {
       return { isSuccess: false, error: mapSupabaseError(receiverError) };
     }
-    if (!receiver) {
+    if (!receiver || (Array.isArray(receiver) && receiver.length === 0)) {
       return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_RECEIVER };
     }
   }
@@ -132,6 +132,9 @@ export async function createTransactionAction(
     {
       sender_id: authResult.userId,
       amount: parsed.data.amount,
+      currency_id: parsed.data.currencyId,
+      exchange_rate: parsed.data.exchangeRate,
+      amount_usd: parsed.data.amountUsd,
       type: parsed.data.type,
       date: parsed.data.date,
       description: parsed.data.description,
@@ -179,6 +182,9 @@ export async function updateTransactionAction({
   // the authenticated user for self-transfers).
   const updatePayload: Partial<ITransaction> = {
     amount: parsed.data.amount,
+    currency_id: parsed.data.currencyId,
+    exchange_rate: parsed.data.exchangeRate,
+    amount_usd: parsed.data.amountUsd,
     type: parsed.data.type,
     date: parsed.data.date,
     description: parsed.data.description,

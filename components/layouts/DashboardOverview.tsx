@@ -38,7 +38,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
     const typeMap = new Map<string, number>();
     transactions.forEach((trans) => {
       const type = trans.type === 'income' ? 'Income' : 'Expense';
-      typeMap.set(type, (typeMap.get(type) || 0) + Number(trans.amount));
+      typeMap.set(type, (typeMap.get(type) || 0) + Number(trans.amount_usd));
     });
     return Array.from(typeMap, ([name, value]) => ({
       name,
@@ -56,7 +56,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
             month: 'short',
             day: 'numeric',
           }),
-          amount: trans.amount,
+          amount: trans.amount_usd,
         })),
     [transactions]
   );

@@ -22,12 +22,18 @@ import {
   getReceiversAction,
   updateTransactionAction,
 } from '@/app/actions/transactions';
+import { getExchangeRateAction } from '@/app/actions/exchange-rate';
+import { EExchangeRateProvider, ECurrency } from '@/enums';
 import { TRANSACTION_MSGS } from '@/messages';
-import type { ICategory, ITransaction } from '@/interfaces';
+import type { ICategory, ICurrency, ITransaction } from '@/interfaces';
 
 interface ITransactionForm {
   onSuccess: (input: {
     amount: number;
+    currencyId: string;
+    exchangeRate: number;
+    amountUsd: number;
+    rateProvider?: string;
     type: 'income' | 'expense';
     description: string | null;
     date: string;
@@ -38,6 +44,13 @@ interface ITransactionForm {
   editingId: string | null;
   editingTransaction?: ITransaction | null;
   categories: ICategory[];
+  currencies: ICurrency[];
+}
+
+const DEFAULT_PROVIDER = EExchangeRateProvider.PrivatBank;
+
+function getCurrencyCodeById(currencies: ICurrency[], id: string): string | null {
+  return currencies.find((c) => c.id === id)?.code ?? null;
 }
 
 export const TransactionForm: FC<ITransactionForm> = ({
@@ -46,9 +59,13 @@ export const TransactionForm: FC<ITransactionForm> = ({
   editingId,
   editingTransaction,
   categories,
+  currencies,
 }) => {
   const [formData, setFormData] = useState({
     amount: editingTransaction ? String(editingTransaction.amount) : '',
+    currencyId: editingTransaction?.currency_id ?? currencies[0]?.id ?? '',
+    exchangeRate: editingTransaction ? String(editingTransaction.exchange_rate) : '1',
+    rateProvider: DEFAULT_PROVIDER as string,
     type: editingTransaction?.type ?? ('expense' as 'income' | 'expense'),
     description: editingTransaction?.description ?? '',
     date: editingTransaction?.date ?? new Date().toISOString().split('T')[0],
@@ -57,6 +74,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
   });
   const [users, setUsers] = useState<Array<{ id: string; email: string }>>([]);
   const [isPending, startTransition] = useTransition();
+  const [isLoadingRate, setIsLoadingRate] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
@@ -76,28 +94,53 @@ export const TransactionForm: FC<ITransactionForm> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
+    if (!currencyCode || currencyCode === ECurrency.USD) {
+      setFormData((prev) => ({ ...prev, exchangeRate: '1' }));
+      return;
+    }
+
+    let isCancelled = false;
+    setIsLoadingRate(true);
+
+    (async () => {
+      const result = await getExchangeRateAction(currencyCode as ECurrency, formData.rateProvider);
+      if (isCancelled) return;
+      if (result.isSuccess) {
+        setFormData((prev) => ({ ...prev, exchangeRate: String(result.data) }));
+      } else if (result.error) {
+        showError('Exchange rate', result.error);
+      }
+      setIsLoadingRate(false);
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [formData.currencyId, formData.rateProvider, currencies]);
+
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const input: {
-      amount: number;
-      type: 'income' | 'expense';
-      description: string | null;
-      date: string;
-      receiverId?: string;
-      categoryId?: string | null;
-    } = {
-      amount: parseFloat(formData.amount),
+    const amount = parseFloat(formData.amount);
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
+    const amountUsd =
+      currencyCode === ECurrency.USD ? amount : Number((amount / exchangeRate).toFixed(2));
+
+    const input = {
+      amount,
+      currencyId: formData.currencyId,
+      exchangeRate,
+      amountUsd,
+      rateProvider: formData.rateProvider as 'privatbank' | 'monobank',
       type: formData.type,
       description: formData.description || null,
       date: formData.date,
+      ...(formData.receiverId && { receiverId: formData.receiverId }),
+      ...(formData.categoryId && { categoryId: formData.categoryId }),
     };
-    if (formData.receiverId) {
-      input.receiverId = formData.receiverId;
-    }
-    if (formData.categoryId) {
-      input.categoryId = formData.categoryId;
-    }
 
     startTransition(async () => {
       try {
@@ -137,6 +180,62 @@ export const TransactionForm: FC<ITransactionForm> = ({
                 value={formData.amount}
                 onChange={(e) => {
                   setFormData({ ...formData, amount: e.target.value });
+                }}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="currency">Currency</Label>
+              <Select
+                value={formData.currencyId}
+                onValueChange={(v) => {
+                  setFormData({ ...formData, currencyId: v });
+                }}
+              >
+                <SelectTrigger className="w-full" id="currency">
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((currency) => (
+                    <SelectItem key={currency.id} value={currency.id}>
+                      {currency.symbol} {currency.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="rateProvider">Rate provider</Label>
+              <Select
+                value={formData.rateProvider}
+                onValueChange={(v) => {
+                  setFormData({ ...formData, rateProvider: v });
+                }}
+              >
+                <SelectTrigger className="w-full" id="rateProvider">
+                  <SelectValue placeholder="Select bank" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={EExchangeRateProvider.PrivatBank}>PrivatBank</SelectItem>
+                  <SelectItem value={EExchangeRateProvider.Monobank}>Monobank</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="exchangeRate">Exchange rate to USD</Label>
+              <Input
+                id="exchangeRate"
+                type="number"
+                step="0.000001"
+                min="0"
+                placeholder="1.0"
+                value={formData.exchangeRate}
+                disabled={isLoadingRate}
+                onChange={(e) => {
+                  setFormData({ ...formData, exchangeRate: e.target.value });
                 }}
                 required
               />

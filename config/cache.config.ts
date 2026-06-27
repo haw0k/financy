@@ -6,7 +6,9 @@
 export const CACHE_TAGS = {
   categories: 'categories',
   categoryTypes: 'category-types',
+  currencies: 'currencies',
   dashboard: 'dashboard',
+  exchangeRates: 'exchange-rates',
   receivers: 'receivers',
   transactions: 'transactions',
 } as const;

@@ -12,40 +12,40 @@ The application currently stores transaction amounts as a single numeric value a
 
 ### Phase 1 — Database and Data Model
 
-- [ ] Create the currencies table and seed it with UAH, USD, and EUR.
-- [ ] Add currency, exchange rate, and USD-equivalent amount columns to the transactions table.
-- [ ] Update TypeScript interfaces and schemas to include the new transaction fields.
+- [x] Create the currencies table and seed it with UAH, USD, and EUR.
+- [x] Add currency, exchange rate, and USD-equivalent amount columns to the transactions table.
+- [x] Update TypeScript interfaces and schemas to include the new transaction fields.
 
 ### Phase 2 — Exchange Rate Services
 
-- [ ] Integrate PrivatBank public exchange rate API.
-- [ ] Integrate Monobank public exchange rate API.
-- [ ] Implement a service that returns the appropriate buy rate for a given currency pair and selected bank.
-- [ ] Cache fetched exchange rates for the current day to avoid repeated API calls, since rates change only once per day.
-- [ ] Add fallback handling for unavailable or malformed API responses, using cached values when available.
+- [x] Integrate PrivatBank public exchange rate API.
+- [x] Integrate Monobank public exchange rate API.
+- [x] Implement a service that returns the appropriate buy rate for a given currency pair and selected bank.
+- [x] Cache fetched exchange rates for the current day to avoid repeated API calls, since rates change only once per day.
+- [x] Add fallback handling for unavailable or malformed API responses, using cached values when available.
 
 ### Phase 3 — Transaction Form Updates
 
-- [ ] Add a currency selector with ₴, $, and € symbols to the transaction creation form.
-- [ ] Add a bank selector for choosing PrivatBank or Monobank.
-- [ ] Add an exchange-rate-to-USD input field.
-- [ ] Auto-fill the exchange rate input when a currency is selected, defaulting to PrivatBank.
-- [ ] Update the exchange rate when the selected bank changes.
-- [ ] Store the USD-equivalent amount when the transaction is submitted.
+- [x] Add a currency selector with ₴, $, and € symbols to the transaction creation form.
+- [x] Add a bank selector for choosing PrivatBank or Monobank.
+- [x] Add an exchange-rate-to-USD input field.
+- [x] Auto-fill the exchange rate input when a currency is selected, defaulting to PrivatBank.
+- [x] Update the exchange rate when the selected bank changes.
+- [x] Store the USD-equivalent amount when the transaction is submitted.
 
 ### Phase 4 — Dashboard and Server Actions
 
-- [ ] Update existing dashboard Server Actions to use the USD-equivalent amount for totals and analytics.
-- [ ] Ensure charts and summaries continue to render without visible UI changes.
-- [ ] Backfill or handle legacy transactions that lack USD-equivalent amounts.
+- [x] Update existing dashboard Server Actions to use the USD-equivalent amount for totals and analytics.
+- [x] Ensure charts and summaries continue to render without visible UI changes.
+- [x] Backfill or handle legacy transactions that lack USD-equivalent amounts.
 
 ### Phase 5 — Testing and Validation
 
-- [ ] Add tests for currency conversion logic and exchange rate selection.
-- [ ] Add tests for auto-filling the exchange rate input.
-- [ ] Add tests for dashboard calculations using USD-equivalent amounts.
-- [ ] Add tests for API failure fallback behavior.
-- [ ] Run type-check, lint, and tests before merging.
+- [x] Add tests for currency conversion logic and exchange rate selection.
+- [x] Add tests for auto-filling the exchange rate input.
+- [x] Add tests for dashboard calculations using USD-equivalent amounts.
+- [x] Add tests for API failure fallback behavior.
+- [x] Run type-check, lint, and tests before merging.
 
 ## Risks & Notes
 
@@ -57,12 +57,12 @@ The application currently stores transaction amounts as a single numeric value a
 
 ## Definition of Done
 
-- [ ] Currencies table exists and is seeded with UAH, USD, and EUR.
-- [ ] Transactions table stores payment currency, exchange rate to USD, and USD-equivalent amount.
-- [ ] Transaction form includes working currency and bank selectors with the required symbols.
-- [ ] Selecting a currency auto-fills the exchange rate from the default or selected bank.
-- [ ] UAH and EUR transactions convert to USD using the correct buy rates.
-- [ ] USD transactions keep a 1:1 exchange rate.
-- [ ] Dashboard totals, charts, and analytics use USD-equivalent amounts.
-- [ ] Tests cover conversion, auto-fill, API fallback, and dashboard aggregation.
-- [ ] `pnpm lint && pnpm build` passes.
+- [x] Currencies table exists and is seeded with UAH, USD, and EUR.
+- [x] Transactions table stores payment currency, exchange rate to USD, and USD-equivalent amount.
+- [x] Transaction form includes working currency and bank selectors with the required symbols.
+- [x] Selecting a currency auto-fills the exchange rate from the default or selected bank.
+- [x] UAH and EUR transactions convert to USD using the correct buy rates.
+- [x] USD transactions keep a 1:1 exchange rate.
+- [x] Dashboard totals, charts, and analytics use USD-equivalent amounts.
+- [x] Tests cover conversion, auto-fill, API fallback, and dashboard aggregation.
+- [x] `pnpm lint && pnpm build` passes.
