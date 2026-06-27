@@ -1,5 +1,5 @@
-import { getTransactionsDataAction } from '@/app/actions/transactions';
 import { getCurrenciesAction } from '@/app/actions/currencies';
+import { getTransactionsDataAction } from '@/app/actions/transactions';
 import { TransactionsTableClient } from './TransactionsTableClient';
 
 export async function TransactionsTableServer() {

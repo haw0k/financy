@@ -214,13 +214,25 @@ select
   au.id,
   au.email,
   coalesce(au.raw_user_meta_data ->> 'role', 'sender'),
-  case
-    when au.raw_user_meta_data ->> 'role' = 'admin' then 'approved'
-    else 'pending'
-  end
+  'pending'
 from auth.users au
 left join public.profiles p on p.id = au.id
 where p.id is null;
+
+-- Approve exactly one admin if no approved admin exists yet.
+-- The unique partial index idx_profiles_single_approved_admin guarantees only one.
+update public.profiles
+set status = 'approved', updated_at = now()
+where id = (
+  select id
+  from public.profiles
+  where role = 'admin' and status = 'pending'
+  order by created_at, id
+  limit 1
+)
+and not exists (
+  select 1 from public.profiles where role = 'admin' and status = 'approved'
+);
 
 -- Backfill app_metadata for existing users (populate role/status in JWT)
 -- Uses COALESCE to handle NULL raw_app_meta_data (NULL || jsonb = NULL in PostgreSQL)

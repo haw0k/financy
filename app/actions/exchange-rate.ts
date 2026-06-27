@@ -1,12 +1,12 @@
 'use server';
 
 import { cacheTag, cacheLife as nextCacheLife } from 'next/cache';
+import { getExchangeRate, getExchangeRates } from '@/lib/exchange-rate';
 import { requireApprovedUser } from '@/lib/require-auth';
 import { CACHE_TAGS, dashboardCacheLife } from '@/config';
-import { EExchangeRateProvider, ECurrency } from '@/enums';
-import { EXCHANGE_RATE_MSGS } from '@/messages';
-import { getExchangeRate, getExchangeRates } from '@/lib/exchange-rate';
+import { ECurrency, EExchangeRateProvider } from '@/enums';
 import type { IExchangeRate } from '@/lib/exchange-rate';
+import { EXCHANGE_RATE_MSGS } from '@/messages';
 import type { TActionResult } from '@/types';
 
 export async function getExchangeRatesAction(
