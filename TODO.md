@@ -8,7 +8,7 @@
 
 - [ ] **Pagination and filtering**: Add server-side pagination and filtering to the transactions page. Evaluate the same for the categories page.
 - [ ] **Multi-currency support**: Support multiple currencies and fetch exchange rates via bank APIs.
-- [ ] **Simple data caching**: Introduce lightweight caching so that navigating between pages does not refetch data from the database every time.
+- [x] **Simple data caching**: Introduce lightweight caching so that navigating between pages does not refetch data from the database every time.
 
 ## Styling
 
