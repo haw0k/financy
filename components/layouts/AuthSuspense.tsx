@@ -1,4 +1,4 @@
-import { Suspense, type PropsWithChildren } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 
 /**
  * Wraps auth-dependent children in a Suspense boundary so the static shell can

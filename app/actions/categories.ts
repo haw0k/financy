@@ -1,11 +1,11 @@
 'use server';
 
+import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
-import { CACHE_TAGS, dashboardCacheLife } from '@/config';
+import { CACHE_TAGS, dashboardCacheLife, mutationRevalidateProfile } from '@/config';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
 import { CATEGORY_MSGS } from '@/messages';
-import { cacheLife as nextCacheLife, cacheTag, revalidateTag } from 'next/cache';
 import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
 import type { ICategory, ICategoryType } from '@/interfaces';
 import type { TActionResult } from '@/types';
@@ -50,7 +50,7 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TActi
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
-  revalidateTag(CACHE_TAGS.categories, 'max');
+  revalidateTag(CACHE_TAGS.categories, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -106,7 +106,7 @@ export async function updateCategoryAction({
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
-  revalidateTag(CACHE_TAGS.categories, 'max');
+  revalidateTag(CACHE_TAGS.categories, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -130,7 +130,7 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAct
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
-  revalidateTag(CACHE_TAGS.categories, 'max');
+  revalidateTag(CACHE_TAGS.categories, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -156,7 +156,7 @@ export async function createCategoryTypeAction(
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
-  revalidateTag(CACHE_TAGS.categoryTypes, 'max');
+  revalidateTag(CACHE_TAGS.categoryTypes, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -191,7 +191,7 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
-  revalidateTag(CACHE_TAGS.categoryTypes, 'max');
+  revalidateTag(CACHE_TAGS.categoryTypes, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -219,7 +219,7 @@ export async function deleteCategoryTypeAction({
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
-  revalidateTag(CACHE_TAGS.categoryTypes, 'max');
+  revalidateTag(CACHE_TAGS.categoryTypes, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }

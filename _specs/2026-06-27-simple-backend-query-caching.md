@@ -29,14 +29,14 @@ Introduce lightweight server-side caching for read-heavy backend queries so that
 
 ## Acceptance Criteria
 
-- [ ] The most frequently accessed read queries on `/dashboard`, `/dashboard/transactions`, and `/dashboard/categories` are wrapped with `"use cache"`. The `/admin` read queries are not cached.
-- [ ] Each cached function declares a `cacheLife` value and at least one `cacheTag`.
-- [ ] Relevant dashboard write actions (create/update/delete for transactions, categories, and category types) call `revalidateTag` for the affected tags. Admin approve/reject actions do not need cache invalidation because `/admin` reads are uncached.
-- [ ] Repeated navigation between the above pages does not produce new Supabase read queries for the cached data within the configured lifetime.
-- [ ] User-specific data is never returned to a different user after switching accounts or during concurrent sessions.
-- [ ] No authentication, session, or authorization-related functions are cached.
-- [ ] `pnpm build`, `pnpm type-check`, `pnpm lint`, and `pnpm test:run` pass.
-- [ ] A short note is added to the project documentation describing which data is cached, which data is intentionally not cached (`/admin`), and how to invalidate the cached data.
+- [x] The most frequently accessed read queries on `/dashboard`, `/dashboard/transactions`, and `/dashboard/categories` are wrapped with `"use cache"`. The `/admin` read queries are not cached.
+- [x] Each cached function declares a `cacheLife` value and at least one `cacheTag`.
+- [x] Relevant dashboard write actions (create/update/delete for transactions, categories, and category types) call `revalidateTag` for the affected tags. Admin approve/reject actions invalidate the `receivers` tag because the cached receiver list is affected by approval status.
+- [x] Repeated navigation between the above pages does not produce new Supabase read queries for the cached data within the configured lifetime.
+- [x] User-specific data is never returned to a different user after switching accounts or during concurrent sessions.
+- [x] No authentication, session, or authorization-related functions are cached.
+- [x] `pnpm build`, `pnpm type-check`, `pnpm lint`, and `pnpm test:run` pass.
+- [x] A short note is added to the project documentation describing which data is cached, which data is intentionally not cached (`/admin`), how to invalidate the cached data, and the known limitation that transient read errors are cached for the configured lifetime.
 
 ## Open Questions
 

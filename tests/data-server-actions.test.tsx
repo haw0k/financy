@@ -1,4 +1,6 @@
+import { revalidateTag } from 'next/cache';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mutationRevalidateProfile } from '@/config';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
@@ -559,5 +561,196 @@ describe('deleteTransactionAction', () => {
     if (!result.isSuccess) {
       expect(result.error).toBe('Transaction not found');
     }
+  });
+});
+
+/* ── Cache revalidation ─────────────────────────────────────────── */
+
+describe('cache revalidation', () => {
+  it('createCategoryAction revalidates categories', async () => {
+    const { createCategoryAction } = await import('@/app/actions/categories');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder({ id: 'ct1' });
+      }
+      return createQueryBuilder(null);
+    });
+
+    await createCategoryAction({ name: 'Food', type: 'expense', color: '#fff', type_id: 'ct1' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('categories', mutationRevalidateProfile);
+  });
+
+  it('updateCategoryAction revalidates categories', async () => {
+    const { updateCategoryAction } = await import('@/app/actions/categories');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder({ id: 'ct1' });
+      }
+      if (table === 'categories') {
+        return createQueryBuilder([{ id: 'cat1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    await updateCategoryAction({
+      id: 'cat1',
+      input: { name: 'Food', type: 'expense', color: '#fff', type_id: 'ct1' },
+    });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('categories', mutationRevalidateProfile);
+  });
+
+  it('deleteCategoryAction revalidates categories', async () => {
+    const { deleteCategoryAction } = await import('@/app/actions/categories');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'categories') {
+        return createQueryBuilder([{ id: 'cat1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    await deleteCategoryAction({ id: 'cat1' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('categories', mutationRevalidateProfile);
+  });
+
+  it('createCategoryTypeAction revalidates category-types', async () => {
+    const { createCategoryTypeAction } = await import('@/app/actions/categories');
+
+    mockApprovedProfile();
+
+    await createCategoryTypeAction({ name: 'Goods' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      'category-types',
+      mutationRevalidateProfile
+    );
+  });
+
+  it('updateCategoryTypeAction revalidates category-types', async () => {
+    const { updateCategoryTypeAction } = await import('@/app/actions/categories');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder([{ id: 'ct1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    await updateCategoryTypeAction({ id: 'ct1', input: { name: 'Goods' } });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      'category-types',
+      mutationRevalidateProfile
+    );
+  });
+
+  it('deleteCategoryTypeAction revalidates category-types', async () => {
+    const { deleteCategoryTypeAction } = await import('@/app/actions/categories');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder([{ id: 'ct1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    await deleteCategoryTypeAction({ id: 'ct1' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      'category-types',
+      mutationRevalidateProfile
+    );
+  });
+
+  it('createTransactionAction revalidates transactions and dashboard', async () => {
+    const { createTransactionAction } = await import('@/app/actions/transactions');
+
+    mockApprovedProfile();
+
+    await createTransactionAction({
+      amount: 100,
+      type: 'expense',
+      date: '2026-06-20',
+      description: null,
+    });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      'transactions',
+      mutationRevalidateProfile
+    );
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('dashboard', mutationRevalidateProfile);
+  });
+
+  it('updateTransactionAction revalidates transactions and dashboard', async () => {
+    const { updateTransactionAction } = await import('@/app/actions/transactions');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder([{ id: 't1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    await updateTransactionAction({
+      id: 't1',
+      input: {
+        amount: 100,
+        type: 'expense',
+        date: '2026-06-20',
+        description: null,
+        receiverId: 'receiver-1',
+      },
+    });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      'transactions',
+      mutationRevalidateProfile
+    );
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('dashboard', mutationRevalidateProfile);
+  });
+
+  it('deleteTransactionAction revalidates transactions and dashboard', async () => {
+    const { deleteTransactionAction } = await import('@/app/actions/transactions');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder([{ id: 't1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    await deleteTransactionAction({ id: 't1' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith(
+      'transactions',
+      mutationRevalidateProfile
+    );
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('dashboard', mutationRevalidateProfile);
   });
 });

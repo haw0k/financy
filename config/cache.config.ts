@@ -24,3 +24,9 @@ export const dashboardCacheLife = {
   revalidate: 30,
   expire: 60,
 };
+
+/**
+ * Profile passed to `revalidateTag` after a successful mutation. The built-in `max` profile
+ * expires matching cached entries immediately so the next read sees fresh data.
+ */
+export const mutationRevalidateProfile = 'max';

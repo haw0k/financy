@@ -443,11 +443,12 @@ A single profile is used for all dashboard caches (defined in `config/cache.conf
 
 ### Cache invalidation
 
-After a successful mutation the affected tags are revalidated with `revalidateTag(tag, 'max')`:
+After a successful mutation the affected tags are revalidated with `revalidateTag(tag, mutationRevalidateProfile)`:
 
 - `createCategoryAction`, `updateCategoryAction`, `deleteCategoryAction` → `categories`
 - `createCategoryTypeAction`, `updateCategoryTypeAction`, `deleteCategoryTypeAction` → `categoryTypes`
-- Transaction mutations → `transactions` (already covered by the `transactions` tag)
+- Transaction mutations (`createTransactionAction`, `updateTransactionAction`, `deleteTransactionAction`) → `transactions` **and** `dashboard`
+- Admin approval/rejection (`approveUserAction`, `rejectUserAction`) → `receivers`
 
 ### What is NOT cached
 
@@ -455,9 +456,13 @@ After a successful mutation the affected tags are revalidated with `revalidateTa
 - The `/admin` pending-users list remains uncached so the admin always sees fresh data.
 - Any data operation that depends on real-time accuracy is left dynamic.
 
+### Known limitations
+
+- Cached functions return success/error results through `TActionResult`. A transient database or RPC error returned by a cached read will be cached for the configured lifetime, so the same user will see the stale error until the TTL expires or a successful revalidation occurs. For this reason the cache lifetime is intentionally short (30–60 seconds).
+
 ### Suspense boundaries
 
-Because private caches read cookies/session data, components that call cached actions must be wrapped in `<Suspense>` so the static shell can prerender while auth resolves at request time. The categories page uses `CategoriesSkeleton` as its fallback.
+Because private caches read cookies/session data, auth-dependent layouts are wrapped in a shared `<AuthSuspense>` fallback (`components/layouts/AuthSuspense.tsx`) so the static shell can prerender while the session/role resolves at request time. Loading skeletons for individual dashboard routes live in `app/(app)/dashboard/**/loading.tsx` and render through Next.js's built-in loading convention.
 
 ## Further reading
 

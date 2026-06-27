@@ -33,4 +33,4 @@
 - [x] docs: Document React Server Components Practical Patterns — { 2026-06-20-document-rsc-patterns.md }
 - [x] feat: Polish Application Styling With Frontend-Design Plugin - { 2026-06-21-frontend-design-styling.md }
 - [x] chore: Replace ESLint and Prettier with Biome - { 2026-06-22-replace-eslint-prettier-with-biome.md }
-- [ ] perf: Simple Backend Query Caching - { 2026-06-27-simple-backend-query-caching.md }
+- [x] perf: Simple Backend Query Caching - { 2026-06-27-simple-backend-query-caching.md }

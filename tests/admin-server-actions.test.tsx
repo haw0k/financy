@@ -1,4 +1,6 @@
+import { revalidateTag } from 'next/cache';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mutationRevalidateProfile } from '@/config';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
@@ -267,5 +269,34 @@ describe('rejectUserAction', () => {
 
     expect(result.isSuccess).toBe(true);
     expect(mockDeleteUser).toHaveBeenCalledWith('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+  });
+});
+
+/* ── Cache revalidation ─────────────────────────────────────────── */
+
+describe('cache revalidation', () => {
+  it('approveUserAction revalidates receivers', async () => {
+    const { approveUserAction } = await import('@/app/actions/admin');
+
+    mockFrom
+      .mockReturnValueOnce(createQueryBuilder({ status: 'approved', role: 'admin' }))
+      .mockReturnValueOnce(createQueryBuilder({ status: 'pending', role: 'sender' }))
+      .mockReturnValueOnce(createQueryBuilder(null));
+
+    await approveUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('receivers', mutationRevalidateProfile);
+  });
+
+  it('rejectUserAction revalidates receivers', async () => {
+    const { rejectUserAction } = await import('@/app/actions/admin');
+
+    mockFrom
+      .mockReturnValueOnce(createQueryBuilder({ status: 'approved', role: 'admin' }))
+      .mockReturnValueOnce(createQueryBuilder({ status: 'pending', role: 'sender' }));
+
+    await rejectUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
+
+    expect(vi.mocked(revalidateTag)).toHaveBeenCalledWith('receivers', mutationRevalidateProfile);
   });
 });

@@ -1,4 +1,4 @@
-import { Suspense, type PropsWithChildren } from 'react';
+import { type PropsWithChildren, Suspense } from 'react';
 import { RoleProvider, ThemeProvider } from '@/components/providers';
 import { Analytics } from '@vercel/analytics/next';
 import { Geist_Mono, Roboto } from 'next/font/google';

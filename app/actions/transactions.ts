@@ -1,12 +1,12 @@
 'use server';
 
+import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
-import { CACHE_TAGS, dashboardCacheLife } from '@/config';
+import { CACHE_TAGS, dashboardCacheLife, mutationRevalidateProfile } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
-import { cacheLife as nextCacheLife, cacheTag, revalidateTag } from 'next/cache';
 import type { TTransactionInput } from '@/schemas';
 import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
 import type { TActionResult } from '@/types';
@@ -144,7 +144,8 @@ export async function createTransactionAction(
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
-  revalidateTag(CACHE_TAGS.transactions, 'max');
+  revalidateTag(CACHE_TAGS.transactions, mutationRevalidateProfile);
+  revalidateTag(CACHE_TAGS.dashboard, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -215,7 +216,8 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
-  revalidateTag(CACHE_TAGS.transactions, 'max');
+  revalidateTag(CACHE_TAGS.transactions, mutationRevalidateProfile);
+  revalidateTag(CACHE_TAGS.dashboard, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }
@@ -249,7 +251,8 @@ export async function deleteTransactionAction({
     return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
-  revalidateTag(CACHE_TAGS.transactions, 'max');
+  revalidateTag(CACHE_TAGS.transactions, mutationRevalidateProfile);
+  revalidateTag(CACHE_TAGS.dashboard, mutationRevalidateProfile);
 
   return { isSuccess: true, data: undefined };
 }

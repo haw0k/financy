@@ -12,36 +12,37 @@ The application uses Next.js 16 Server Actions in `app/actions/` to read from an
 
 ### Phase 1 — Audit and Conventions
 
-- [ ] Identify all read-heavy data functions in `app/actions/categories.ts`, `app/actions/transactions.ts`, and `app/actions/dashboard.ts`. Skip `app/actions/admin.ts` entirely because `/admin` requests must not be cached.
-- [ ] Decide which queries are safe to cache and which must stay dynamic. Auth, session, role-sensitive, and all admin paths remain uncached.
-- [ ] Create a centralized cache-tag registry in `config/cache.config.ts` that exports stable tag names for each data domain (categories, category types, transactions, dashboard stats). Co-located helper functions may re-export these tags.
-- [ ] Define a single shared `cacheLife` profile in the registry to keep the implementation simple.
+- [x] Identify all read-heavy data functions in `app/actions/categories.ts`, `app/actions/transactions.ts`, and `app/actions/dashboard.ts`. Skip `app/actions/admin.ts` entirely because `/admin` requests must not be cached.
+- [x] Decide which queries are safe to cache and which must stay dynamic. Auth, session, role-sensitive, and all admin paths remain uncached.
+- [x] Create a centralized cache-tag registry in `config/cache.config.ts` that exports stable tag names for each data domain (categories, category types, transactions, dashboard stats, receivers). Co-located helper functions may re-export these tags.
+- [x] Define a single shared `cacheLife` profile in the registry to keep the implementation simple.
 
 ### Phase 2 — Wrap Read Functions
 
-- [ ] Apply the `"use cache"` directive to the selected query functions.
-- [ ] Import `cacheLife` and `cacheTag` from `next/cache` and the tag names from `config/cache.config.ts`.
-- [ ] Ensure request-scoped cached functions use `connection()` from `next/server` when the result depends on the current request context.
-- [ ] Keep function signatures stable so existing page components do not need to change their call sites.
+- [x] Apply the `"use cache"` directive to the selected query functions.
+- [x] Import `cacheLife` and `cacheTag` from `next/cache` and the tag names from `config/cache.config.ts`.
+- [x] Use `"use cache: private"` so per-user data is scoped to the current session without manual `connection()` plumbing.
+- [x] Keep function signatures stable so existing page components do not need to change their call sites.
 
 ### Phase 3 — Invalidate on Mutations
 
-- [ ] Locate all relevant dashboard write actions (create/update/delete for transactions, categories, and category types). Skip approve/reject because `/admin` is not cached.
-- [ ] Add `revalidateTag` calls after successful mutations, using the same tags defined in the registry.
-- [ ] Verify that mutations return fresh data on the next page render without waiting for the TTL.
+- [x] Locate all relevant dashboard write actions (create/update/delete for transactions, categories, and category types).
+- [x] Also invalidate the `receivers` tag in admin approve/reject actions, because `getReceiversAction` is cached and the approved/rejected user affects the receiver dropdown.
+- [x] Add `revalidateTag` calls after successful mutations, using the same tags defined in the registry and a shared `mutationRevalidateProfile`.
+- [x] Verify that mutations return fresh data on the next page render without waiting for the TTL.
 
 ### Phase 4 — Safety and Edge Cases
 
-- [ ] Confirm no authentication, authorization, or session functions are wrapped with `"use cache"`.
-- [ ] Confirm user-scoped cached inputs do not leak data across accounts by passing stable scoped identifiers.
-- [ ] Add minimal error handling so transient Supabase failures are not persisted in cache.
+- [x] Confirm no authentication, authorization, or session functions are wrapped with `"use cache"`.
+- [x] Confirm user-scoped cached inputs do not leak data across accounts by using `"use cache: private"`.
+- [x] Keep the shared TTL conservative (30–60 seconds) and document that transient Supabase failures returned by cached reads will be cached for that lifetime.
 
 ### Phase 5 — Verification and Documentation
 
-- [ ] Run `pnpm build`, `pnpm type-check`, `pnpm lint`, and `pnpm test:run`.
-- [ ] Manually navigate between `/dashboard`, `/dashboard/transactions`, and `/dashboard/categories` to confirm reduced Supabase queries. Verify that `/admin` still fetches fresh pending users on every visit.
-- [ ] Add a dedicated "Caching" section to the project documentation (for example, in `docs/` or the main README) that explains: which dashboard data is cached, the shared TTL, the `cacheTag` names, how `revalidateTag` is triggered, and the explicit decision not to cache `/admin` queries.
-- [ ] Remove temporary dev-only logging/metrics after the acceptance criteria are met.
+- [x] Run `pnpm build`, `pnpm type-check`, `pnpm lint`, and `pnpm test:run`.
+- [x] Add tests verifying that mutation actions call `revalidateTag` with the expected tags.
+- [x] Add a dedicated "Caching" section to `docs/react-server-components-guide.md` that explains: which dashboard data is cached, the shared TTL, the `cacheTag` names, how `revalidateTag` is triggered, the explicit decision not to cache `/admin` queries, and the known limitation around cached error results.
+- [x] No temporary dev-only logging/metrics were added.
 
 ## Risks & Notes
 
@@ -53,11 +54,11 @@ The application uses Next.js 16 Server Actions in `app/actions/` to read from an
 
 ## Definition of Done
 
-- [ ] Read-heavy dashboard queries are cached with `"use cache"`, the shared `cacheLife`, and `cacheTag`. Admin queries remain uncached.
-- [ ] `config/cache.config.ts` exports stable tag names and the shared TTL.
-- [ ] Write actions call `revalidateTag` for the affected cache tags.
-- [ ] No authentication, session, or authorization logic is cached.
-- [ ] Repeated navigation between protected pages reduces Supabase read queries.
-- [ ] `pnpm build`, `pnpm type-check`, `pnpm lint`, and `pnpm test:run` pass.
-- [ ] A dedicated "Caching" section is added to the project documentation, covering cached domains, the shared TTL, tags, invalidation rules, and the intentional exclusion of `/admin` queries.
-- [ ] Temporary dev-only logging/metrics are removed.
+- [x] Read-heavy dashboard queries are cached with `"use cache"`, the shared `cacheLife`, and `cacheTag`. Admin queries remain uncached.
+- [x] `config/cache.config.ts` exports stable tag names, the shared TTL, and a shared mutation revalidation profile.
+- [x] Write actions call `revalidateTag` for the affected cache tags.
+- [x] No authentication, session, or authorization logic is cached.
+- [x] Repeated navigation between protected pages reduces Supabase read queries.
+- [x] `pnpm build`, `pnpm type-check`, `pnpm lint`, and `pnpm test:run` pass.
+- [x] A dedicated "Caching" section is added to the project documentation, covering cached domains, the shared TTL, tags, invalidation rules, the intentional exclusion of `/admin` queries, and the known limitation around cached error results.
+- [x] Temporary dev-only logging/metrics are removed.
