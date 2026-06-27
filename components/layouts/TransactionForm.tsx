@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/lib/shadcn';
 import { DatePicker, showError } from '@/components/ui';
+import { convertToUsd, mapProvider } from '@/lib/exchange-rate';
 import { withTimeout } from '@/lib/with-timeout';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
 import { getExchangeRateAction } from '@/app/actions/exchange-rate';
@@ -126,15 +127,14 @@ export const TransactionForm: FC<ITransactionForm> = ({
     const amount = parseFloat(formData.amount);
     const exchangeRate = parseFloat(formData.exchangeRate);
     const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
-    const amountUsd =
-      currencyCode === ECurrency.USD ? amount : Number((amount / exchangeRate).toFixed(2));
+    const amountUsd = currencyCode === ECurrency.USD ? amount : convertToUsd(amount, exchangeRate);
 
     const input = {
       amount,
       currencyId: formData.currencyId,
       exchangeRate,
       amountUsd,
-      rateProvider: formData.rateProvider as 'privatbank' | 'monobank',
+      rateProvider: mapProvider(formData.rateProvider),
       type: formData.type,
       description: formData.description || null,
       date: formData.date,

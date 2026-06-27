@@ -31,7 +31,11 @@ const CURRENCY_CODES: Record<ECurrency, number> = {
 const PRIVATBANK_API_URL = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
 const MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency';
 
-function mapProvider(value: string): EExchangeRateProvider {
+// Exchange rates change roughly once per day; cache fetch responses for several hours
+// to reduce API calls while still allowing updates when banks publish new rates.
+const RATE_CACHE_SECONDS = 4 * 60 * 60;
+
+export function mapProvider(value: string): EExchangeRateProvider {
   if (value === EExchangeRateProvider.Monobank) {
     return EExchangeRateProvider.Monobank;
   }
@@ -40,7 +44,7 @@ function mapProvider(value: string): EExchangeRateProvider {
 
 async function fetchPrivatBankRates(): Promise<IExchangeRate[]> {
   const response = await fetch(PRIVATBANK_API_URL, {
-    next: { revalidate: 3600 },
+    next: { revalidate: RATE_CACHE_SECONDS },
   });
 
   if (!response.ok) {
@@ -60,7 +64,7 @@ async function fetchPrivatBankRates(): Promise<IExchangeRate[]> {
 
 async function fetchMonobankRates(): Promise<IExchangeRate[]> {
   const response = await fetch(MONOBANK_API_URL, {
-    next: { revalidate: 3600 },
+    next: { revalidate: RATE_CACHE_SECONDS },
   });
 
   if (!response.ok) {
@@ -108,6 +112,7 @@ export async function getExchangeRate(
     return 1;
   }
 
+  // For UAH transactions we need the USD/UAH buy rate; for EUR transactions we need the EUR/UAH buy rate.
   const rates = await getExchangeRates(provider);
   const targetCode = currency === ECurrency.UAH ? ECurrency.USD : currency;
   const found = rates.find((rate) => rate.currency === targetCode);

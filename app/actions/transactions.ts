@@ -2,6 +2,7 @@
 
 import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache';
 import { mapSupabaseError } from '@/lib/db-errors';
+import { convertToUsd } from '@/lib/exchange-rate';
 import { requireApprovedUser } from '@/lib/require-auth';
 import { CACHE_TAGS, dashboardCacheLife, mutationRevalidateProfile } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
@@ -109,6 +110,28 @@ export async function createTransactionAction(
     return { isSuccess: false, error: authResult.error };
   }
 
+  // Recalculate USD amount on the server to prevent client-side tampering
+  const { data: currency, error: currencyError } = await authResult.supabase
+    .from('currencies')
+    .select('code')
+    .eq('id', parsed.data.currencyId)
+    .maybeSingle();
+
+  if (currencyError) {
+    return { isSuccess: false, error: mapSupabaseError(currencyError) };
+  }
+  if (!currency) {
+    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_CURRENCY };
+  }
+
+  const expectedAmountUsd =
+    currency.code === 'USD'
+      ? parsed.data.amount
+      : convertToUsd(parsed.data.amount, parsed.data.exchangeRate);
+  if (Math.abs(expectedAmountUsd - parsed.data.amountUsd) > 0.01) {
+    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_USD_AMOUNT };
+  }
+
   // Validate receiverId against approved, non-admin receivers
   const receiverId = parsed.data.receiverId || authResult.userId;
   if (parsed.data.receiverId) {
@@ -134,6 +157,7 @@ export async function createTransactionAction(
       amount: parsed.data.amount,
       currency_id: parsed.data.currencyId,
       exchange_rate: parsed.data.exchangeRate,
+      rate_provider: parsed.data.rateProvider,
       amount_usd: parsed.data.amountUsd,
       type: parsed.data.type,
       date: parsed.data.date,
@@ -176,6 +200,28 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: authResult.error };
   }
 
+  // Recalculate USD amount on the server to prevent client-side tampering
+  const { data: currency, error: currencyError } = await authResult.supabase
+    .from('currencies')
+    .select('code')
+    .eq('id', parsed.data.currencyId)
+    .maybeSingle();
+
+  if (currencyError) {
+    return { isSuccess: false, error: mapSupabaseError(currencyError) };
+  }
+  if (!currency) {
+    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_CURRENCY };
+  }
+
+  const expectedAmountUsd =
+    currency.code === 'USD'
+      ? parsed.data.amount
+      : convertToUsd(parsed.data.amount, parsed.data.exchangeRate);
+  if (Math.abs(expectedAmountUsd - parsed.data.amountUsd) > 0.01) {
+    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_USD_AMOUNT };
+  }
+
   // Validate receiverId against approved, non-admin receivers.
   // When receiverId is not provided for an update, omit receiver_id from the
   // payload to preserve the existing value (unlike create, which defaults to
@@ -184,6 +230,7 @@ export async function updateTransactionAction({
     amount: parsed.data.amount,
     currency_id: parsed.data.currencyId,
     exchange_rate: parsed.data.exchangeRate,
+    rate_provider: parsed.data.rateProvider,
     amount_usd: parsed.data.amountUsd,
     type: parsed.data.type,
     date: parsed.data.date,

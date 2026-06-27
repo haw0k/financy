@@ -3,6 +3,7 @@ export interface ITransaction {
   amount: number;
   currency_id: string;
   exchange_rate: number;
+  rate_provider: string;
   amount_usd: number;
   type: 'income' | 'expense';
   date: string;

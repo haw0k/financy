@@ -71,6 +71,7 @@ create table if not exists public.transactions (
   amount decimal(12, 2) not null check (amount > 0),
   currency_id uuid not null references public.currencies(id) on delete restrict,
   exchange_rate decimal(18, 6) not null check (exchange_rate > 0),
+  rate_provider text not null check (rate_provider in ('privatbank', 'monobank')),
   amount_usd decimal(12, 2) not null check (amount_usd > 0),
   category_id uuid references public.categories(id) on delete set null,
   type text not null check (type in ('income', 'expense')),

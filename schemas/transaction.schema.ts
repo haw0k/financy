@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EExchangeRateProvider } from '@/enums';
 import { TRANSACTION_MSGS } from '@/messages';
 
 export const transactionSchema = z.object({
@@ -11,7 +12,9 @@ export const transactionSchema = z.object({
   description: z.string().nullable(),
   categoryId: z.string().nullable().optional(),
   receiverId: z.string().optional(),
-  rateProvider: z.enum(['privatbank', 'monobank']).optional(),
+  rateProvider: z.enum([EExchangeRateProvider.PrivatBank, EExchangeRateProvider.Monobank], {
+    message: 'Exchange rate provider is required',
+  }),
 });
 
 export type TTransactionInput = z.infer<typeof transactionSchema>;

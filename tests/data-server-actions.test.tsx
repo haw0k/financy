@@ -1,6 +1,7 @@
 import { revalidateTag } from 'next/cache';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CACHE_TAGS, mutationRevalidateProfile } from '@/config';
+import { EExchangeRateProvider } from '@/enums';
 
 /* ── Mocks ─────────────────────────────────────────────────────── */
 
@@ -490,6 +491,7 @@ describe('createTransactionAction', () => {
       currencyId: '123e4567-e89b-12d3-a456-426614174000',
       exchangeRate: 1,
       amountUsd: 0,
+      rateProvider: EExchangeRateProvider.PrivatBank,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -508,10 +510,13 @@ describe('createTransactionAction', () => {
     mockFrom.mockImplementation((table: string) => {
       callCount += 1;
       if (table === 'profiles') {
-        if (callCount <= 1) {
+        if (callCount <= 2) {
           return createQueryBuilder({ id: 'user-1', status: 'approved', role: 'sender' });
         }
         return createQueryBuilder([]);
+      }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'USD' });
       }
       if (table === 'transactions') {
         return createQueryBuilder(null);
@@ -524,6 +529,7 @@ describe('createTransactionAction', () => {
       currencyId: '123e4567-e89b-12d3-a456-426614174000',
       exchangeRate: 1,
       amountUsd: 100,
+      rateProvider: EExchangeRateProvider.PrivatBank,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -543,6 +549,9 @@ describe('createTransactionAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'USD' });
+      }
       if (table === 'transactions') {
         return createQueryBuilder(null);
       }
@@ -554,6 +563,7 @@ describe('createTransactionAction', () => {
       currencyId: '123e4567-e89b-12d3-a456-426614174000',
       exchangeRate: 1,
       amountUsd: 100,
+      rateProvider: EExchangeRateProvider.PrivatBank,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -571,6 +581,9 @@ describe('updateTransactionAction', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'USD' });
+      }
       if (table === 'transactions') {
         return createQueryBuilder([]);
       }
@@ -584,6 +597,7 @@ describe('updateTransactionAction', () => {
         currencyId: 'invalid-currency',
         exchangeRate: 1,
         amountUsd: 100,
+        rateProvider: EExchangeRateProvider.PrivatBank,
         type: 'expense',
         date: '2026-06-20',
         description: null,
@@ -755,6 +769,9 @@ describe('cache revalidation', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
       }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'USD' });
+      }
       if (table === 'transactions') {
         return createQueryBuilder(null);
       }
@@ -766,6 +783,7 @@ describe('cache revalidation', () => {
       currencyId: '123e4567-e89b-12d3-a456-426614174000',
       exchangeRate: 1,
       amountUsd: 100,
+      rateProvider: EExchangeRateProvider.PrivatBank,
       type: 'expense',
       date: '2026-06-20',
       description: null,
@@ -788,6 +806,9 @@ describe('cache revalidation', () => {
       if (table === 'profiles') {
         return createQueryBuilder({ id: 'receiver-1', status: 'approved', role: 'sender' });
       }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'USD' });
+      }
       if (table === 'transactions') {
         return createQueryBuilder([{ id: 't1' }]);
       }
@@ -801,6 +822,7 @@ describe('cache revalidation', () => {
         currencyId: '123e4567-e89b-12d3-a456-426614174000',
         exchangeRate: 1,
         amountUsd: 100,
+        rateProvider: EExchangeRateProvider.PrivatBank,
         type: 'expense',
         date: '2026-06-20',
         description: null,
