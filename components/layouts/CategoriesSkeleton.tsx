@@ -1,7 +1,7 @@
 import { Skeleton } from '@/lib/shadcn';
 import type { FC } from 'react';
 
-export const CategoriesPageSkeleton: FC = () => (
+export const CategoriesSkeleton: FC = () => (
   <div className="flex flex-col gap-6 p-6 md:p-8">
     {/* Categories Table Skeleton */}
     <div className="rounded-lg border">

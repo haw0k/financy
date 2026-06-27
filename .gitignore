@@ -10,6 +10,9 @@ next.user-config.*
 # Environment variables
 .env*.local
 
+# Auto-generated Next.js TypeScript declarations
+next-env.d.ts
+
 # Common ignores
 node_modules
 .next/
