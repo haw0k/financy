@@ -1,15 +1,18 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import { routes } from '@/config';
 
-export function HomePage() {
-  const router = useRouter();
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    router.replace(routes.login);
-  }, [router]);
+export async function HomePage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return null;
+  if (user) {
+    redirect(routes.dashboard);
+  }
+
+  redirect(routes.login);
 }

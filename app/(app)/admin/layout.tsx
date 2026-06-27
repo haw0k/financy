@@ -1,8 +1,9 @@
-import { Suspense, type PropsWithChildren } from 'react';
 import { redirect } from 'next/navigation';
+import { AuthSuspense } from '@/components/layouts';
 import { createClient } from '@/lib/supabase/server';
 import { routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
+import type { PropsWithChildren } from 'react';
 
 async function AdminAuthLoader({ children }: PropsWithChildren) {
   const supabase = await createClient();
@@ -30,8 +31,8 @@ async function AdminAuthLoader({ children }: PropsWithChildren) {
 
 export default function AdminLayout({ children }: PropsWithChildren) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+    <AuthSuspense>
       <AdminAuthLoader>{children}</AdminAuthLoader>
-    </Suspense>
+    </AuthSuspense>
   );
 }

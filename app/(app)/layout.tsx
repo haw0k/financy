@@ -1,8 +1,8 @@
-import { type PropsWithChildren, Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { AppShell } from '@/components/layouts';
+import { AppShell, AuthSuspense } from '@/components/layouts';
 import { createClient } from '@/lib/supabase/server';
 import { routes } from '@/config';
+import type { PropsWithChildren } from 'react';
 
 async function AppAuthLoader({ children }: PropsWithChildren) {
   const supabase = await createClient();
@@ -19,8 +19,8 @@ async function AppAuthLoader({ children }: PropsWithChildren) {
 
 export default function AppLayout({ children }: PropsWithChildren) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+    <AuthSuspense>
       <AppAuthLoader>{children}</AppAuthLoader>
-    </Suspense>
+    </AuthSuspense>
   );
 }

@@ -4,8 +4,10 @@ import { z } from 'zod';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedAdmin } from '@/lib/require-auth';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { CACHE_TAGS } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 import { ADMIN_MSGS } from '@/messages';
+import { revalidateTag } from 'next/cache';
 import type { TActionResult } from '@/types';
 
 const userIdSchema = z.string().uuid({ message: ADMIN_MSGS.INVALID_USER_ID });
@@ -109,6 +111,8 @@ export async function approveUserAction({
     return { isSuccess: false, error: ADMIN_MSGS.APPROVE_STATUS_FAILED };
   }
 
+  revalidateTag(CACHE_TAGS.receivers, 'max');
+
   return { isSuccess: true, data: undefined };
 }
 
@@ -138,6 +142,8 @@ export async function rejectUserAction({
   if (deleteError) {
     return { isSuccess: false, error: mapSupabaseError(deleteError) };
   }
+
+  revalidateTag(CACHE_TAGS.receivers, 'max');
 
   return { isSuccess: true, data: undefined };
 }

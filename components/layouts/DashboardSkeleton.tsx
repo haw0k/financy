@@ -1,5 +1,3 @@
-'use client';
-
 import { Skeleton } from '@/lib/shadcn';
 import type { FC } from 'react';
 

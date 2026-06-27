@@ -1,6 +1,6 @@
 export * from './AppShell';
+export * from './AuthSuspense';
 export * from './CategoriesPageSkeleton';
-export * from './CategoriesSkeleton';
 export * from './CategoriesTableClient';
 export * from './CategoriesTableServer';
 export * from './DashboardNav';

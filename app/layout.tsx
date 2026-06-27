@@ -98,7 +98,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
           `}
         </Script>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          <Suspense fallback={children}>
+          <Suspense fallback={<div className="min-h-screen bg-background" />}>
             <RoleLoader>{children}</RoleLoader>
           </Suspense>
           <SonnerToaster richColors position="bottom-right" />

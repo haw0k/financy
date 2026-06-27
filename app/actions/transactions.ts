@@ -6,7 +6,7 @@ import { CACHE_TAGS, dashboardCacheLife } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
-import { cacheLife as nextCacheLife, cacheTag } from 'next/cache';
+import { cacheLife as nextCacheLife, cacheTag, revalidateTag } from 'next/cache';
 import type { TTransactionInput } from '@/schemas';
 import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
 import type { TActionResult } from '@/types';
@@ -144,6 +144,8 @@ export async function createTransactionAction(
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
 
+  revalidateTag(CACHE_TAGS.transactions, 'max');
+
   return { isSuccess: true, data: undefined };
 }
 
@@ -213,6 +215,8 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
 
+  revalidateTag(CACHE_TAGS.transactions, 'max');
+
   return { isSuccess: true, data: undefined };
 }
 
@@ -244,6 +248,8 @@ export async function deleteTransactionAction({
   if (!deleted?.length) {
     return { isSuccess: false, error: TRANSACTION_MSGS.NOT_FOUND };
   }
+
+  revalidateTag(CACHE_TAGS.transactions, 'max');
 
   return { isSuccess: true, data: undefined };
 }

@@ -130,6 +130,8 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAct
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
+  revalidateTag(CACHE_TAGS.categories, 'max');
+
   return { isSuccess: true, data: undefined };
 }
 
@@ -189,6 +191,8 @@ export async function updateCategoryTypeAction({
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
+  revalidateTag(CACHE_TAGS.categoryTypes, 'max');
+
   return { isSuccess: true, data: undefined };
 }
 
@@ -214,6 +218,8 @@ export async function deleteCategoryTypeAction({
   if (!deleted?.length) {
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
+
+  revalidateTag(CACHE_TAGS.categoryTypes, 'max');
 
   return { isSuccess: true, data: undefined };
 }
