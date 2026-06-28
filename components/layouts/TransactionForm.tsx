@@ -14,6 +14,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@/lib/shadcn';
 import { DatePicker, showError } from '@/components/ui';
 import { convertToUsd, mapProvider } from '@/lib/exchange-rate';
@@ -161,6 +164,20 @@ export const TransactionForm: FC<ITransactionForm> = ({
     });
   };
 
+  const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
+  const isUsd = currencyCode === ECurrency.USD;
+  const computedAmountUsd = (() => {
+    const amount = Number.parseFloat(formData.amount) || 0;
+    const exchangeRate = Number.parseFloat(formData.exchangeRate) || 0;
+    if (isUsd) {
+      return amount.toFixed(2);
+    }
+    if (!amount || !exchangeRate) {
+      return '';
+    }
+    return convertToUsd(amount, exchangeRate).toFixed(2);
+  })();
+
   return (
     <Card className="mb-6">
       <CardHeader>
@@ -169,188 +186,220 @@ export const TransactionForm: FC<ITransactionForm> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="amount">Amount</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                value={formData.amount}
-                onChange={(e) => {
-                  setFormData({ ...formData, amount: e.target.value });
-                }}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="currency">Currency</Label>
-              <Select
-                value={formData.currencyId}
-                onValueChange={(v) => {
-                  setFormData({ ...formData, currencyId: v });
-                }}
-              >
-                <SelectTrigger className="w-full" id="currency">
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  {currencies.map((currency) => (
-                    <SelectItem key={currency.id} value={currency.id}>
-                      {currency.symbol} {currency.code}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="rateProvider">Rate provider</Label>
-              <Select
-                value={formData.rateProvider}
-                onValueChange={(v) => {
-                  setFormData({ ...formData, rateProvider: v });
-                }}
-              >
-                <SelectTrigger className="w-full" id="rateProvider">
-                  <SelectValue placeholder="Select bank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={EExchangeRateProvider.PrivatBank}>PrivatBank</SelectItem>
-                  <SelectItem value={EExchangeRateProvider.Monobank}>Monobank</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="exchangeRate">Exchange rate to USD</Label>
-              <Input
-                id="exchangeRate"
-                type="number"
-                step="0.000001"
-                min="0"
-                placeholder="1.0"
-                value={formData.exchangeRate}
-                disabled={isLoadingRate}
-                onChange={(e) => {
-                  setFormData({ ...formData, exchangeRate: e.target.value });
-                }}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="amountUsd">Amount in USD</Label>
-              <Input
-                id="amountUsd"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                value={(() => {
-                  const amount = Number.parseFloat(formData.amount) || 0;
-                  const exchangeRate = Number.parseFloat(formData.exchangeRate) || 0;
-                  const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
-                  if (currencyCode === ECurrency.USD) {
-                    return amount.toFixed(2);
-                  }
-                  if (!amount || !exchangeRate) {
-                    return '';
-                  }
-                  return convertToUsd(amount, exchangeRate).toFixed(2);
-                })()}
-                disabled
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="type">Type</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(v) => {
-                  setFormData({ ...formData, type: v as 'income' | 'expense' });
-                }}
-              >
-                <SelectTrigger className="w-full" id="type">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="expense">Expense</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
-              <DatePicker
-                value={formData.date}
-                onChange={(date) => {
-                  setFormData({ ...formData, date });
-                }}
-              />
-            </div>
-
-            {users.length > 0 && (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Amount</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="receiver">Receiver</Label>
+                <Label htmlFor="amount" className="text-xs text-muted-foreground">
+                  Amount
+                </Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  value={formData.amount}
+                  onChange={(e) => {
+                    setFormData({ ...formData, amount: e.target.value });
+                  }}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="currency" className="text-xs text-muted-foreground">
+                  Currency
+                </Label>
                 <Select
-                  value={formData.receiverId}
+                  value={formData.currencyId}
                   onValueChange={(v) => {
-                    setFormData({ ...formData, receiverId: v });
+                    setFormData({ ...formData, currencyId: v });
                   }}
                 >
-                  <SelectTrigger className="w-full" id="receiver">
-                    <SelectValue placeholder="Select receiver" />
+                  <SelectTrigger className="w-full" id="currency">
+                    <SelectValue placeholder="Select currency" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.email}
+                    {currencies.map((currency) => (
+                      <SelectItem key={currency.id} value={currency.id}>
+                        {currency.symbol} {currency.code}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            )}
 
-            {categories.length > 0 && (
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.categoryId}
+                <Label htmlFor="amountUsd" className="text-xs text-muted-foreground">
+                  Amount in USD
+                </Label>
+                <Input
+                  id="amountUsd"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  value={computedAmountUsd}
+                  disabled
+                />
+                {!isUsd && currencyCode && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <Label htmlFor="rateProvider" className="sr-only">
+                      Rate provider
+                    </Label>
+                    <Select
+                      value={formData.rateProvider}
+                      onValueChange={(v) => {
+                        setFormData({ ...formData, rateProvider: v });
+                      }}
+                    >
+                      <SelectTrigger
+                        className="h-6 w-fit gap-1 border-none bg-secondary px-2 text-xs hover:bg-secondary/80"
+                        id="rateProvider"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={EExchangeRateProvider.PrivatBank}>PrivatBank</SelectItem>
+                        <SelectItem value={EExchangeRateProvider.Monobank}>Monobank</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <Label htmlFor="exchangeRate" className="sr-only">
+                      Exchange rate to USD
+                    </Label>
+                    <Input
+                      id="exchangeRate"
+                      type="number"
+                      step="0.000001"
+                      min="0"
+                      placeholder="1.0"
+                      value={formData.exchangeRate}
+                      disabled={isLoadingRate}
+                      onChange={(e) => {
+                        setFormData({ ...formData, exchangeRate: e.target.value });
+                      }}
+                      required
+                      className="h-6 w-24 text-xs"
+                    />
+                    <span className="text-xs text-muted-foreground">{currencyCode}/USD</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Details</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2 md:col-span-2">
+                <Label className="text-xs text-muted-foreground">Type</Label>
+                <ToggleGroup
+                  type="single"
+                  variant="outline"
+                  className="w-full sm:w-fit"
+                  value={formData.type}
                   onValueChange={(v) => {
-                    setFormData({ ...formData, categoryId: v });
+                    if (v) {
+                      setFormData({ ...formData, type: v as 'income' | 'expense' });
+                    }
                   }}
                 >
-                  <SelectTrigger className="w-full" id="category">
-                    <SelectValue placeholder="Select category (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <ToggleGroupItem value="expense" className="flex-1 sm:flex-initial">
+                    Expense
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="income" className="flex-1 sm:flex-initial">
+                    Income
+                  </ToggleGroupItem>
+                </ToggleGroup>
               </div>
-            )}
 
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                placeholder="Optional description"
-                value={formData.description}
-                onChange={(e) => {
-                  setFormData({ ...formData, description: e.target.value });
-                }}
-              />
+              {categories.length > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="category" className="text-xs text-muted-foreground">
+                    Category
+                  </Label>
+                  <Select
+                    value={formData.categoryId}
+                    onValueChange={(v) => {
+                      setFormData({ ...formData, categoryId: v });
+                    }}
+                  >
+                    <SelectTrigger className="w-full" id="category">
+                      <SelectValue placeholder="Select category (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {users.length > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="receiver" className="text-xs text-muted-foreground">
+                    Receiver
+                  </Label>
+                  <Select
+                    value={formData.receiverId}
+                    onValueChange={(v) => {
+                      setFormData({ ...formData, receiverId: v });
+                    }}
+                  >
+                    <SelectTrigger className="w-full" id="receiver">
+                      <SelectValue placeholder="Select receiver" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Date & note</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="date" className="text-xs text-muted-foreground">
+                  Date
+                </Label>
+                <DatePicker
+                  value={formData.date}
+                  onChange={(date) => {
+                    setFormData({ ...formData, date });
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="description" className="text-xs text-muted-foreground">
+                  Description
+                </Label>
+                <Input
+                  id="description"
+                  placeholder="Optional description"
+                  value={formData.description}
+                  onChange={(e) => {
+                    setFormData({ ...formData, description: e.target.value });
+                  }}
+                />
+              </div>
             </div>
           </div>
 

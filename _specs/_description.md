@@ -34,3 +34,4 @@
 - [x] chore: Replace ESLint and Prettier with Biome - { 2026-06-22-replace-eslint-prettier-with-biome.md }
 - [x] perf: Simple Backend Query Caching - { 2026-06-27-simple-backend-query-caching.md }
 - [x] feat: Multi-Currency Support - { 2026-06-27-multi-currency-support.md }
+- [x] feat: Improve Transaction Form Layout - { 2026-06-28-improve-transaction-form-layout.md }
