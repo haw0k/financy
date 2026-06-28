@@ -41,50 +41,64 @@ export function mapProvider(value: TExchangeRateProvider): EExchangeRateProvider
 }
 
 async function fetchPrivatBankRates(): Promise<IExchangeRate[]> {
-  const response = await fetch(PRIVATBANK_API_URL, {
-    next: { revalidate: exchangeRateCacheSeconds },
-  });
+  try {
+    const response = await fetch(PRIVATBANK_API_URL, {
+      next: { revalidate: exchangeRateCacheSeconds },
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      throw new Error(EXCHANGE_RATE_MSGS.PRIVATBANK_FETCH_FAILED);
+    }
+
+    const data = (await response.json()) as IPrivatBankRate[];
+
+    return data
+      .filter((item) => item.base_ccy === ECurrency.UAH)
+      .map((item) => ({
+        currency: item.ccy as ECurrency,
+        provider: EExchangeRateProvider.PrivatBank,
+        rate: Number.parseFloat(item.buy),
+      }));
+  } catch (error) {
+    if (error instanceof Error && error.message === EXCHANGE_RATE_MSGS.PRIVATBANK_FETCH_FAILED) {
+      throw error;
+    }
     throw new Error(EXCHANGE_RATE_MSGS.PRIVATBANK_FETCH_FAILED);
   }
-
-  const data = (await response.json()) as IPrivatBankRate[];
-
-  return data
-    .filter((item) => item.base_ccy === ECurrency.UAH)
-    .map((item) => ({
-      currency: item.ccy as ECurrency,
-      provider: EExchangeRateProvider.PrivatBank,
-      rate: Number.parseFloat(item.buy),
-    }));
 }
 
 async function fetchMonobankRates(): Promise<IExchangeRate[]> {
-  const response = await fetch(MONOBANK_API_URL, {
-    next: { revalidate: exchangeRateCacheSeconds },
-  });
+  try {
+    const response = await fetch(MONOBANK_API_URL, {
+      next: { revalidate: exchangeRateCacheSeconds },
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      throw new Error(EXCHANGE_RATE_MSGS.MONOBANK_FETCH_FAILED);
+    }
+
+    const data = (await response.json()) as IMonobankRate[];
+
+    return data
+      .filter(
+        (item) =>
+          item.currencyCodeB === CURRENCY_CODES.UAH &&
+          (item.currencyCodeA === CURRENCY_CODES.USD || item.currencyCodeA === CURRENCY_CODES.EUR)
+      )
+      .map((item) => {
+        const currency = item.currencyCodeA === CURRENCY_CODES.USD ? ECurrency.USD : ECurrency.EUR;
+        return {
+          currency,
+          provider: EExchangeRateProvider.Monobank,
+          rate: item.rateBuy,
+        };
+      });
+  } catch (error) {
+    if (error instanceof Error && error.message === EXCHANGE_RATE_MSGS.MONOBANK_FETCH_FAILED) {
+      throw error;
+    }
     throw new Error(EXCHANGE_RATE_MSGS.MONOBANK_FETCH_FAILED);
   }
-
-  const data = (await response.json()) as IMonobankRate[];
-
-  return data
-    .filter(
-      (item) =>
-        item.currencyCodeB === CURRENCY_CODES.UAH &&
-        (item.currencyCodeA === CURRENCY_CODES.USD || item.currencyCodeA === CURRENCY_CODES.EUR)
-    )
-    .map((item) => {
-      const currency = item.currencyCodeA === CURRENCY_CODES.USD ? ECurrency.USD : ECurrency.EUR;
-      return {
-        currency,
-        provider: EExchangeRateProvider.Monobank,
-        rate: item.rateBuy,
-      };
-    });
 }
 
 export async function getExchangeRates(
@@ -92,14 +106,10 @@ export async function getExchangeRates(
 ): Promise<IExchangeRate[]> {
   const selectedProvider = mapProvider(provider);
 
-  try {
-    if (selectedProvider === EExchangeRateProvider.Monobank) {
-      return await fetchMonobankRates();
-    }
-    return await fetchPrivatBankRates();
-  } catch {
-    return [];
+  if (selectedProvider === EExchangeRateProvider.Monobank) {
+    return await fetchMonobankRates();
   }
+  return await fetchPrivatBankRates();
 }
 
 export async function getExchangeRate(

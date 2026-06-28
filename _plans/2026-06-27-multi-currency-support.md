@@ -32,6 +32,7 @@ The application currently stores transaction amounts as a single numeric value a
 - [x] Auto-fill the exchange rate input when a currency is selected, defaulting to PrivatBank.
 - [x] Update the exchange rate when the selected bank changes.
 - [x] Store the USD-equivalent amount when the transaction is submitted.
+- [x] (Deferred) Add a user-level default bank preference in settings; kept as a future enhancement.
 
 ### Phase 4 — Dashboard and Server Actions
 

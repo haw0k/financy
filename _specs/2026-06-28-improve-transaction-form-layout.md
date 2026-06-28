@@ -33,18 +33,18 @@ Redesign the transaction creation/editing form in the dashboard to improve reada
 
 ## Acceptance Criteria
 
-- [ ] Transaction form is visually divided into three labeled sections: Amount, Details, Date & note.
-- [ ] Each section is wrapped in a bordered container with a section title inside the container.
-- [ ] Amount section shows `Amount`, `Currency`, and `Amount in USD` in one desktop row.
-- [ ] Exchange-rate provider is no longer a full-width form field.
-- [ ] Provider and editable exchange rate appear as a compact row directly under `Amount in USD`.
-- [ ] Provider can be switched via a small inline select in the compact row.
-- [ ] `Type` is rendered as a toggle group with `Expense` and `Income` options instead of a dropdown.
-- [ ] Form labels use smaller, secondary-colored styling.
-- [ ] Existing auto-fetch of exchange rates and USD-amount calculation continues to work.
-- [ ] Form submission, validation, create, and update flows remain unchanged.
-- [ ] Layout is usable on mobile widths.
-- [ ] `pnpm lint`, `pnpm type-check`, and `pnpm test:run` pass.
+- [x] Transaction form is visually divided into three labeled sections: Amount, Details, Date & note.
+- [x] Each section is wrapped in a bordered container with a section title inside the container.
+- [x] Amount section shows `Amount`, `Currency`, and `Amount in USD` in one desktop row.
+- [x] Exchange-rate provider is no longer a full-width form field.
+- [x] Provider and editable exchange rate appear as a compact row directly under `Amount in USD`.
+- [x] Provider can be switched via a small inline select in the compact row.
+- [x] `Type` is rendered as a toggle group with `Expense` and `Income` options instead of a dropdown.
+- [x] Form labels use smaller, secondary-colored styling.
+- [x] Existing auto-fetch of exchange rates and USD-amount calculation continues to work.
+- [x] Form submission, validation, create, and update flows remain unchanged.
+- [x] Layout is usable on mobile widths.
+- [x] `pnpm lint`, `pnpm type-check`, and `pnpm test:run` pass.
 
 ## Open Questions
 

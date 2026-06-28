@@ -40,17 +40,17 @@ Add support for multiple currencies in the application. The system should store 
 
 ## Acceptance Criteria
 
-- [ ] A currencies table exists with UAH, USD, and EUR records.
-- [ ] Transactions table has columns for payment currency, exchange rate to USD, and USD-equivalent amount.
-- [ ] Transaction creation form includes currency and bank selectors.
-- [ ] Currency selector displays ₴ for UAH, $ for USD, and € for EUR.
-- [ ] Selecting a currency auto-fills the exchange-rate-to-USD input using the current rate from the selected bank (PrivatBank by default).
-- [ ] Selecting UAH fetches and uses the USD buy rate from the chosen bank.
-- [ ] Selecting EUR fetches and uses the EUR buy rate from the chosen bank.
-- [ ] USD transactions keep exchange rate as 1 and USD amount equal to the entered amount.
-- [ ] Dashboard totals, charts, and analytics use the stored USD-equivalent amounts.
-- [ ] Exchange rates are fetched from PrivatBank and Monobank public APIs based on the selected bank.
-- [ ] The original transaction currency, exchange rate, and USD amount are persisted and remain unchanged after creation.
+- [x] A currencies table exists with UAH, USD, and EUR records.
+- [x] Transactions table has columns for payment currency, exchange rate to USD, and USD-equivalent amount.
+- [x] Transaction creation form includes currency and bank selectors.
+- [x] Currency selector displays ₴ for UAH, $ for USD, and € for EUR.
+- [x] Selecting a currency auto-fills the exchange-rate-to-USD input using the current rate from the selected bank (PrivatBank by default).
+- [x] Selecting UAH fetches and uses the USD buy rate from the chosen bank.
+- [x] Selecting EUR fetches and uses the EUR buy rate from the chosen bank.
+- [x] USD transactions keep exchange rate as 1 and USD amount equal to the entered amount.
+- [x] Dashboard totals, charts, and analytics use the stored USD-equivalent amounts.
+- [x] Exchange rates are fetched from PrivatBank and Monobank public APIs based on the selected bank.
+- [x] The original transaction currency, exchange rate, and USD amount are persisted and remain unchanged after creation.
 
 ## Open Questions
 
@@ -61,6 +61,7 @@ Add support for multiple currencies in the application. The system should store 
 - Should the currencies table be seeded via migration or application startup script? application startup script
 - Should exchange rates be recorded with a timestamp separate from the transaction date? no
 - Should the exchange rate input remain editable after it is auto-filled from a bank API? yes
+- Should there be a user-level default bank preference in the settings page? Deferred — not required for the initial multi-currency release. PrivatBank remains the hardcoded default provider.
 
 ## Testing Guidelines
 

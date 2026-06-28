@@ -21,13 +21,20 @@ export async function getExchangeRatesAction(
     return { isSuccess: false, error: authResult.error };
   }
 
-  const rates = await getExchangeRates(provider);
+  try {
+    const rates = await getExchangeRates(provider);
 
-  if (!rates.length) {
-    return { isSuccess: false, error: EXCHANGE_RATE_MSGS.RATE_NOT_FOUND };
+    if (!rates.length) {
+      return { isSuccess: false, error: EXCHANGE_RATE_MSGS.RATE_NOT_FOUND };
+    }
+
+    return { isSuccess: true, data: rates };
+  } catch (error) {
+    return {
+      isSuccess: false,
+      error: error instanceof Error ? error.message : EXCHANGE_RATE_MSGS.RATE_NOT_FOUND,
+    };
   }
-
-  return { isSuccess: true, data: rates };
 }
 
 export async function getExchangeRateAction(
@@ -43,11 +50,18 @@ export async function getExchangeRateAction(
     return { isSuccess: false, error: authResult.error };
   }
 
-  const rate = await getExchangeRate(currency, provider);
+  try {
+    const rate = await getExchangeRate(currency, provider);
 
-  if (rate === null) {
-    return { isSuccess: false, error: EXCHANGE_RATE_MSGS.RATE_NOT_FOUND };
+    if (rate === null) {
+      return { isSuccess: false, error: EXCHANGE_RATE_MSGS.RATE_NOT_FOUND };
+    }
+
+    return { isSuccess: true, data: rate };
+  } catch (error) {
+    return {
+      isSuccess: false,
+      error: error instanceof Error ? error.message : EXCHANGE_RATE_MSGS.RATE_NOT_FOUND,
+    };
   }
-
-  return { isSuccess: true, data: rate };
 }

@@ -1,17 +1,18 @@
 import { describe, expect, it, vi } from 'vitest';
 import { convertToUsd, getExchangeRate, getExchangeRates } from '@/lib/exchange-rate';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
+import { EXCHANGE_RATE_MSGS } from '@/messages';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 describe('exchange rate service', () => {
-  it('returns empty array when PrivatBank API fails', async () => {
+  it('throws provider-specific error when PrivatBank API fails', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-    const rates = await getExchangeRates(EExchangeRateProvider.PrivatBank);
-
-    expect(rates).toEqual([]);
+    await expect(getExchangeRates(EExchangeRateProvider.PrivatBank)).rejects.toThrow(
+      EXCHANGE_RATE_MSGS.PRIVATBANK_FETCH_FAILED
+    );
   });
 
   it('parses PrivatBank USD and EUR buy rates', async () => {

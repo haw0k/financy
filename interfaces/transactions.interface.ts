@@ -1,9 +1,11 @@
+import { EExchangeRateProvider } from '@/enums';
+
 export interface ITransaction {
   id: string;
   amount: number;
   currency_id: string;
   exchange_rate: number;
-  rate_provider: string;
+  rate_provider: EExchangeRateProvider;
   amount_usd: number;
   type: 'income' | 'expense';
   date: string;

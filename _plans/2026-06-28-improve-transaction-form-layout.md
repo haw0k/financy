@@ -53,38 +53,38 @@ All server-action logic in `app/actions/transactions.ts` and the `transactionSch
 
 ### Phase 1 — Restructure the form layout
 
-- [ ] Replace the single `md:grid-cols-2` wrapper with three semantic sections separated by `Separator`.
-- [ ] Wrap each section in a bordered container (`border rounded-lg p-4 space-y-4`).
-- [ ] Section **Amount**:
+- [x] Replace the single `md:grid-cols-2` wrapper with three semantic sections separated by `Separator`.
+- [x] Wrap each section in a bordered container (`border rounded-lg p-4 space-y-4`).
+- [x] Section **Amount**:
   - Section title inside the container.
   - Three-column desktop row: `Amount` input, `Currency` select, `Amount in USD` input (read-only).
   - Compact inline row under `Amount in USD` containing a small provider `Select` and an editable exchange-rate `Input`.
-- [ ] Section **Details**:
+- [x] Section **Details**:
   - Section title inside the container.
   - `Type` toggle group (`Expense` / `Income`).
   - `Category` select (if categories exist).
   - `Receiver` select (if receivers exist).
-- [ ] Section **Date & note**:
+- [x] Section **Date & note**:
   - Section title inside the container.
   - `Date` picker.
   - `Description` input (full width).
 
 ### Phase 2 — Apply visual hierarchy
 
-- [ ] Add `text-xs text-muted-foreground` styling to all field labels.
-- [ ] Add section headings (`text-sm font-medium text-foreground`).
-- [ ] Ensure responsive behavior for the three-column Amount row (stack or wrap on narrow screens).
-- [ ] Hide or disable the exchange-rate inline input when USD is selected.
+- [x] Add `text-xs text-muted-foreground` styling to all field labels.
+- [x] Add section headings (`text-sm font-medium text-foreground`).
+- [x] Ensure responsive behavior for the three-column Amount row (stack or wrap on narrow screens).
+- [x] Hide or disable the exchange-rate inline input when USD is selected.
 
 ### Phase 3 — Verify behavior and quality
 
-- [ ] Confirm exchange-rate auto-fetch still triggers on currency/provider changes.
-- [ ] Confirm manual exchange-rate edits are preserved.
-- [ ] Run `pnpm lint`.
-- [ ] Run `pnpm type-check`.
-- [ ] Run `pnpm test:run`.
-- [ ] Run `pnpm build`.
-- [ ] Update `_specs/_description.md` and `_plans/_description.md` to mark the feature complete.
+- [x] Confirm exchange-rate auto-fetch still triggers on currency/provider changes.
+- [x] Confirm manual exchange-rate edits are preserved.
+- [x] Run `pnpm lint`.
+- [x] Run `pnpm type-check`.
+- [x] Run `pnpm test:run`.
+- [x] Run `pnpm build`.
+- [x] Update `_specs/_description.md` and `_plans/_description.md` to mark the feature complete.
 
 ## Risks & Notes
 
