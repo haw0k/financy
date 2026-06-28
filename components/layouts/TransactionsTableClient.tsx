@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC, useState, useTransition } from 'react';
+import { type FC, useEffect, useState, useTransition } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
@@ -42,6 +42,10 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
   const [categories] = useState<ICategory[]>(initialCategories);
   const [categoryTypes] = useState<ICategoryType[]>(initialCategoryTypes);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    setTransactions(initialTransactions);
+  }, [initialTransactions]);
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -98,48 +102,8 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
         <CardContent className="flex flex-col gap-6">
           {isShowForm && (
             <TransactionForm
-              onSuccess={async (input) => {
+              onSuccess={async () => {
                 setIsShowForm(false);
-                if (editingId) {
-                  setTransactions(
-                    transactions.map((t) =>
-                      t.id === editingId
-                        ? {
-                            ...t,
-                            amount: input.amount,
-                            currency_id: input.currencyId,
-                            exchange_rate: input.exchangeRate,
-                            rate_provider: input.rateProvider ?? t.rate_provider,
-                            amount_usd: input.amountUsd,
-                            type: input.type,
-                            date: input.date,
-                            description: input.description,
-                            category_id: input.categoryId ?? null,
-                            receiver_id: input.receiverId || t.receiver_id,
-                          }
-                        : t
-                    )
-                  );
-                } else {
-                  // Optimistic add with temp ID; router.refresh() will correct it
-                  setTransactions([
-                    {
-                      id: `temp-${Date.now()}`,
-                      amount: input.amount,
-                      currency_id: input.currencyId,
-                      exchange_rate: input.exchangeRate,
-                      rate_provider: input.rateProvider || '',
-                      amount_usd: input.amountUsd,
-                      type: input.type,
-                      date: input.date,
-                      description: input.description,
-                      category_id: input.categoryId ?? null,
-                      sender_id: '',
-                      receiver_id: input.receiverId || '',
-                    },
-                    ...transactions,
-                  ]);
-                }
                 setEditingId(null);
                 // Re-render server components to fetch fresh data
                 router.refresh();

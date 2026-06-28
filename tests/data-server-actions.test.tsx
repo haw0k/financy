@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CACHE_TAGS, mutationRevalidateProfile } from '@/config';
 import { EExchangeRateProvider } from '@/enums';
@@ -923,6 +923,7 @@ describe('cache revalidation', () => {
       CACHE_TAGS.dashboard,
       mutationRevalidateProfile
     );
+    expect(vi.mocked(revalidatePath)).toHaveBeenCalledWith('/dashboard/transactions');
   });
 
   it('updateTransactionAction revalidates transactions and dashboard', async () => {
@@ -964,6 +965,7 @@ describe('cache revalidation', () => {
       CACHE_TAGS.dashboard,
       mutationRevalidateProfile
     );
+    expect(vi.mocked(revalidatePath)).toHaveBeenCalledWith('/dashboard/transactions');
   });
 
   it('deleteTransactionAction revalidates transactions and dashboard', async () => {
@@ -989,5 +991,6 @@ describe('cache revalidation', () => {
       CACHE_TAGS.dashboard,
       mutationRevalidateProfile
     );
+    expect(vi.mocked(revalidatePath)).toHaveBeenCalledWith('/dashboard/transactions');
   });
 });

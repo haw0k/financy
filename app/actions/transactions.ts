@@ -1,6 +1,6 @@
 'use server';
 
-import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache';
+import { cacheTag, cacheLife as nextCacheLife, revalidatePath, revalidateTag } from 'next/cache';
 import { mapSupabaseError } from '@/lib/db-errors';
 import { convertToUsd } from '@/lib/exchange-rate';
 import { requireApprovedUser } from '@/lib/require-auth';
@@ -53,10 +53,6 @@ export async function getTransactionsDataAction(): Promise<
     categoryTypes: ICategoryType[];
   }>
 > {
-  'use cache: private';
-  cacheTag(CACHE_TAGS.transactions, CACHE_TAGS.categories, CACHE_TAGS.categoryTypes);
-  nextCacheLife(dashboardCacheLife);
-
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };
@@ -190,6 +186,7 @@ export async function createTransactionAction(
 
   revalidateTag(CACHE_TAGS.transactions, mutationRevalidateProfile);
   revalidateTag(CACHE_TAGS.dashboard, mutationRevalidateProfile);
+  revalidatePath('/dashboard/transactions');
 
   return { isSuccess: true, data: undefined };
 }
@@ -271,6 +268,7 @@ export async function updateTransactionAction({
 
   revalidateTag(CACHE_TAGS.transactions, mutationRevalidateProfile);
   revalidateTag(CACHE_TAGS.dashboard, mutationRevalidateProfile);
+  revalidatePath('/dashboard/transactions');
 
   return { isSuccess: true, data: undefined };
 }
@@ -306,6 +304,7 @@ export async function deleteTransactionAction({
 
   revalidateTag(CACHE_TAGS.transactions, mutationRevalidateProfile);
   revalidateTag(CACHE_TAGS.dashboard, mutationRevalidateProfile);
+  revalidatePath('/dashboard/transactions');
 
   return { isSuccess: true, data: undefined };
 }
