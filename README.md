@@ -275,7 +275,7 @@ Deploy to Vercel with one click:
 - [ ] Recurring transactions
 - [ ] Real-time notifications
 - [ ] CSV/PDF export
-- [ ] Multi-currency support
+- [x] Multi-currency support
 
 ## License
 
