@@ -95,9 +95,9 @@ All server-action logic in `app/actions/transactions.ts` and the `transactionSch
 
 ## Definition of Done
 
-- [ ] Form matches the three-section layout described in the spec.
-- [ ] `Type` is a toggle group, `Rate provider` is not a full-width field, and labels are smaller/secondary.
-- [ ] Exchange-rate provider switch and editable rate are available in the compact row under `Amount in USD`.
-- [ ] Auto-fetch, validation, create, and update flows still work.
-- [ ] All quality checks (`lint`, `type-check`, `test:run`, `build`) pass.
-- [ ] Description index files are updated.
+- [x] Form matches the three-section layout described in the spec.
+- [x] `Type` is a toggle group, `Rate provider` is not a full-width field, and labels are smaller/secondary.
+- [x] Exchange-rate provider switch and editable rate are available in the compact row under `Amount in USD`.
+- [x] Auto-fetch, validation, create, and update flows still work.
+- [x] All quality checks (`lint`, `type-check`, `test:run`, `build`) pass.
+- [x] Description index files are updated.
