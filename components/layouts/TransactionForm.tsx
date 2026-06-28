@@ -261,7 +261,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
               disabled
             />
             {!isUsd && currencyCode && (
-              <div className="flex items-center justify-end gap-2 pt-1">
+              <div className="flex items-center justify-end gap-4 pt-1">
                 <Label htmlFor="rateProvider" className="sr-only">
                   Rate provider
                 </Label>
@@ -424,7 +424,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
         </div>
       </fieldset>
 
-      <div className="flex gap-2 pt-2">
+      <div className="flex gap-4 pt-2">
         <Button type="submit" disabled={isPending || !formData.amount}>
           {isPending ? 'Saving...' : editingId ? 'Update Transaction' : 'Add Transaction'}
         </Button>
