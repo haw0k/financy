@@ -61,7 +61,7 @@ Browser → Supabase Auth → proxy.ts / middleware.ts → Protected Routes (das
 - `hooks/` - Custom hooks (useMobile, useHandler)
 - `enums/` - TypeScript enums (ERole, EProfileStatus)
 - `interfaces/` - TypeScript interfaces (transactions, categories, stats)
-- `scripts/001_init_database.sql` - Database schema
+- `scripts/001_init_database.sql` - Single development database setup script. It drops all application tables before recreating them; use only in dev/test environments. RLS is intentionally disabled. For production, apply changes incrementally via Supabase migrations instead of dropping live tables.
 - `tests/` - Vitest test files
 - `_specs/` - Feature specification documents
 - `_plans/` - Implementation plans

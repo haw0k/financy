@@ -1,4 +1,7 @@
--- Drop tables in reverse dependency order (for idempotent re-run)
+-- Drop tables in reverse dependency order (for idempotent re-run on a fresh database).
+-- IMPORTANT: This script is the single source of truth for local/development database setup.
+-- It intentionally drops all application tables before recreating them; use only in dev/test
+-- environments where data loss is acceptable.
 drop table if exists public.transactions;
 drop table if exists public.currencies;
 drop table if exists public.categories;

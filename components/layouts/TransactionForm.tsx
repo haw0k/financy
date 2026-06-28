@@ -14,7 +14,7 @@ import {
   ToggleGroupItem,
 } from '@/lib/shadcn';
 import { DatePicker, showError } from '@/components/ui';
-import { convertToUsd, mapProvider } from '@/lib/exchange-rate';
+import { convertToUsd, getDisplayRate, mapProvider } from '@/lib/exchange-rate';
 import { withTimeout } from '@/lib/with-timeout';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
 import { getExchangeRateAction } from '@/app/actions/exchange-rate';
@@ -25,6 +25,7 @@ import {
 } from '@/app/actions/transactions';
 import { TRANSACTION_MSGS } from '@/messages';
 import type { ICategory, ICurrency, ITransaction } from '@/interfaces';
+import type { TExchangeRateProvider } from '@/types';
 
 interface ITransactionForm {
   onSuccess: (input: {
@@ -52,10 +53,6 @@ function getCurrencyCodeById(currencies: ICurrency[], id: string): string | null
   return currencies.find((c) => c.id === id)?.code ?? null;
 }
 
-function getCurrencyIdByCode(currencies: ICurrency[], code: string): string | undefined {
-  return currencies.find((c) => c.code === code)?.id;
-}
-
 export const TransactionForm: FC<ITransactionForm> = ({
   onSuccess,
   onCancel,
@@ -67,19 +64,16 @@ export const TransactionForm: FC<ITransactionForm> = ({
   const [formData, setFormData] = useState({
     amount: editingTransaction ? String(editingTransaction.amount) : '',
     currencyId: editingTransaction?.currency_id ?? currencies[0]?.id ?? '',
-    // Store the *inverse* rate shown to the user (e.g. 40 UAH per 1 USD).
-    // The actual USD-per-unit rate sent to the server is derived on submit.
+    // The display rate is always shown with 4 decimals and is the inverse for UAH.
     displayRate: editingTransaction
       ? String(
-          Number(
-            (editingTransaction.currency_id === getCurrencyIdByCode(currencies, ECurrency.UAH)
-              ? 1 / editingTransaction.exchange_rate
-              : editingTransaction.exchange_rate
-            ).toFixed(4)
+          getDisplayRate(
+            editingTransaction.exchange_rate,
+            getCurrencyCodeById(currencies, editingTransaction.currency_id) as ECurrency
           )
         )
       : '1',
-    rateProvider: DEFAULT_PROVIDER as string,
+    rateProvider: (editingTransaction?.rate_provider ?? DEFAULT_PROVIDER) as TExchangeRateProvider,
     type: editingTransaction?.type ?? ('expense' as 'income' | 'expense'),
     description: editingTransaction?.description ?? '',
     date: editingTransaction?.date ?? new Date().toISOString().split('T')[0],
@@ -122,10 +116,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
       const result = await getExchangeRateAction(currencyCode as ECurrency, formData.rateProvider);
       if (isCancelled) return;
       if (result.isSuccess) {
-        // For UAH show units per 1 USD; for other currencies show USD per 1 unit.
-        const serverRate = result.data ?? 1;
-        const isUah = currencyCode === ECurrency.UAH;
-        const displayRate = Number((isUah ? 1 / serverRate : serverRate).toFixed(4));
+        const displayRate = getDisplayRate(result.data ?? 1, currencyCode as ECurrency);
         setFormData((prev) => ({ ...prev, displayRate: String(displayRate) }));
       } else if (result.error) {
         showError('Exchange rate', result.error);
@@ -145,7 +136,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
     const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
     const isUah = currencyCode === ECurrency.UAH;
     const displayRate = Number(Number.parseFloat(formData.displayRate).toFixed(4));
-    const exchangeRate = Number((isUah ? 1 / displayRate : displayRate).toFixed(6));
+    const exchangeRate = Number((isUah ? 1 / displayRate : displayRate).toFixed(4));
     const amountUsd = currencyCode === ECurrency.USD ? amount : convertToUsd(amount, exchangeRate);
 
     const input = {
@@ -268,7 +259,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
                 <Select
                   value={formData.rateProvider}
                   onValueChange={(v) => {
-                    setFormData({ ...formData, rateProvider: v });
+                    setFormData({ ...formData, rateProvider: v as TExchangeRateProvider });
                   }}
                 >
                   <SelectTrigger

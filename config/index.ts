@@ -2,6 +2,7 @@ export { authConfig } from './auth.config';
 export {
   CACHE_TAGS,
   dashboardCacheLife,
+  exchangeRateCacheSeconds,
   mutationRevalidateProfile,
 } from './cache.config';
 export { env, getSupabaseRedirectUrl } from './env.config';

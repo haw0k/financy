@@ -1,5 +1,7 @@
+import { exchangeRateCacheSeconds } from '@/config';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
 import { EXCHANGE_RATE_MSGS } from '@/messages';
+import type { TExchangeRateProvider } from '@/types';
 
 export interface IExchangeRate {
   currency: ECurrency;
@@ -31,11 +33,7 @@ const CURRENCY_CODES: Record<ECurrency, number> = {
 const PRIVATBANK_API_URL = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5';
 const MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency';
 
-// Exchange rates change roughly once per day; cache fetch responses for several hours
-// to reduce API calls while still allowing updates when banks publish new rates.
-const RATE_CACHE_SECONDS = 4 * 60 * 60;
-
-export function mapProvider(value: string): EExchangeRateProvider {
+export function mapProvider(value: TExchangeRateProvider): EExchangeRateProvider {
   if (value === EExchangeRateProvider.Monobank) {
     return EExchangeRateProvider.Monobank;
   }
@@ -44,7 +42,7 @@ export function mapProvider(value: string): EExchangeRateProvider {
 
 async function fetchPrivatBankRates(): Promise<IExchangeRate[]> {
   const response = await fetch(PRIVATBANK_API_URL, {
-    next: { revalidate: RATE_CACHE_SECONDS },
+    next: { revalidate: exchangeRateCacheSeconds },
   });
 
   if (!response.ok) {
@@ -64,7 +62,7 @@ async function fetchPrivatBankRates(): Promise<IExchangeRate[]> {
 
 async function fetchMonobankRates(): Promise<IExchangeRate[]> {
   const response = await fetch(MONOBANK_API_URL, {
-    next: { revalidate: RATE_CACHE_SECONDS },
+    next: { revalidate: exchangeRateCacheSeconds },
   });
 
   if (!response.ok) {
@@ -90,7 +88,7 @@ async function fetchMonobankRates(): Promise<IExchangeRate[]> {
 }
 
 export async function getExchangeRates(
-  provider: string = EExchangeRateProvider.PrivatBank
+  provider: TExchangeRateProvider = EExchangeRateProvider.PrivatBank
 ): Promise<IExchangeRate[]> {
   const selectedProvider = mapProvider(provider);
 
@@ -106,7 +104,7 @@ export async function getExchangeRates(
 
 export async function getExchangeRate(
   currency: ECurrency,
-  provider: string = EExchangeRateProvider.PrivatBank
+  provider: TExchangeRateProvider = EExchangeRateProvider.PrivatBank
 ): Promise<number | null> {
   if (currency === ECurrency.USD) {
     return 1;
@@ -131,6 +129,18 @@ export async function getExchangeRate(
   }
 
   return Number((currencyRate.rate / usdRate.rate).toFixed(4));
+}
+
+/**
+ * Returns the inverse rate for display purposes.
+ * - For UAH: how many units are needed to buy 1 USD (e.g. 41.50).
+ * - For other currencies: the USD-per-unit rate directly (e.g. 1.07 for EUR).
+ */
+export function getDisplayRate(serverRate: number, currency: ECurrency): number {
+  if (currency === ECurrency.UAH) {
+    return Number((1 / serverRate).toFixed(4));
+  }
+  return Number(serverRate.toFixed(4));
 }
 
 export function convertToUsd(amount: number, rate: number): number {

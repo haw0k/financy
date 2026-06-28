@@ -7,10 +7,10 @@ import { CACHE_TAGS, dashboardCacheLife } from '@/config';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
 import type { IExchangeRate } from '@/lib/exchange-rate';
 import { EXCHANGE_RATE_MSGS } from '@/messages';
-import type { TActionResult } from '@/types';
+import type { TActionResult, TExchangeRateProvider } from '@/types';
 
 export async function getExchangeRatesAction(
-  provider: string = EExchangeRateProvider.PrivatBank
+  provider: TExchangeRateProvider = EExchangeRateProvider.PrivatBank
 ): Promise<TActionResult<IExchangeRate[]>> {
   'use cache: private';
   cacheTag(CACHE_TAGS.exchangeRates);
@@ -32,7 +32,7 @@ export async function getExchangeRatesAction(
 
 export async function getExchangeRateAction(
   currency: ECurrency,
-  provider: string = EExchangeRateProvider.PrivatBank
+  provider: TExchangeRateProvider = EExchangeRateProvider.PrivatBank
 ): Promise<TActionResult<number>> {
   'use cache: private';
   cacheTag(CACHE_TAGS.exchangeRates);

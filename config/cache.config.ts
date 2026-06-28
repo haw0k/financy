@@ -14,6 +14,13 @@ export const CACHE_TAGS = {
 } as const;
 
 /**
+ * Exchange rates change roughly once per day. The bank API `fetch()` calls are cached for 4 hours,
+ * and the wrapping Next.js cache tags use `dashboardCacheLife` (30s stale/revalidate). Currently no
+ * mutation manually invalidates `exchangeRates` because fresh rates are not expected within a day.
+ */
+export const exchangeRateCacheSeconds = 4 * 60 * 60;
+
+/**
  * Shared cache lifetime used for all dashboard data. A single, simple TTL keeps the caching
  * implementation easy to reason about while still reducing redundant database queries when
  * navigating between pages.
