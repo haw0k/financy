@@ -200,10 +200,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
   })();
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mb-6 space-y-4 rounded-xl border bg-card p-6 shadow-sm"
-    >
+    <form onSubmit={handleSubmit} className="mb-6 space-y-4 rounded-xl border bg-card p-6">
       <fieldset className="min-w-0 space-y-4 rounded-lg border px-4 pb-4">
         <legend className="px-2 text-sm font-medium text-foreground">Amount</legend>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -264,7 +261,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
               disabled
             />
             {!isUsd && currencyCode && (
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center justify-end gap-2 pt-1">
                 <Label htmlFor="rateProvider" className="sr-only">
                   Rate provider
                 </Label>
@@ -275,7 +272,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
                   }}
                 >
                   <SelectTrigger
-                    className="h-6 w-fit gap-1 border-none bg-secondary px-2 text-xs hover:bg-secondary/80"
+                    className="h-8 w-fit gap-1 border-none bg-secondary px-2 text-xs hover:bg-secondary/80"
                     id="rateProvider"
                   >
                     <SelectValue />
@@ -289,21 +286,25 @@ export const TransactionForm: FC<ITransactionForm> = ({
                 <Label htmlFor="inverseRate" className="sr-only">
                   Exchange rate to USD
                 </Label>
-                <Input
-                  id="inverseRate"
-                  type="number"
-                  step="0.0001"
-                  min="0"
-                  placeholder="1.0"
-                  value={formData.displayRate}
-                  disabled={isLoadingRate}
-                  onChange={(e) => {
-                    setFormData({ ...formData, displayRate: e.target.value });
-                  }}
-                  required
-                  className="h-8 w-28 text-sm"
-                />
-                <span className="text-xs text-muted-foreground">{rateLabel}</span>
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs text-muted-foreground">
+                    {rateLabel}
+                  </span>
+                  <Input
+                    id="inverseRate"
+                    type="number"
+                    step="0.0001"
+                    min="0"
+                    placeholder="1.0"
+                    value={formData.displayRate}
+                    disabled={isLoadingRate}
+                    onChange={(e) => {
+                      setFormData({ ...formData, displayRate: e.target.value });
+                    }}
+                    required
+                    className="h-8 w-32 pl-12 pr-2 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
               </div>
             )}
           </div>

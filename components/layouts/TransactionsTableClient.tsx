@@ -182,7 +182,12 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                   {filteredTransactions.map((transaction) => (
                     <TableRow key={transaction.id}>
                       <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
-                      <TableCell>{transaction.description || '-'}</TableCell>
+                      <TableCell
+                        className="max-w-[200px] truncate"
+                        title={transaction.description ?? undefined}
+                      >
+                        {transaction.description || '-'}
+                      </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {getCategoryDisplayName(transaction.category_id)}
                       </TableCell>
@@ -204,7 +209,8 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                             transaction.type === 'income' ? 'text-primary' : 'text-destructive'
                           }
                         >
-                          {transaction.type === 'income' ? '+' : '-'}$
+                          {transaction.type === 'income' ? '+' : '-'}
+                          {currencies.find((c) => c.id === transaction.currency_id)?.symbol ?? '$'}
                           {transaction.amount.toFixed(2)}
                         </span>
                       </TableCell>
