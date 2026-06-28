@@ -133,7 +133,7 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
                       type: input.type,
                       date: input.date,
                       description: input.description,
-                      category_id: null,
+                      category_id: input.categoryId ?? null,
                       sender_id: '',
                       receiver_id: input.receiverId || '',
                     },

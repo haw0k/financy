@@ -57,7 +57,7 @@ describe('exchange rate service', () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('returns correct UAH buy rate for USD from selected provider', async () => {
+  it('returns USD-per-unit rate for UAH from selected provider', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => [
@@ -68,10 +68,24 @@ describe('exchange rate service', () => {
 
     const rate = await getExchangeRate(ECurrency.UAH, EExchangeRateProvider.PrivatBank);
 
-    expect(rate).toBe(41.5);
+    expect(rate).toBeCloseTo(1 / 41.5, 10);
   });
 
-  it('returns null when UAH rate is not available from provider', async () => {
+  it('returns USD-per-unit cross-rate for EUR from selected provider', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        { ccy: 'USD', base_ccy: 'UAH', buy: '41.50', sale: '42.00' },
+        { ccy: 'EUR', base_ccy: 'UAH', buy: '44.20', sale: '45.00' },
+      ],
+    });
+
+    const rate = await getExchangeRate(ECurrency.EUR, EExchangeRateProvider.PrivatBank);
+
+    expect(rate).toBeCloseTo(44.2 / 41.5, 10);
+  });
+
+  it('returns null when USD rate is missing for cross-rate', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => [{ ccy: 'EUR', base_ccy: 'UAH', buy: '44.20', sale: '45.00' }],
@@ -82,8 +96,20 @@ describe('exchange rate service', () => {
     expect(rate).toBeNull();
   });
 
+  it('returns null when currency rate is missing for cross-rate', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ ccy: 'USD', base_ccy: 'UAH', buy: '41.50', sale: '42.00' }],
+    });
+
+    const rate = await getExchangeRate(ECurrency.EUR, EExchangeRateProvider.PrivatBank);
+
+    expect(rate).toBeNull();
+  });
+
   it('converts amount to USD using exchange rate', () => {
-    expect(convertToUsd(1000, 40)).toBe(25);
+    expect(convertToUsd(1000, 1 / 40)).toBe(25);
     expect(convertToUsd(100, 1)).toBe(100);
+    expect(convertToUsd(100, 44.2 / 41.5)).toBe(106.51);
   });
 });

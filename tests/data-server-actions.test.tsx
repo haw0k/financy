@@ -571,6 +571,96 @@ describe('createTransactionAction', () => {
 
     expect(result.isSuccess).toBe(true);
   });
+
+  it('should return error for invalid currency', async () => {
+    const { createTransactionAction } = await import('@/app/actions/transactions');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'currencies') {
+        return createQueryBuilder(null);
+      }
+      return createQueryBuilder(null);
+    });
+
+    const result = await createTransactionAction({
+      amount: 100,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1,
+      amountUsd: 100,
+      rateProvider: EExchangeRateProvider.PrivatBank,
+      type: 'expense',
+      date: '2026-06-20',
+      description: null,
+    });
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toBe('Invalid currency selected');
+    }
+  });
+
+  it('should return error when USD amount does not match exchange rate', async () => {
+    const { createTransactionAction } = await import('@/app/actions/transactions');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'UAH' });
+      }
+      return createQueryBuilder(null);
+    });
+
+    const result = await createTransactionAction({
+      amount: 1000,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1 / 40,
+      amountUsd: 999,
+      rateProvider: EExchangeRateProvider.PrivatBank,
+      type: 'expense',
+      date: '2026-06-20',
+      description: null,
+    });
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toBe('USD amount does not match the provided exchange rate');
+    }
+  });
+
+  it('should insert UAH transaction with correct USD amount', async () => {
+    const { createTransactionAction } = await import('@/app/actions/transactions');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'UAH' });
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder(null);
+      }
+      return createQueryBuilder(null);
+    });
+
+    const result = await createTransactionAction({
+      amount: 1000,
+      currencyId: '123e4567-e89b-12d3-a456-426614174000',
+      exchangeRate: 1 / 40,
+      amountUsd: 25,
+      rateProvider: EExchangeRateProvider.PrivatBank,
+      type: 'expense',
+      date: '2026-06-20',
+      description: null,
+    });
+
+    expect(result.isSuccess).toBe(true);
+  });
 });
 
 describe('updateTransactionAction', () => {
@@ -608,6 +698,42 @@ describe('updateTransactionAction', () => {
     expect(result.isSuccess).toBe(false);
     if (!result.isSuccess) {
       expect(result.error).toBe('Currency is required');
+    }
+  });
+
+  it('should return error when USD amount does not match exchange rate', async () => {
+    const { updateTransactionAction } = await import('@/app/actions/transactions');
+
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'currencies') {
+        return createQueryBuilder({ code: 'EUR' });
+      }
+      if (table === 'transactions') {
+        return createQueryBuilder([{ id: 't1' }]);
+      }
+      return createQueryBuilder(null);
+    });
+
+    const result = await updateTransactionAction({
+      id: 't1',
+      input: {
+        amount: 100,
+        currencyId: '123e4567-e89b-12d3-a456-426614174000',
+        exchangeRate: 44.2 / 41.5,
+        amountUsd: 50,
+        rateProvider: EExchangeRateProvider.PrivatBank,
+        type: 'expense',
+        date: '2026-06-20',
+        description: null,
+      },
+    });
+
+    expect(result.isSuccess).toBe(false);
+    if (!result.isSuccess) {
+      expect(result.error).toBe('USD amount does not match the provided exchange rate');
     }
   });
 });

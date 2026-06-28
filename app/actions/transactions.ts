@@ -4,13 +4,47 @@ import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache'
 import { mapSupabaseError } from '@/lib/db-errors';
 import { convertToUsd } from '@/lib/exchange-rate';
 import { requireApprovedUser } from '@/lib/require-auth';
+import { createClient } from '@/lib/supabase/server';
 import { CACHE_TAGS, dashboardCacheLife, mutationRevalidateProfile } from '@/config';
-import { EProfileStatus, ERole } from '@/enums';
+import { ECurrency, EProfileStatus, ERole } from '@/enums';
 import { transactionSchema } from '@/schemas';
 import { TRANSACTION_MSGS } from '@/messages';
 import type { TTransactionInput } from '@/schemas';
 import type { ICategory, ICategoryType, ITransaction } from '@/interfaces';
 import type { TActionResult } from '@/types';
+
+type TSupabaseClient = Awaited<ReturnType<typeof createClient>>;
+
+/**
+ * Re-calculates and validates the USD-equivalent amount on the server. This
+ * prevents clients from tampering with `amountUsd` while still allowing them to
+ * edit the exchange rate manually (for example, when a bank API is unavailable).
+ */
+async function validateUsdAmount(
+  supabase: TSupabaseClient,
+  input: TTransactionInput
+): Promise<{ isValid: false; error: string } | { isValid: true }> {
+  const { data: currency, error: currencyError } = await supabase
+    .from('currencies')
+    .select('code')
+    .eq('id', input.currencyId)
+    .maybeSingle();
+
+  if (currencyError) {
+    return { isValid: false, error: mapSupabaseError(currencyError) };
+  }
+  if (!currency) {
+    return { isValid: false, error: TRANSACTION_MSGS.INVALID_CURRENCY };
+  }
+
+  const expectedAmountUsd =
+    currency.code === ECurrency.USD ? input.amount : convertToUsd(input.amount, input.exchangeRate);
+  if (Math.abs(expectedAmountUsd - input.amountUsd) > 0.01) {
+    return { isValid: false, error: TRANSACTION_MSGS.INVALID_USD_AMOUNT };
+  }
+
+  return { isValid: true };
+}
 
 export async function getTransactionsDataAction(): Promise<
   TActionResult<{
@@ -110,26 +144,9 @@ export async function createTransactionAction(
     return { isSuccess: false, error: authResult.error };
   }
 
-  // Recalculate USD amount on the server to prevent client-side tampering
-  const { data: currency, error: currencyError } = await authResult.supabase
-    .from('currencies')
-    .select('code')
-    .eq('id', parsed.data.currencyId)
-    .maybeSingle();
-
-  if (currencyError) {
-    return { isSuccess: false, error: mapSupabaseError(currencyError) };
-  }
-  if (!currency) {
-    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_CURRENCY };
-  }
-
-  const expectedAmountUsd =
-    currency.code === 'USD'
-      ? parsed.data.amount
-      : convertToUsd(parsed.data.amount, parsed.data.exchangeRate);
-  if (Math.abs(expectedAmountUsd - parsed.data.amountUsd) > 0.01) {
-    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_USD_AMOUNT };
+  const validation = await validateUsdAmount(authResult.supabase, parsed.data);
+  if (!validation.isValid) {
+    return { isSuccess: false, error: validation.error };
   }
 
   // Validate receiverId against approved, non-admin receivers
@@ -200,26 +217,9 @@ export async function updateTransactionAction({
     return { isSuccess: false, error: authResult.error };
   }
 
-  // Recalculate USD amount on the server to prevent client-side tampering
-  const { data: currency, error: currencyError } = await authResult.supabase
-    .from('currencies')
-    .select('code')
-    .eq('id', parsed.data.currencyId)
-    .maybeSingle();
-
-  if (currencyError) {
-    return { isSuccess: false, error: mapSupabaseError(currencyError) };
-  }
-  if (!currency) {
-    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_CURRENCY };
-  }
-
-  const expectedAmountUsd =
-    currency.code === 'USD'
-      ? parsed.data.amount
-      : convertToUsd(parsed.data.amount, parsed.data.exchangeRate);
-  if (Math.abs(expectedAmountUsd - parsed.data.amountUsd) > 0.01) {
-    return { isSuccess: false, error: TRANSACTION_MSGS.INVALID_USD_AMOUNT };
+  const validation = await validateUsdAmount(authResult.supabase, parsed.data);
+  if (!validation.isValid) {
+    return { isSuccess: false, error: validation.error };
   }
 
   // Validate receiverId against approved, non-admin receivers.

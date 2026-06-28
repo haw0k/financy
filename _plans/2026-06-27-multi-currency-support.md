@@ -22,7 +22,7 @@ The application currently stores transaction amounts as a single numeric value a
 - [x] Integrate Monobank public exchange rate API.
 - [x] Implement a service that returns the appropriate buy rate for a given currency pair and selected bank.
 - [x] Cache fetched exchange rates for the current day to avoid repeated API calls, since rates change only once per day.
-- [x] Add fallback handling for unavailable or malformed API responses, using cached values when available.
+- [x] Add fallback handling for unavailable or malformed API responses; the UI shows an error and lets the user enter the rate manually.
 
 ### Phase 3 — Transaction Form Updates
 

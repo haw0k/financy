@@ -112,18 +112,27 @@ export async function getExchangeRate(
     return 1;
   }
 
-  // For UAH transactions we need the USD/UAH buy rate; for EUR transactions we need the EUR/UAH buy rate.
+  // The APIs return how many UAH are needed to buy 1 USD/EUR. To get a consistent
+  // "USD per 1 unit of transaction currency" rate we divide by the USD/UAH rate.
   const rates = await getExchangeRates(provider);
-  const targetCode = currency === ECurrency.UAH ? ECurrency.USD : currency;
-  const found = rates.find((rate) => rate.currency === targetCode);
+  const usdRate = rates.find((rate) => rate.currency === ECurrency.USD);
 
-  if (!found) {
+  if (!usdRate) {
     return null;
   }
 
-  return found.rate;
+  if (currency === ECurrency.UAH) {
+    return 1 / usdRate.rate;
+  }
+
+  const currencyRate = rates.find((rate) => rate.currency === currency);
+  if (!currencyRate) {
+    return null;
+  }
+
+  return currencyRate.rate / usdRate.rate;
 }
 
 export function convertToUsd(amount: number, rate: number): number {
-  return Number((amount / rate).toFixed(2));
+  return Number((amount * rate).toFixed(2));
 }
