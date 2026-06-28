@@ -3,6 +3,7 @@
 ## Auth
 
 - [ ] **Rate limiting for auth server actions**: Server actions (`loginAction`, `signUpAction`, `adminLoginAction`, `adminSignUpAction`) have no rate limiting. Consider adding per-IP attempt tracking or middleware-based rate limiting to prevent brute-force attacks.
+- [ ] **OAuth support**: Add sign-in with OAuth providers (e.g., Google) alongside email/password authentication. Requires handling provider callbacks, matching/merging accounts, and deciding whether OAuth users bypass admin approval or go through the same pending/approval flow.
 
 ## Features
 

@@ -130,8 +130,7 @@ financy/
 ├── _specs/                      # Feature specification documents
 ├── _plans/                      # Implementation plans
 ├── scripts/
-│   ├── 001_init_database.sql    # Database initialization script
-│   └── 002_add_role_to_jwt_metadata.sql # JWT role/status metadata triggers
+│   └── 001_init_database.sql    # Database initialization script
 │
 ├── tests/                       # Vitest test files
 │

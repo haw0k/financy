@@ -271,6 +271,7 @@ Deploy to Vercel with one click:
 ## Features Roadmap
 
 - [x] Document React Server Components practical patterns with auth and SQL database
+- [ ] OAuth support
 - [ ] Budget tracking & alerts
 - [ ] Recurring transactions
 - [ ] Real-time notifications
