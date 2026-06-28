@@ -209,13 +209,20 @@ as $$
   from transactions;
 $$;
 
--- Backfill profiles for existing auth users who don't have one yet
+-- Backfill profiles for existing auth users who don't have one yet.
+-- Prefer the existing JWT app_metadata role/status because that reflects the most
+-- recent application state; fall back to raw_user_meta_data (set at signup) only
+-- when app_metadata is not populated yet.
 insert into public.profiles (id, email, role, status)
 select
   au.id,
   au.email,
-  coalesce(au.raw_user_meta_data ->> 'role', 'sender'),
-  'pending'
+  coalesce(
+    au.raw_app_meta_data ->> 'role',
+    au.raw_user_meta_data ->> 'role',
+    'sender'
+  ),
+  coalesce(au.raw_app_meta_data ->> 'status', 'pending')
 from auth.users au
 left join public.profiles p on p.id = au.id
 where p.id is null;

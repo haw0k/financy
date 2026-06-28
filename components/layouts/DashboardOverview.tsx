@@ -111,7 +111,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Income vs Expenses</CardTitle>
+            <CardTitle className="text-xl">Income vs Expenses</CardTitle>
             <CardDescription>Distribution of your transactions</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
@@ -160,7 +160,7 @@ export const DashboardOverview: FC<IDashboardOverview> = ({ transactions, stats,
 
         <Card>
           <CardHeader>
-            <CardTitle>Transaction Trend</CardTitle>
+            <CardTitle className="text-xl">Transaction Trend</CardTitle>
             <CardDescription>Last 10 transactions</CardDescription>
           </CardHeader>
           <CardContent>

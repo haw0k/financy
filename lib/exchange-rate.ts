@@ -130,7 +130,7 @@ export async function getExchangeRate(
     return null;
   }
 
-  return currencyRate.rate / usdRate.rate;
+  return Number((currencyRate.rate / usdRate.rate).toFixed(4));
 }
 
 export function convertToUsd(amount: number, rate: number): number {

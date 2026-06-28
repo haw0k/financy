@@ -215,7 +215,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Categories</CardTitle>
+              <CardTitle className="text-xl">Categories</CardTitle>
             </div>
             <NewButton
               onClick={() => {
@@ -427,7 +427,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Category Types</CardTitle>
+              <CardTitle className="text-xl">Category Types</CardTitle>
             </div>
             <NewButton
               onClick={() => {

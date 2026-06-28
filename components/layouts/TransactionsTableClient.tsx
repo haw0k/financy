@@ -86,7 +86,7 @@ export const TransactionsTableClient: FC<ITransactionsTableClient> = ({
         <CardHeader>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Transactions</CardTitle>
+              <CardTitle className="text-xl">Transactions</CardTitle>
             </div>
             <NewButton
               onClick={() => {

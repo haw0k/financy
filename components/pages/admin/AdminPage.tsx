@@ -153,7 +153,7 @@ export function AdminPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Pending Users</CardTitle>
+          <CardTitle className="text-xl">Pending Users</CardTitle>
           <CardDescription>Approve or reject new user registrations</CardDescription>
         </CardHeader>
         <CardContent>

@@ -30,7 +30,7 @@ export async function SettingsPage() {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>System</CardTitle>
+            <CardTitle className="text-xl">System</CardTitle>
           </CardHeader>
           <CardContent>
             <ThemeSelect />
@@ -38,7 +38,7 @@ export async function SettingsPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Account Information</CardTitle>
+            <CardTitle className="text-xl">Account Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
@@ -60,7 +60,7 @@ export async function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>About</CardTitle>
+            <CardTitle className="text-xl">About</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">

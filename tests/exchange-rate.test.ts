@@ -82,7 +82,7 @@ describe('exchange rate service', () => {
 
     const rate = await getExchangeRate(ECurrency.EUR, EExchangeRateProvider.PrivatBank);
 
-    expect(rate).toBeCloseTo(44.2 / 41.5, 10);
+    expect(rate).toBeCloseTo(44.2 / 41.5, 4);
   });
 
   it('returns null when USD rate is missing for cross-rate', async () => {

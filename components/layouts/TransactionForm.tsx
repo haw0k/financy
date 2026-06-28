@@ -109,7 +109,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
       const result = await getExchangeRateAction(currencyCode as ECurrency, formData.rateProvider);
       if (isCancelled) return;
       if (result.isSuccess) {
-        setFormData((prev) => ({ ...prev, exchangeRate: String(result.data) }));
+        setFormData((prev) => ({ ...prev, exchangeRate: String(result.data?.toFixed(4)) }));
       } else if (result.error) {
         showError('Exchange rate', result.error);
       }
@@ -124,8 +124,8 @@ export const TransactionForm: FC<ITransactionForm> = ({
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const amount = parseFloat(formData.amount);
-    const exchangeRate = parseFloat(formData.exchangeRate);
+    const amount = Number(Number.parseFloat(formData.amount).toFixed(2));
+    const exchangeRate = Number(Number.parseFloat(formData.exchangeRate).toFixed(4));
     const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
     const amountUsd = currencyCode === ECurrency.USD ? amount : convertToUsd(amount, exchangeRate);
 
@@ -164,7 +164,9 @@ export const TransactionForm: FC<ITransactionForm> = ({
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>{editingId ? 'Edit Transaction' : 'Add New Transaction'}</CardTitle>
+        <CardTitle className="text-base font-medium">
+          {editingId ? 'Edit Transaction' : 'Add New Transaction'}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -238,6 +240,30 @@ export const TransactionForm: FC<ITransactionForm> = ({
                   setFormData({ ...formData, exchangeRate: e.target.value });
                 }}
                 required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="amountUsd">Amount in USD</Label>
+              <Input
+                id="amountUsd"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                value={(() => {
+                  const amount = Number.parseFloat(formData.amount) || 0;
+                  const exchangeRate = Number.parseFloat(formData.exchangeRate) || 0;
+                  const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
+                  if (currencyCode === ECurrency.USD) {
+                    return amount.toFixed(2);
+                  }
+                  if (!amount || !exchangeRate) {
+                    return '';
+                  }
+                  return convertToUsd(amount, exchangeRate).toFixed(2);
+                })()}
+                disabled
               />
             </div>
 
