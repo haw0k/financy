@@ -5,4 +5,5 @@ export const TRANSACTION_MSGS = {
   INVALID_RECEIVER: 'Invalid receiver selected',
   INVALID_CURRENCY: 'Invalid currency selected',
   INVALID_USD_AMOUNT: 'USD amount does not match the provided exchange rate',
+  INVALID_RATE: 'Exchange rate must be greater than zero',
 } as const;

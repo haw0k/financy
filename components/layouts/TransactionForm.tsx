@@ -147,8 +147,8 @@ export const TransactionForm: FC<ITransactionForm> = ({
     const isUah = currencyCode === ECurrency.UAH;
     const displayRate = Number(Number.parseFloat(formData.displayRate).toFixed(4));
 
-    if (!isUsd && (Number.isNaN(displayRate) || displayRate <= 0)) {
-      showError('Transaction', 'Exchange rate must be greater than zero');
+    if (currencyCode !== ECurrency.USD && (Number.isNaN(displayRate) || displayRate <= 0)) {
+      showError('Transaction', TRANSACTION_MSGS.INVALID_RATE);
       return;
     }
 
@@ -277,6 +277,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
                   value={formData.rateProvider}
                   onValueChange={(v) => {
                     setFormData({ ...formData, rateProvider: v as TExchangeRateProvider });
+                    setIsUserEditedRate(false);
                   }}
                 >
                   <SelectTrigger
