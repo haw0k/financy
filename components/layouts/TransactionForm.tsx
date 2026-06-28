@@ -53,6 +53,10 @@ function getCurrencyCodeById(currencies: ICurrency[], id: string): string | null
   return currencies.find((c) => c.id === id)?.code ?? null;
 }
 
+function getDefaultCurrencyId(currencies: ICurrency[]): string {
+  return currencies.find((c) => c.code === ECurrency.USD)?.id ?? currencies[0]?.id ?? '';
+}
+
 export const TransactionForm: FC<ITransactionForm> = ({
   onSuccess,
   onCancel,
@@ -63,7 +67,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
 }) => {
   const [formData, setFormData] = useState({
     amount: editingTransaction ? String(editingTransaction.amount) : '',
-    currencyId: editingTransaction?.currency_id ?? currencies[0]?.id ?? '',
+    currencyId: editingTransaction?.currency_id ?? getDefaultCurrencyId(currencies),
     // The display rate is always shown with 4 decimals and is the inverse for UAH.
     displayRate: editingTransaction
       ? String(

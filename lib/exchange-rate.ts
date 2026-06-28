@@ -1,13 +1,8 @@
 import { exchangeRateCacheSeconds } from '@/config';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
 import { EXCHANGE_RATE_MSGS } from '@/messages';
+import type { IExchangeRate } from '@/interfaces';
 import type { TExchangeRateProvider } from '@/types';
-
-export interface IExchangeRate {
-  currency: ECurrency;
-  provider: EExchangeRateProvider;
-  rate: number;
-}
 
 interface IPrivatBankRate {
   ccy: string;

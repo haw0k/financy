@@ -5,8 +5,8 @@ import { getExchangeRate, getExchangeRates } from '@/lib/exchange-rate';
 import { requireApprovedUser } from '@/lib/require-auth';
 import { CACHE_TAGS, dashboardCacheLife } from '@/config';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
-import type { IExchangeRate } from '@/lib/exchange-rate';
 import { EXCHANGE_RATE_MSGS } from '@/messages';
+import type { IExchangeRate } from '@/interfaces';
 import type { TActionResult, TExchangeRateProvider } from '@/types';
 
 export async function getExchangeRatesAction(

@@ -72,13 +72,11 @@ Visit `http://localhost:3000` and start using the app!
 pnpm dev          # Start dev server
 pnpm build       # Production build
 pnpm start       # Start production server
-pnpm lint        # Lint check
-pnpm lint:fix    # Auto-fix lint issues
+pnpm check       # Biome check (lint + format + import order)
+pnpm check:fix   # Auto-fix Biome issues
 pnpm type-check  # TypeScript check
-pnpm format:check # Check formatting
-pnpm format:fix  # Fix formatting
-pnpm check       # Combined lint + format check
-pnpm check:fix   # Combined lint + format auto-fix
+pnpm format:check # Check formatting only
+pnpm format:fix  # Fix formatting only
 pnpm clean       # Clean build cache
 ```
 

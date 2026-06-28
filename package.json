@@ -6,8 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
     "clean": "rm -rf .next",
     "format:check": "biome format .",
     "format:fix": "biome format --write .",

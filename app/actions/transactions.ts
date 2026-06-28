@@ -53,6 +53,8 @@ export async function getTransactionsDataAction(): Promise<
     categoryTypes: ICategoryType[];
   }>
 > {
+  // Intentionally not cached: the transactions table must reflect edits
+  // made via TransactionForm immediately without waiting for tag expiry.
   const authResult = await requireApprovedUser();
   if ('error' in authResult) {
     return { isSuccess: false, error: authResult.error };

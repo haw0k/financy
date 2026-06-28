@@ -14,13 +14,13 @@ Financy is a full-stack financial management application built with Next.js 16.2
 pnpm dev          # Start dev server (http://localhost:3000)
 pnpm build        # Production build
 pnpm start        # Start production server
-pnpm lint         # Lint check
-pnpm lint:fix     # Auto-fix lint issues
+pnpm check        # Biome check (lint + format + import order)
+pnpm check:fix     # Auto-fix Biome issues
 pnpm type-check   # TypeScript check
-pnpm format:check # Check formatting
-pnpm format:fix   # Fix formatting
+pnpm format:check # Check formatting only
+pnpm format:fix   # Fix formatting only
 pnpm clean        # Clean .next build cache
-pnpm lint && pnpm build  # Full pre-deploy check
+pnpm check && pnpm build  # Full pre-deploy check
 pnpm test            # Run Vitest tests (watch mode)
 pnpm test:run        # Run Vitest tests (single run)
 ```

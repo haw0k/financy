@@ -232,7 +232,7 @@ pnpm build
 pnpm start
 
 # Lint and check formatting
-pnpm lint
+pnpm check
 pnpm format:check
 
 # Auto-fix linting and formatting
