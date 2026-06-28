@@ -20,6 +20,7 @@ Redesign the transaction creation/editing form in the dashboard to improve reada
 - Use smaller, secondary-colored labels (`text-xs text-muted-foreground`) across the form to reduce visual competition with field content.
 - Preserve all existing validation, auto-fetch behavior for exchange rates, and server-action submission logic.
 - Keep the form responsive: the three-column Amount row should stack or wrap on narrow viewports.
+- Wrap each section in a visible bordered container (`border rounded-lg p-4`) with a section title inside the container.
 
 ## Possible Edge Cases
 
@@ -33,6 +34,7 @@ Redesign the transaction creation/editing form in the dashboard to improve reada
 ## Acceptance Criteria
 
 - [ ] Transaction form is visually divided into three labeled sections: Amount, Details, Date & note.
+- [ ] Each section is wrapped in a bordered container with a section title inside the container.
 - [ ] Amount section shows `Amount`, `Currency`, and `Amount in USD` in one desktop row.
 - [ ] Exchange-rate provider is no longer a full-width form field.
 - [ ] Provider and editable exchange rate appear as a compact row directly under `Amount in USD`.

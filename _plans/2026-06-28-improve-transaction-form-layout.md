@@ -54,14 +54,18 @@ All server-action logic in `app/actions/transactions.ts` and the `transactionSch
 ### Phase 1 — Restructure the form layout
 
 - [ ] Replace the single `md:grid-cols-2` wrapper with three semantic sections separated by `Separator`.
+- [ ] Wrap each section in a bordered container (`border rounded-lg p-4 space-y-4`).
 - [ ] Section **Amount**:
+  - Section title inside the container.
   - Three-column desktop row: `Amount` input, `Currency` select, `Amount in USD` input (read-only).
   - Compact inline row under `Amount in USD` containing a small provider `Select` and an editable exchange-rate `Input`.
 - [ ] Section **Details**:
+  - Section title inside the container.
   - `Type` toggle group (`Expense` / `Income`).
   - `Category` select (if categories exist).
   - `Receiver` select (if receivers exist).
 - [ ] Section **Date & note**:
+  - Section title inside the container.
   - `Date` picker.
   - `Description` input (full width).
 

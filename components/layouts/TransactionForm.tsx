@@ -14,7 +14,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Separator,
   ToggleGroup,
   ToggleGroupItem,
 } from '@/lib/shadcn';
@@ -68,7 +67,11 @@ export const TransactionForm: FC<ITransactionForm> = ({
   const [formData, setFormData] = useState({
     amount: editingTransaction ? String(editingTransaction.amount) : '',
     currencyId: editingTransaction?.currency_id ?? currencies[0]?.id ?? '',
-    exchangeRate: editingTransaction ? String(editingTransaction.exchange_rate) : '1',
+    // Store the *inverse* rate shown to the user (e.g. 40 UAH per 1 USD).
+    // The actual USD-per-unit rate sent to the server is derived on submit.
+    inverseRate: editingTransaction
+      ? String(Number((1 / editingTransaction.exchange_rate).toFixed(4)))
+      : '1',
     rateProvider: DEFAULT_PROVIDER as string,
     type: editingTransaction?.type ?? ('expense' as 'income' | 'expense'),
     description: editingTransaction?.description ?? '',
@@ -101,7 +104,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
   useEffect(() => {
     const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
     if (!currencyCode || currencyCode === ECurrency.USD) {
-      setFormData((prev) => ({ ...prev, exchangeRate: '1' }));
+      setFormData((prev) => ({ ...prev, inverseRate: '1' }));
       return;
     }
 
@@ -112,7 +115,10 @@ export const TransactionForm: FC<ITransactionForm> = ({
       const result = await getExchangeRateAction(currencyCode as ECurrency, formData.rateProvider);
       if (isCancelled) return;
       if (result.isSuccess) {
-        setFormData((prev) => ({ ...prev, exchangeRate: String(result.data?.toFixed(4)) }));
+        // Server/API rate is USD-per-unit. Show the inverse to the user.
+        const serverRate = result.data ?? 1;
+        const inverseRate = Number((1 / serverRate).toFixed(4));
+        setFormData((prev) => ({ ...prev, inverseRate: String(inverseRate) }));
       } else if (result.error) {
         showError('Exchange rate', result.error);
       }
@@ -128,7 +134,8 @@ export const TransactionForm: FC<ITransactionForm> = ({
     e.preventDefault();
 
     const amount = Number(Number.parseFloat(formData.amount).toFixed(2));
-    const exchangeRate = Number(Number.parseFloat(formData.exchangeRate).toFixed(4));
+    const inverseRate = Number(Number.parseFloat(formData.inverseRate).toFixed(4));
+    const exchangeRate = Number((1 / inverseRate).toFixed(6));
     const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
     const amountUsd = currencyCode === ECurrency.USD ? amount : convertToUsd(amount, exchangeRate);
 
@@ -165,16 +172,19 @@ export const TransactionForm: FC<ITransactionForm> = ({
   };
 
   const currencyCode = getCurrencyCodeById(currencies, formData.currencyId);
+  const currencySymbol = currencies.find((c) => c.id === formData.currencyId)?.symbol ?? '';
+  const usdSymbol = currencies.find((c) => c.code === ECurrency.USD)?.symbol ?? '$';
   const isUsd = currencyCode === ECurrency.USD;
   const computedAmountUsd = (() => {
     const amount = Number.parseFloat(formData.amount) || 0;
-    const exchangeRate = Number.parseFloat(formData.exchangeRate) || 0;
+    const inverseRate = Number.parseFloat(formData.inverseRate) || 0;
     if (isUsd) {
       return amount.toFixed(2);
     }
-    if (!amount || !exchangeRate) {
+    if (!amount || !inverseRate) {
       return '';
     }
+    const exchangeRate = 1 / inverseRate;
     return convertToUsd(amount, exchangeRate).toFixed(2);
   })();
 
@@ -187,12 +197,13 @@ export const TransactionForm: FC<ITransactionForm> = ({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">Amount</h3>
+          <fieldset className="min-w-0 space-y-4 rounded-lg border px-4 pb-4">
+            <legend className="px-2 text-sm font-medium text-foreground">Amount</legend>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs text-muted-foreground">
+                <Label htmlFor="amount" className="gap-0.5 text-xs text-muted-foreground">
                   Amount
+                  <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="amount"
@@ -209,8 +220,9 @@ export const TransactionForm: FC<ITransactionForm> = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="currency" className="text-xs text-muted-foreground">
+                <Label htmlFor="currency" className="gap-0.5 text-xs text-muted-foreground">
                   Currency
+                  <span className="text-destructive">*</span>
                 </Label>
                 <Select
                   value={formData.currencyId}
@@ -267,41 +279,45 @@ export const TransactionForm: FC<ITransactionForm> = ({
                       </SelectContent>
                     </Select>
                     <span className="text-xs text-muted-foreground">·</span>
-                    <Label htmlFor="exchangeRate" className="sr-only">
+                    <Label htmlFor="inverseRate" className="sr-only">
                       Exchange rate to USD
                     </Label>
                     <Input
-                      id="exchangeRate"
+                      id="inverseRate"
                       type="number"
-                      step="0.000001"
+                      step="0.0001"
                       min="0"
                       placeholder="1.0"
-                      value={formData.exchangeRate}
+                      value={formData.inverseRate}
                       disabled={isLoadingRate}
                       onChange={(e) => {
-                        setFormData({ ...formData, exchangeRate: e.target.value });
+                        setFormData({ ...formData, inverseRate: e.target.value });
                       }}
                       required
-                      className="h-6 w-24 text-xs"
+                      className="h-8 w-28 text-sm"
                     />
-                    <span className="text-xs text-muted-foreground">{currencyCode}/USD</span>
+                    <span className="text-xs text-muted-foreground">
+                      {usdSymbol}/{currencySymbol}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
-          </div>
+          </fieldset>
 
-          <Separator />
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">Details</h3>
+          <fieldset className="min-w-0 space-y-4 rounded-lg border px-4 pb-4">
+            <legend className="px-2 text-sm font-medium text-foreground">Details</legend>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2 md:col-span-2">
-                <Label className="text-xs text-muted-foreground">Type</Label>
+              <div className="space-y-2">
+                <Label className="gap-0.5 text-xs text-muted-foreground">
+                  Type
+                  <span className="text-destructive">*</span>
+                </Label>
                 <ToggleGroup
                   type="single"
                   variant="outline"
-                  className="w-full sm:w-fit"
+                  size="sm"
+                  className="w-full"
                   value={formData.type}
                   onValueChange={(v) => {
                     if (v) {
@@ -309,39 +325,14 @@ export const TransactionForm: FC<ITransactionForm> = ({
                     }
                   }}
                 >
-                  <ToggleGroupItem value="expense" className="flex-1 sm:flex-initial">
+                  <ToggleGroupItem value="expense" className="flex-1">
                     Expense
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="income" className="flex-1 sm:flex-initial">
+                  <ToggleGroupItem value="income" className="flex-1">
                     Income
                   </ToggleGroupItem>
                 </ToggleGroup>
               </div>
-
-              {categories.length > 0 && (
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="text-xs text-muted-foreground">
-                    Category
-                  </Label>
-                  <Select
-                    value={formData.categoryId}
-                    onValueChange={(v) => {
-                      setFormData({ ...formData, categoryId: v });
-                    }}
-                  >
-                    <SelectTrigger className="w-full" id="category">
-                      <SelectValue placeholder="Select category (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
 
               {users.length > 0 && (
                 <div className="space-y-2">
@@ -367,17 +358,41 @@ export const TransactionForm: FC<ITransactionForm> = ({
                   </Select>
                 </div>
               )}
+
+              {categories.length > 0 && (
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="category" className="text-xs text-muted-foreground">
+                    Category
+                  </Label>
+                  <Select
+                    value={formData.categoryId}
+                    onValueChange={(v) => {
+                      setFormData({ ...formData, categoryId: v });
+                    }}
+                  >
+                    <SelectTrigger className="w-full" id="category">
+                      <SelectValue placeholder="Select category (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-          </div>
+          </fieldset>
 
-          <Separator />
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">Date & note</h3>
+          <fieldset className="min-w-0 space-y-4 rounded-lg border px-4 pb-4">
+            <legend className="px-2 text-sm font-medium text-foreground">Date & note</legend>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="date" className="text-xs text-muted-foreground">
+                <Label htmlFor="date" className="gap-0.5 text-xs text-muted-foreground">
                   Date
+                  <span className="text-destructive">*</span>
                 </Label>
                 <DatePicker
                   value={formData.date}
@@ -387,7 +402,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
                 />
               </div>
 
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2">
                 <Label htmlFor="description" className="text-xs text-muted-foreground">
                   Description
                 </Label>
@@ -401,7 +416,7 @@ export const TransactionForm: FC<ITransactionForm> = ({
                 />
               </div>
             </div>
-          </div>
+          </fieldset>
 
           <div className="flex gap-2">
             <Button type="submit" disabled={isPending || !formData.amount}>
