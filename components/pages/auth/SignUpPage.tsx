@@ -13,13 +13,16 @@ import {
   CardTitle,
   Input,
   Label,
+} from '@/lib/shadcn';
+import {
+  PasswordField,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/lib/shadcn';
-import { PasswordField, showError } from '@/components/ui';
+  showError,
+} from '@/components/ui';
 import { withTimeout } from '@/lib/with-timeout';
 import { routes, siteConfig } from '@/config';
 import { ERole } from '@/enums';

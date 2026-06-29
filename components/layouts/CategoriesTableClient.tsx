@@ -20,11 +20,6 @@ import {
   CardTitle,
   Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Table,
   TableBody,
   TableCell,
@@ -32,7 +27,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/lib/shadcn';
-import { NewButton, showError } from '@/components/ui';
+import {
+  NewButton,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  showError,
+} from '@/components/ui';
 import { withTimeout } from '@/lib/with-timeout';
 import {
   createCategoryAction,

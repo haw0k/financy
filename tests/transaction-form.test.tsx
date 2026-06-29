@@ -41,6 +41,8 @@ const mockShowError = vi.fn();
 
 vi.mock('@/components/ui', async () => {
   const actual = await vi.importActual<typeof import('@/components/ui')>('@/components/ui');
+  const React = await import('react');
+
   return {
     ...actual,
     DatePicker: ({ onChange, value }: { onChange: (date: string) => void; value: string }) => (
@@ -53,27 +55,6 @@ vi.mock('@/components/ui', async () => {
           onChange(e.target.value);
         }}
       />
-    ),
-    showError: mockShowError,
-  };
-});
-
-vi.mock('@/lib/shadcn', async () => {
-  const React = await import('react');
-
-  return {
-    Button: React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-      ({ children, ...props }, ref) => (
-        <button ref={ref} {...props}>
-          {children}
-        </button>
-      )
-    ),
-    Input: React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-      ({ ...props }, ref) => <input ref={ref} {...props} />
-    ),
-    Label: ({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) => (
-      <label htmlFor={htmlFor}>{children}</label>
     ),
     Select: ({
       children,
@@ -124,6 +105,27 @@ vi.mock('@/lib/shadcn', async () => {
       </button>
     ),
     SelectValue: ({ placeholder }: { placeholder?: string }) => <>{placeholder}</>,
+    showError: mockShowError,
+  };
+});
+
+vi.mock('@/lib/shadcn', async () => {
+  const React = await import('react');
+
+  return {
+    Button: React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
+      ({ children, ...props }, ref) => (
+        <button ref={ref} {...props}>
+          {children}
+        </button>
+      )
+    ),
+    Input: React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
+      ({ ...props }, ref) => <input ref={ref} {...props} />
+    ),
+    Label: ({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) => (
+      <label htmlFor={htmlFor}>{children}</label>
+    ),
     ToggleGroup: ({
       children,
       value,

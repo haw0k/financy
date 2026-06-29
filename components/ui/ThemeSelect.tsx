@@ -3,7 +3,7 @@
 import { type FC, useSyncExternalStore } from 'react';
 import { ChevronDown, Moon, Sun, SunMoon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/lib/shadcn';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 
 function getIsServerSnapshot() {
   return false;

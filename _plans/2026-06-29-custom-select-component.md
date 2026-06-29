@@ -12,20 +12,20 @@ The application uses the shadcn/ui Select primitive from `lib/shadcn/Select.tsx`
 
 ### Phase 1 — Audit and Preserve the Primitive
 
-- [ ] Read the current `lib/shadcn/Select.tsx` source and confirm its exact contents.
-- [ ] Verify that the shadcn/ui Select source has not been modified from the original generated code; restore it if needed.
+- [x] Read the current `lib/shadcn/Select.tsx` source and confirm its exact contents.
+- [x] Verify that the shadcn/ui Select source has not been modified from the original generated code; restore it if needed.
 
 ### Phase 2 — Create the Custom Select Wrapper
 
-- [ ] Add a new `components/ui/Select.tsx` file that re-exports and extends the shadcn/ui Select primitive.
-- [ ] Ensure the custom component preserves the same public API, sub-components, type safety, and accessibility behavior as the underlying primitive.
-- [ ] Apply project-specific styling, defaults, or behavior only inside the new component.
+- [x] Add a new `components/ui/Select.tsx` file that re-exports and extends the shadcn/ui Select primitive.
+- [x] Ensure the custom component preserves the same public API, sub-components, type safety, and accessibility behavior as the underlying primitive.
+- [x] Apply project-specific styling, defaults, or behavior only inside the new component.
 
 ### Phase 3 — Validate and Test
 
-- [ ] Add or update tests under `tests/` to cover rendering, selection, value change handling, and keyboard accessibility.
-- [ ] Run `pnpm check`, `pnpm type-check`, and `pnpm test:run` and address any failures.
-- [ ] Confirm that `lib/shadcn/Select.tsx` has no unintended diff after the change.
+- [x] Add or update tests under `tests/` to cover rendering, selection, value change handling, and keyboard accessibility.
+- [x] Run `pnpm check`, `pnpm type-check`, and `pnpm test:run` and address any failures.
+- [x] Confirm that `lib/shadcn/Select.tsx` has no unintended diff after the change.
 
 ## Risks & Notes
 
@@ -35,8 +35,8 @@ The application uses the shadcn/ui Select primitive from `lib/shadcn/Select.tsx`
 
 ## Definition of Done
 
-- [ ] `lib/shadcn/Select.tsx` remains in its original state.
-- [ ] `components/ui/Select.tsx` exists and provides a working, composable custom Select.
-- [ ] `pnpm check` passes.
-- [ ] `pnpm type-check` passes.
-- [ ] Tests for the new component pass.
+- [x] `lib/shadcn/Select.tsx` remains in its original state.
+- [x] `components/ui/Select.tsx` exists and provides a working, composable custom Select.
+- [x] `pnpm check` passes.
+- [x] `pnpm type-check` passes.
+- [x] Tests for the new component pass.
