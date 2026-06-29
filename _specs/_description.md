@@ -35,3 +35,4 @@
 - [x] perf: Simple Backend Query Caching - { 2026-06-27-simple-backend-query-caching.md }
 - [x] feat: Multi-Currency Support - { 2026-06-27-multi-currency-support.md }
 - [x] feat: Improve Transaction Form Layout - { 2026-06-28-improve-transaction-form-layout.md }
+- [ ] feat: Custom Select Component - { 2026-06-29-custom-select-component.md }
