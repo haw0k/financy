@@ -271,7 +271,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
 
                     <div className="space-y-2">
                       <Label htmlFor="color">Color</Label>
-                      <div className="flex gap-2">
+                      <div className="relative h-8 w-8 shrink-0">
                         <Input
                           id="color"
                           type="color"
@@ -279,15 +279,11 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                           onChange={(e) => {
                             setFormData({ ...formData, color: e.target.value });
                           }}
-                          className="h-10 w-14 cursor-pointer p-1"
+                          className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                         />
-                        <Input
-                          type="text"
-                          value={formData.color}
-                          onChange={(e) => {
-                            setFormData({ ...formData, color: e.target.value });
-                          }}
-                          className="flex-1"
+                        <div
+                          className="absolute inset-0 rounded-full border border-border"
+                          style={{ backgroundColor: formData.color }}
                         />
                       </div>
                     </div>
