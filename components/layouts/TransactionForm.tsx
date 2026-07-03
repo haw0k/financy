@@ -12,6 +12,7 @@ import {
   showError,
 } from '@/components/ui';
 import { convertToUsd, getDisplayRate, mapProvider } from '@/lib/exchange-rate';
+import { getCategoryIcon } from '@/lib/icons';
 import { withTimeout } from '@/lib/with-timeout';
 import { ECurrency, EExchangeRateProvider } from '@/enums';
 import { getExchangeRateAction } from '@/app/actions/exchange-rate';
@@ -362,11 +363,16 @@ export const TransactionForm: FC<ITransactionForm> = ({
                   <SelectValue placeholder="Select category (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
+                  {categories.map((cat) => {
+                    const CategoryIcon = getCategoryIcon(cat.icon);
+
+                    return (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        <CategoryIcon className="h-4 w-4" />
+                        {cat.name}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
