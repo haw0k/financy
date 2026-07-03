@@ -357,7 +357,7 @@ describe('updateCategoryAction', () => {
         return createQueryBuilder({ id: 'ct1' });
       }
       if (table === CACHE_TAGS.categories) {
-        return createQueryBuilder([]);
+        return createQueryBuilder(null);
       }
       return createQueryBuilder(null);
     });
@@ -383,7 +383,7 @@ describe('deleteCategoryAction', () => {
         return createQueryBuilder({ status: 'approved' });
       }
       if (table === CACHE_TAGS.categories) {
-        return createQueryBuilder([{ id: 'cat1' }]);
+        return createQueryBuilder({ id: 'cat1' });
       }
       return createQueryBuilder(null);
     });
@@ -401,7 +401,7 @@ describe('deleteCategoryAction', () => {
         return createQueryBuilder({ status: 'approved' });
       }
       if (table === CACHE_TAGS.categories) {
-        return createQueryBuilder([]);
+        return createQueryBuilder(null);
       }
       return createQueryBuilder(null);
     });
@@ -458,7 +458,7 @@ describe('updateCategoryTypeAction', () => {
         return createQueryBuilder({ status: 'approved' });
       }
       if (table === 'category_types') {
-        return createQueryBuilder([]);
+        return createQueryBuilder(null);
       }
       return createQueryBuilder(null);
     });
@@ -481,7 +481,7 @@ describe('deleteCategoryTypeAction', () => {
         return createQueryBuilder({ status: 'approved' });
       }
       if (table === 'category_types') {
-        return createQueryBuilder([]);
+        return createQueryBuilder(null);
       }
       return createQueryBuilder(null);
     });

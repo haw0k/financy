@@ -58,7 +58,7 @@ export async function createCategoryAction(
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!created) {
-    return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
+    return { isSuccess: false, error: CATEGORY_MSGS.CREATE_FAILED };
   }
 
   revalidateTag(CACHE_TAGS.categories, mutationRevalidateProfile);
@@ -134,12 +134,13 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAct
     .from('categories')
     .delete()
     .eq('id', id)
-    .select('id');
+    .select()
+    .single();
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
-  if (!deleted?.length) {
+  if (!deleted) {
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
@@ -171,7 +172,7 @@ export async function createCategoryTypeAction(
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
   if (!created) {
-    return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
+    return { isSuccess: false, error: CATEGORY_MSGS.CREATE_TYPE_FAILED };
   }
 
   revalidateTag(CACHE_TAGS.categoryTypes, mutationRevalidateProfile);
@@ -229,12 +230,13 @@ export async function deleteCategoryTypeAction({
     .from('category_types')
     .delete()
     .eq('id', id)
-    .select('id');
+    .select()
+    .single();
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
-  if (!deleted?.length) {
+  if (!deleted) {
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
