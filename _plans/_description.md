@@ -37,3 +37,4 @@
 - [x] feat: Multi-Currency Support - { 2026-06-27-multi-currency-support.md }
 - [x] feat: Improve Transaction Form Layout - { 2026-06-28-improve-transaction-form-layout.md }
 - [x] feat: Custom Select Component - { 2026-06-29-custom-select-component.md }
+- [ ] refactor: Unify Categories Form Appearance with Transactions - { 2026-07-03-unify-categories-form-appearance.md }
