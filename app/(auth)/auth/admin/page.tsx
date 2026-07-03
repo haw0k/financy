@@ -3,6 +3,7 @@ import { createMetadata } from '@/lib/metadata';
 
 export const metadata = createMetadata({
   title: 'Admin',
+  description: 'Admin authentication',
   path: '/auth/admin',
   isNoIndex: true,
 });
