@@ -12,26 +12,26 @@ The `/dashboard/categories` page renders two inline forms: one for categories an
 
 ### Phase 1 — Form Structure Update
 
-- [ ] Wrap the category form fields into logical `fieldset` sections with `legend` titles, mirroring the transaction form layout.
-- [ ] Wrap the category type form fields into a `fieldset` section with a `legend` title.
-- [ ] Preserve existing state, submission handlers, and validation behavior.
+- [x] Wrap the category form fields into logical `fieldset` sections with `legend` titles, mirroring the transaction form layout.
+- [x] Wrap the category type form fields into a `fieldset` section with a `legend` title.
+- [x] Preserve existing state, submission handlers, and validation behavior.
 
 ### Phase 2 — Required Field Indicators
 
-- [ ] Add a red asterisk indicator to labels of required fields in both forms.
-- [ ] Ensure optional fields do not display the required indicator.
-- [ ] Keep label styling consistent with the transaction form (text-xs, muted-foreground).
+- [x] Add a red asterisk indicator to labels of required fields in both forms.
+- [x] Ensure optional fields do not display the required indicator.
+- [x] Keep label styling consistent with the transaction form (text-xs, muted-foreground).
 
 ### Phase 3 — Responsive Alignment
 
-- [ ] Verify field alignment and spacing remain correct on mobile and desktop viewports.
-- [ ] Ensure the color picker circle still aligns with the surrounding field group.
+- [x] Verify field alignment and spacing remain correct on mobile and desktop viewports.
+- [x] Ensure the color picker circle still aligns with the surrounding field group.
 
 ### Phase 4 — Verification
 
-- [ ] Run `pnpm check` and `pnpm type-check`.
-- [ ] Run the existing Vitest suite.
-- [ ] Add or update tests to verify fieldset/legend presence and required asterisk rendering.
+- [x] Run `pnpm check` and `pnpm type-check`.
+- [x] Run the existing Vitest suite.
+- [x] Add or update tests to verify fieldset/legend presence and required asterisk rendering.
 
 ## Risks & Notes
 
@@ -41,7 +41,7 @@ The `/dashboard/categories` page renders two inline forms: one for categories an
 
 ## Definition of Done
 
-- [ ] Category form matches the transaction form visual pattern.
-- [ ] Category type form matches the transaction form visual pattern.
-- [ ] Required fields display a red asterisk; optional fields do not.
-- [ ] `pnpm check`, `pnpm type-check`, and `pnpm test:run` all pass.
+- [x] Category form matches the transaction form visual pattern.
+- [x] Category type form matches the transaction form visual pattern.
+- [x] Required fields display a red asterisk; optional fields do not.
+- [x] `pnpm check`, `pnpm type-check`, and `pnpm test:run` all pass.
