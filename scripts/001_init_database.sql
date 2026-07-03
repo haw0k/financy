@@ -29,7 +29,6 @@ create unique index if not exists idx_profiles_single_approved_admin
 create table if not exists public.category_types (
   id uuid primary key default gen_random_uuid(),
   name text not null unique,
-  icon text default 'circle',
   created_at timestamp with time zone default now()
 );
 
@@ -42,7 +41,6 @@ create table if not exists public.categories (
   type text not null check (type in ('income', 'expense')),
   type_id uuid references public.category_types(id) on delete set null,
   color text default '#3b82f6',
-  icon text default 'circle',
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );

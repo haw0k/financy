@@ -53,6 +53,12 @@ vi.mock('@/components/ui', async () => {
       return collectOptions(element.props.children);
     });
 
+  const SelectTrigger = ({ children, id }: { children: React.ReactNode; id?: string }) => (
+    <button id={id} type="button">
+      {children}
+    </button>
+  );
+
   return {
     NewButton: ({ onClick, label }: { onClick?: () => void; label?: string }) => (
       <button type="button" aria-label={label ?? 'New'} onClick={onClick}>
@@ -69,9 +75,14 @@ vi.mock('@/components/ui', async () => {
       onValueChange?: (value: string) => void;
     }) => {
       const options = collectOptions(children);
+      const triggerId = React.Children.toArray(children).find(
+        (child): child is React.ReactElement<{ id?: string }> =>
+          React.isValidElement(child) && child.type === SelectTrigger
+      )?.props.id;
 
       return (
         <select
+          id={triggerId}
           value={value}
           onChange={(e) => {
             onValueChange?.(e.target.value);
@@ -91,11 +102,7 @@ vi.mock('@/components/ui', async () => {
       <option value={value}>{children}</option>
     ),
     SelectLabel: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    SelectTrigger: ({ children, id }: { children: React.ReactNode; id?: string }) => (
-      <button id={id} type="button">
-        {children}
-      </button>
-    ),
+    SelectTrigger,
     SelectValue: ({ placeholder }: { placeholder?: string }) => <>{placeholder}</>,
     showError: mockShowError,
   };
@@ -248,8 +255,7 @@ describe('CategoriesTableClient icon selector', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: 'New' })[0]);
 
-    expect(screen.getByText('Icon')).toBeDefined();
-    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByLabelText('Icon')).toBeDefined();
   });
 
   it('renders icon select in the category type form', () => {
@@ -257,8 +263,7 @@ describe('CategoriesTableClient icon selector', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: 'New' })[1]);
 
-    expect(screen.getByText('Icon')).toBeDefined();
-    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByLabelText('Icon')).toBeDefined();
   });
 
   it('submits the selected icon value when creating a category', async () => {
@@ -269,8 +274,7 @@ describe('CategoriesTableClient icon selector', () => {
       target: { value: 'Food' },
     });
 
-    const iconSelects = screen.getAllByRole('combobox');
-    fireEvent.change(iconSelects[iconSelects.length - 2], { target: { value: 'wallet' } });
+    fireEvent.change(screen.getByLabelText('Icon'), { target: { value: 'wallet' } });
 
     fireEvent.click(screen.getByRole('button', { name: 'Add Category' }));
 
@@ -288,8 +292,7 @@ describe('CategoriesTableClient icon selector', () => {
       target: { value: 'Goods' },
     });
 
-    const iconSelects = screen.getAllByRole('combobox');
-    fireEvent.change(iconSelects[iconSelects.length - 1], { target: { value: 'wallet' } });
+    fireEvent.change(screen.getByLabelText('Icon'), { target: { value: 'wallet' } });
 
     fireEvent.click(screen.getByRole('button', { name: 'Add Type' }));
 

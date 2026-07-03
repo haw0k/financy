@@ -2,7 +2,6 @@
 
 import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache';
 import { mapSupabaseError } from '@/lib/db-errors';
-import { DEFAULT_CATEGORY_ICON } from '@/lib/icons';
 import { requireApprovedUser } from '@/lib/require-auth';
 import { CACHE_TAGS, dashboardCacheLife, mutationRevalidateProfile } from '@/config';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
@@ -47,7 +46,7 @@ export async function createCategoryAction(
         name: parsed.data.name,
         type: parsed.data.type,
         color: parsed.data.color,
-        icon: parsed.data.icon || DEFAULT_CATEGORY_ICON,
+        icon: parsed.data.icon,
         type_id: parsed.data.type_id ?? null,
       },
     ])
@@ -105,7 +104,7 @@ export async function updateCategoryAction({
       name: parsed.data.name,
       type: parsed.data.type,
       color: parsed.data.color,
-      icon: parsed.data.icon || DEFAULT_CATEGORY_ICON,
+      icon: parsed.data.icon,
       type_id: parsed.data.type_id ?? null,
     })
     .eq('id', id)
@@ -164,7 +163,7 @@ export async function createCategoryTypeAction(
 
   const { data: created, error } = await authResult.supabase
     .from('category_types')
-    .insert([{ name: parsed.data.name, icon: parsed.data.icon || DEFAULT_CATEGORY_ICON }])
+    .insert([{ name: parsed.data.name, icon: parsed.data.icon }])
     .select()
     .single();
 
@@ -199,7 +198,7 @@ export async function updateCategoryTypeAction({
 
   const { data: updated, error } = await authResult.supabase
     .from('category_types')
-    .update({ name: parsed.data.name, icon: parsed.data.icon || DEFAULT_CATEGORY_ICON })
+    .update({ name: parsed.data.name, icon: parsed.data.icon })
     .eq('id', id)
     .select()
     .single();
