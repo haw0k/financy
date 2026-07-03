@@ -51,6 +51,16 @@ import {
 import { CATEGORY_MSGS } from '@/messages';
 import type { ICategory, ICategoryType, ICategoryTypeInput } from '@/interfaces';
 
+const DEFAULT_CATEGORY_COLOR = 'var(--chart-3)';
+
+type TCategoryFormData = {
+  name: string;
+  type: 'income' | 'expense';
+  color: string;
+  icon: string;
+  type_id: string;
+};
+
 interface ICategoriesTableClient {
   initialCategories: ICategory[];
   initialCategoryTypes: ICategoryType[];
@@ -64,18 +74,17 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
   const [categoryTypes, setCategoryTypes] = useState<ICategoryType[]>(initialCategoryTypes);
   const [isShowForm, setIsShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const DEFAULT_CATEGORY_COLOR = 'var(--chart-3)';
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<TCategoryFormData>({
     name: '',
-    type: 'expense' as 'income' | 'expense',
+    type: 'expense',
     color: DEFAULT_CATEGORY_COLOR,
-    icon: DEFAULT_CATEGORY_ICON as string,
+    icon: DEFAULT_CATEGORY_ICON,
     type_id: '',
   });
   const [ctFormData, setCtFormData] = useState<ICategoryTypeInput>({
     name: '',
-    icon: DEFAULT_CATEGORY_ICON as string,
+    icon: DEFAULT_CATEGORY_ICON,
   });
   const [ctEditingId, setCtEditingId] = useState<string | null>(null);
   const [isCtShowForm, setCtIsShowForm] = useState(false);
@@ -121,7 +130,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
             };
             setCategoryTypes([...categoryTypes, newCategoryType]);
           }
-          setCtFormData({ name: '', icon: DEFAULT_CATEGORY_ICON as string });
+          setCtFormData({ name: '', icon: DEFAULT_CATEGORY_ICON });
           setCtEditingId(null);
           setCtIsShowForm(false);
           router.refresh();
@@ -213,7 +222,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
             name: '',
             type: 'expense',
             color: DEFAULT_CATEGORY_COLOR,
-            icon: DEFAULT_CATEGORY_ICON as string,
+            icon: DEFAULT_CATEGORY_ICON,
             type_id: '',
           });
           setEditingId(null);
@@ -393,7 +402,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       name: '',
                       type: 'expense',
                       color: DEFAULT_CATEGORY_COLOR,
-                      icon: DEFAULT_CATEGORY_ICON as string,
+                      icon: DEFAULT_CATEGORY_ICON,
                       type_id: '',
                     });
                   }}
@@ -576,7 +585,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                   onClick={() => {
                     setCtIsShowForm(false);
                     setCtEditingId(null);
-                    setCtFormData({ name: '', icon: DEFAULT_CATEGORY_ICON as string });
+                    setCtFormData({ name: '', icon: DEFAULT_CATEGORY_ICON });
                   }}
                 >
                   Cancel

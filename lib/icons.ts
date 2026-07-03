@@ -58,7 +58,7 @@ import type { LucideIcon } from 'lucide-react';
 
 export const DEFAULT_CATEGORY_ICON = 'circle' as const;
 
-export const CATEGORY_ICON_GROUPS = [
+const categoryIconGroups = [
   {
     group: 'General',
     items: [
@@ -150,11 +150,16 @@ export const CATEGORY_ICON_GROUPS = [
   },
 ] as const;
 
-export const CATEGORY_ICONS = CATEGORY_ICON_GROUPS.flatMap((group) =>
-  [...group.items].sort((a, b) => a.label.localeCompare(b.label))
-);
+const sortedCategoryIconGroups = categoryIconGroups.map((group) => ({
+  group: group.group,
+  items: [...group.items].sort((a, b) => a.label.localeCompare(b.label)),
+}));
 
-export type TCategoryIconValue = (typeof CATEGORY_ICONS)[number]['value'];
+export const CATEGORY_ICON_GROUPS = sortedCategoryIconGroups;
+
+export const CATEGORY_ICONS = sortedCategoryIconGroups.flatMap((group) => group.items);
+
+export type TCategoryIconValue = (typeof categoryIconGroups)[number]['items'][number]['value'];
 
 export function getCategoryIcon(value?: string | null): LucideIcon {
   const found = CATEGORY_ICONS.find((item) => item.value === value);
