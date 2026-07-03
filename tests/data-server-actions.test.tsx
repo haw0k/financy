@@ -64,6 +64,11 @@ function createQueryBuilder<T>(data: T, error: unknown = null) {
     order: method,
     limit: method,
     maybeSingle: method,
+    single: () =>
+      Promise.resolve({
+        data: Array.isArray(data) ? (data[0] ?? null) : data,
+        error,
+      }),
     insert: method,
     update: method,
     delete: method,
@@ -298,7 +303,16 @@ describe('createCategoryAction', () => {
         return createQueryBuilder({ id: 'ct1' });
       }
       if (table === CACHE_TAGS.categories) {
-        return createQueryBuilder(null);
+        return createQueryBuilder([
+          {
+            id: 'cat1',
+            name: 'Food',
+            type: 'expense',
+            color: '#fff',
+            icon: 'circle',
+            type_id: 'ct1',
+          },
+        ]);
       }
       return createQueryBuilder(null);
     });
@@ -421,6 +435,9 @@ describe('createCategoryTypeAction', () => {
     mockFrom.mockImplementation((table: string) => {
       if (table === 'profiles') {
         return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder([{ id: 'ct1', name: 'Goods', icon: 'circle' }]);
       }
       return createQueryBuilder(null);
     });
@@ -774,6 +791,18 @@ describe('cache revalidation', () => {
       if (table === 'category_types') {
         return createQueryBuilder({ id: 'ct1' });
       }
+      if (table === CACHE_TAGS.categories) {
+        return createQueryBuilder([
+          {
+            id: 'cat1',
+            name: 'Food',
+            type: 'expense',
+            color: '#fff',
+            icon: 'circle',
+            type_id: 'ct1',
+          },
+        ]);
+      }
       return createQueryBuilder(null);
     });
 
@@ -836,7 +865,15 @@ describe('cache revalidation', () => {
   it('createCategoryTypeAction revalidates category-types', async () => {
     const { createCategoryTypeAction } = await import('@/app/actions/categories');
 
-    mockApprovedProfile();
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'profiles') {
+        return createQueryBuilder({ status: 'approved' });
+      }
+      if (table === 'category_types') {
+        return createQueryBuilder([{ id: 'ct1', name: 'Goods', icon: 'circle' }]);
+      }
+      return createQueryBuilder(null);
+    });
 
     await createCategoryTypeAction({ name: 'Goods' });
 

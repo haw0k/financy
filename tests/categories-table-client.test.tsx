@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ICategory, ICategoryType } from '@/interfaces';
 
@@ -35,6 +35,24 @@ const mockShowError = vi.fn();
 vi.mock('@/components/ui', async () => {
   const React = await import('react');
 
+  const collectOptions = (
+    nodes: React.ReactNode
+  ): React.ReactElement<{
+    value: string;
+    children: React.ReactNode;
+  }>[] =>
+    React.Children.toArray(nodes).flatMap((child) => {
+      if (!React.isValidElement(child)) return [];
+      const element = child as React.ReactElement<{
+        value?: string;
+        children?: React.ReactNode;
+      }>;
+      if (element.props.value !== undefined) {
+        return [element as React.ReactElement<{ value: string; children: React.ReactNode }>];
+      }
+      return collectOptions(element.props.children);
+    });
+
   return {
     NewButton: ({ onClick, label }: { onClick?: () => void; label?: string }) => (
       <button type="button" aria-label={label ?? 'New'} onClick={onClick}>
@@ -50,20 +68,7 @@ vi.mock('@/components/ui', async () => {
       value?: string;
       onValueChange?: (value: string) => void;
     }) => {
-      const options = React.Children.toArray(children).flatMap((child) => {
-        if (!React.isValidElement(child)) return [];
-        const element = child as React.ReactElement<{ value?: string; children?: React.ReactNode }>;
-        if (element.props.value === undefined) {
-          return React.Children.toArray(element.props.children).filter(
-            (c): c is React.ReactElement<{ value: string; children: React.ReactNode }> => {
-              if (!React.isValidElement(c)) return false;
-              const option = c as React.ReactElement<{ value?: string }>;
-              return option.props.value !== undefined;
-            }
-          );
-        }
-        return [element as React.ReactElement<{ value: string; children: React.ReactNode }>];
-      });
+      const options = collectOptions(children);
 
       return (
         <select
@@ -81,9 +86,11 @@ vi.mock('@/components/ui', async () => {
       );
     },
     SelectContent: ({ children }: { children: React.ReactNode }) => children,
+    SelectGroup: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     SelectItem: ({ children, value }: { children: React.ReactNode; value: string }) => (
       <option value={value}>{children}</option>
     ),
+    SelectLabel: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     SelectTrigger: ({ children, id }: { children: React.ReactNode; id?: string }) => (
       <button id={id} type="button">
         {children}
@@ -165,10 +172,16 @@ let CategoriesTableClient: typeof import('@/components/layouts/CategoriesTableCl
 
 beforeEach(async () => {
   vi.clearAllMocks();
-  mockCreateCategoryAction.mockResolvedValue({ isSuccess: true, data: undefined });
+  mockCreateCategoryAction.mockResolvedValue({
+    isSuccess: true,
+    data: { id: 'new-cat', name: 'Food', type: 'expense', color: '#fff', icon: 'circle' },
+  });
   mockUpdateCategoryAction.mockResolvedValue({ isSuccess: true, data: undefined });
   mockDeleteCategoryAction.mockResolvedValue({ isSuccess: true, data: undefined });
-  mockCreateCategoryTypeAction.mockResolvedValue({ isSuccess: true, data: undefined });
+  mockCreateCategoryTypeAction.mockResolvedValue({
+    isSuccess: true,
+    data: { id: 'new-ct', name: 'Goods', icon: 'circle' },
+  });
   mockUpdateCategoryTypeAction.mockResolvedValue({ isSuccess: true, data: undefined });
   mockDeleteCategoryTypeAction.mockResolvedValue({ isSuccess: true, data: undefined });
 
@@ -226,5 +239,101 @@ describe('CategoriesTableClient form layout', () => {
       )
     ).toBeDefined();
     expect(screen.getAllByText('*').length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('CategoriesTableClient icon selector', () => {
+  it('renders icon select in the category form', () => {
+    setup();
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'New' })[0]);
+
+    expect(screen.getByText('Icon')).toBeDefined();
+    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('renders icon select in the category type form', () => {
+    setup();
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'New' })[1]);
+
+    expect(screen.getByText('Icon')).toBeDefined();
+    expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('submits the selected icon value when creating a category', async () => {
+    setup();
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'New' })[0]);
+    fireEvent.change(screen.getByPlaceholderText('e.g., Groceries'), {
+      target: { value: 'Food' },
+    });
+
+    const iconSelects = screen.getAllByRole('combobox');
+    fireEvent.change(iconSelects[iconSelects.length - 2], { target: { value: 'wallet' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add Category' }));
+
+    await waitFor(() => expect(mockCreateCategoryAction).toHaveBeenCalled());
+    expect(mockCreateCategoryAction).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Food', icon: 'wallet' })
+    );
+  });
+
+  it('submits the selected icon value when creating a category type', async () => {
+    setup();
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'New' })[1]);
+    fireEvent.change(screen.getByPlaceholderText('e.g., Consumer goods'), {
+      target: { value: 'Goods' },
+    });
+
+    const iconSelects = screen.getAllByRole('combobox');
+    fireEvent.change(iconSelects[iconSelects.length - 1], { target: { value: 'wallet' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add Type' }));
+
+    await waitFor(() => expect(mockCreateCategoryTypeAction).toHaveBeenCalled());
+    expect(mockCreateCategoryTypeAction).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Goods', icon: 'wallet' })
+    );
+  });
+
+  it('renders the icon in the categories table', () => {
+    const { container } = render(
+      <CategoriesTableClient
+        initialCategories={[
+          { id: '1', name: 'Food', type: 'expense', color: '#fff', icon: 'wallet' },
+        ]}
+        initialCategoryTypes={[]}
+      />
+    );
+
+    expect(container.querySelector('svg')).toBeDefined();
+    expect(screen.getByText('Food')).toBeDefined();
+  });
+
+  it('renders the icon in the category types table', () => {
+    const { container } = render(
+      <CategoriesTableClient
+        initialCategories={[]}
+        initialCategoryTypes={[{ id: '1', name: 'Goods', icon: 'wallet' }]}
+      />
+    );
+
+    expect(container.querySelector('svg')).toBeDefined();
+    expect(screen.getByText('Goods')).toBeDefined();
+  });
+
+  it('falls back to the default icon when a category has no icon value', () => {
+    const { container } = render(
+      <CategoriesTableClient
+        initialCategories={[{ id: '1', name: 'Food', type: 'expense', color: '#fff' }]}
+        initialCategoryTypes={[]}
+      />
+    );
+
+    expect(container.querySelector('svg')).toBeDefined();
+    expect(screen.getByText('Food')).toBeDefined();
   });
 });

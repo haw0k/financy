@@ -26,13 +26,13 @@ Add an icon selection dropdown to the **New Category** and **New Category Type**
 
 ## Acceptance Criteria
 
-- [ ] Icon select is visible and functional in the New Category form.
-- [ ] Icon select is visible and functional in the New Category Type form.
-- [ ] Icon select uses the custom Select component from `@/components/ui`.
-- [ ] Selected icon is saved and displayed in the categories table.
-- [ ] Selected icon is saved and displayed in the category types table.
-- [ ] Optional icons have a default value that does not break existing records.
-- [ ] Existing tests pass and new tests cover icon selection behavior.
+- [x] Icon select is visible and functional in the New Category form.
+- [x] Icon select is visible and functional in the New Category Type form.
+- [x] Icon select uses the custom Select component from `@/components/ui`.
+- [x] Selected icon is saved and displayed in the categories table.
+- [x] Selected icon is saved and displayed in the category types table.
+- [x] Optional icons have a default value that does not break existing records.
+- [x] Existing tests pass and new tests cover icon selection behavior.
 
 ## Open Questions
 

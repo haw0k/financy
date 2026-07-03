@@ -2,6 +2,7 @@
 
 import { cacheTag, cacheLife as nextCacheLife, revalidateTag } from 'next/cache';
 import { mapSupabaseError } from '@/lib/db-errors';
+import { DEFAULT_CATEGORY_ICON } from '@/lib/icons';
 import { requireApprovedUser } from '@/lib/require-auth';
 import { CACHE_TAGS, dashboardCacheLife, mutationRevalidateProfile } from '@/config';
 import { categorySchema, categoryTypeSchema } from '@/schemas';
@@ -10,7 +11,9 @@ import type { TCategoryInput, TCategoryTypeInput } from '@/schemas';
 import type { ICategory, ICategoryType } from '@/interfaces';
 import type { TActionResult } from '@/types';
 
-export async function createCategoryAction(input: TCategoryInput): Promise<TActionResult<void>> {
+export async function createCategoryAction(
+  input: TCategoryInput
+): Promise<TActionResult<ICategory>> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -37,22 +40,30 @@ export async function createCategoryAction(input: TCategoryInput): Promise<TActi
     }
   }
 
-  const { error } = await authResult.supabase.from('categories').insert([
-    {
-      name: parsed.data.name,
-      type: parsed.data.type,
-      color: parsed.data.color,
-      type_id: parsed.data.type_id ?? null,
-    },
-  ]);
+  const { data: created, error } = await authResult.supabase
+    .from('categories')
+    .insert([
+      {
+        name: parsed.data.name,
+        type: parsed.data.type,
+        color: parsed.data.color,
+        icon: parsed.data.icon || DEFAULT_CATEGORY_ICON,
+        type_id: parsed.data.type_id ?? null,
+      },
+    ])
+    .select()
+    .single();
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
+  if (!created) {
+    return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
+  }
 
   revalidateTag(CACHE_TAGS.categories, mutationRevalidateProfile);
 
-  return { isSuccess: true, data: undefined };
+  return { isSuccess: true, data: created };
 }
 
 export async function updateCategoryAction({
@@ -61,7 +72,7 @@ export async function updateCategoryAction({
 }: {
   id: string;
   input: TCategoryInput;
-}): Promise<TActionResult<void>> {
+}): Promise<TActionResult<ICategory>> {
   const parsed = categorySchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -94,21 +105,23 @@ export async function updateCategoryAction({
       name: parsed.data.name,
       type: parsed.data.type,
       color: parsed.data.color,
+      icon: parsed.data.icon || DEFAULT_CATEGORY_ICON,
       type_id: parsed.data.type_id ?? null,
     })
     .eq('id', id)
-    .select('id');
+    .select()
+    .single();
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
-  if (!updated?.length) {
+  if (!updated) {
     return { isSuccess: false, error: CATEGORY_MSGS.NOT_FOUND };
   }
 
   revalidateTag(CACHE_TAGS.categories, mutationRevalidateProfile);
 
-  return { isSuccess: true, data: undefined };
+  return { isSuccess: true, data: updated };
 }
 
 export async function deleteCategoryAction({ id }: { id: string }): Promise<TActionResult<void>> {
@@ -137,7 +150,7 @@ export async function deleteCategoryAction({ id }: { id: string }): Promise<TAct
 
 export async function createCategoryTypeAction(
   input: TCategoryTypeInput
-): Promise<TActionResult<void>> {
+): Promise<TActionResult<ICategoryType>> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -148,17 +161,22 @@ export async function createCategoryTypeAction(
     return { isSuccess: false, error: authResult.error };
   }
 
-  const { error } = await authResult.supabase
+  const { data: created, error } = await authResult.supabase
     .from('category_types')
-    .insert([{ name: parsed.data.name }]);
+    .insert([{ name: parsed.data.name, icon: parsed.data.icon || DEFAULT_CATEGORY_ICON }])
+    .select()
+    .single();
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
+  if (!created) {
+    return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
+  }
 
   revalidateTag(CACHE_TAGS.categoryTypes, mutationRevalidateProfile);
 
-  return { isSuccess: true, data: undefined };
+  return { isSuccess: true, data: created };
 }
 
 export async function updateCategoryTypeAction({
@@ -167,7 +185,7 @@ export async function updateCategoryTypeAction({
 }: {
   id: string;
   input: TCategoryTypeInput;
-}): Promise<TActionResult<void>> {
+}): Promise<TActionResult<ICategoryType>> {
   const parsed = categoryTypeSchema.safeParse(input);
   if (!parsed.success) {
     return { isSuccess: false, error: parsed.error.issues[0].message };
@@ -180,20 +198,21 @@ export async function updateCategoryTypeAction({
 
   const { data: updated, error } = await authResult.supabase
     .from('category_types')
-    .update({ name: parsed.data.name })
+    .update({ name: parsed.data.name, icon: parsed.data.icon || DEFAULT_CATEGORY_ICON })
     .eq('id', id)
-    .select('id');
+    .select()
+    .single();
 
   if (error) {
     return { isSuccess: false, error: mapSupabaseError(error) };
   }
-  if (!updated?.length) {
+  if (!updated) {
     return { isSuccess: false, error: CATEGORY_MSGS.TYPE_NOT_FOUND };
   }
 
   revalidateTag(CACHE_TAGS.categoryTypes, mutationRevalidateProfile);
 
-  return { isSuccess: true, data: undefined };
+  return { isSuccess: true, data: updated };
 }
 
 export async function deleteCategoryTypeAction({

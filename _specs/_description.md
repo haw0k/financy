@@ -37,4 +37,4 @@
 - [x] feat: Improve Transaction Form Layout - { 2026-06-28-improve-transaction-form-layout.md }
 - [x] feat: Custom Select Component - { 2026-06-29-custom-select-component.md }
 - [x] refactor: Unify Categories Form Appearance with Transactions - { 2026-07-03-unify-categories-form-appearance.md }
-- [ ] feat: Icon Selector for Categories and Category Types - { 2026-07-03-icon-selector-for-categories.md }
+- [x] feat: Icon Selector for Categories and Category Types - { 2026-07-03-icon-selector-for-categories.md }

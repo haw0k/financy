@@ -3,6 +3,7 @@ export interface ICategory {
   name: string;
   type: 'income' | 'expense';
   color: string;
+  icon?: string;
   type_id?: string;
 }
 
@@ -14,8 +15,10 @@ export interface ICategoryData {
 export interface ICategoryType {
   id: string;
   name: string;
+  icon?: string;
 }
 
 export interface ICategoryTypeInput {
   name: string;
+  icon?: string;
 }

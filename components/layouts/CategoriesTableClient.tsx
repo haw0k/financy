@@ -31,11 +31,14 @@ import {
   NewButton,
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
   showError,
 } from '@/components/ui';
+import { CATEGORY_ICON_GROUPS, DEFAULT_CATEGORY_ICON, getCategoryIcon } from '@/lib/icons';
 import { withTimeout } from '@/lib/with-timeout';
 import {
   createCategoryAction,
@@ -67,9 +70,13 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
     name: '',
     type: 'expense' as 'income' | 'expense',
     color: DEFAULT_CATEGORY_COLOR,
+    icon: DEFAULT_CATEGORY_ICON as string,
     type_id: '',
   });
-  const [ctFormData, setCtFormData] = useState<ICategoryTypeInput>({ name: '' });
+  const [ctFormData, setCtFormData] = useState<ICategoryTypeInput>({
+    name: '',
+    icon: DEFAULT_CATEGORY_ICON as string,
+  });
   const [ctEditingId, setCtEditingId] = useState<string | null>(null);
   const [isCtShowForm, setCtIsShowForm] = useState(false);
   const [ctDeleteId, setCtDeleteId] = useState<string | null>(null);
@@ -84,25 +91,37 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
         const isEdit = !!ctEditingId;
         const result = await withTimeout(
           isEdit
-            ? updateCategoryTypeAction({ id: ctEditingId, input: { name: ctFormData.name } })
-            : createCategoryTypeAction({ name: ctFormData.name })
+            ? updateCategoryTypeAction({
+                id: ctEditingId,
+                input: {
+                  name: ctFormData.name,
+                  icon: ctFormData.icon || DEFAULT_CATEGORY_ICON,
+                },
+              })
+            : createCategoryTypeAction({
+                name: ctFormData.name,
+                icon: ctFormData.icon || DEFAULT_CATEGORY_ICON,
+              })
         );
 
         if (result.isSuccess) {
           if (isEdit) {
             setCategoryTypes(
               categoryTypes.map((ct) =>
-                ct.id === ctEditingId ? { ...ct, name: ctFormData.name } : ct
+                ct.id === ctEditingId
+                  ? { ...ct, name: ctFormData.name, icon: ctFormData.icon || DEFAULT_CATEGORY_ICON }
+                  : ct
               )
             );
           } else {
-            // Optimistic add with temp ID; router.refresh() will correct it
-            setCategoryTypes([
-              ...categoryTypes,
-              { id: `temp-${Date.now()}`, name: ctFormData.name },
-            ]);
+            const newCategoryType: ICategoryType = result.data ?? {
+              id: `temp-${Date.now()}`,
+              name: ctFormData.name,
+              icon: ctFormData.icon || DEFAULT_CATEGORY_ICON,
+            };
+            setCategoryTypes([...categoryTypes, newCategoryType]);
           }
-          setCtFormData({ name: '' });
+          setCtFormData({ name: '', icon: DEFAULT_CATEGORY_ICON as string });
           setCtEditingId(null);
           setCtIsShowForm(false);
           router.refresh();
@@ -116,7 +135,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
   };
 
   const handleCtEdit = (ct: ICategoryType) => {
-    setCtFormData({ name: ct.name });
+    setCtFormData({ name: ct.name, icon: ct.icon || DEFAULT_CATEGORY_ICON });
     setCtEditingId(ct.id);
     setCtIsShowForm(true);
   };
@@ -140,10 +159,17 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const input: { name: string; type: 'income' | 'expense'; color: string; type_id?: string } = {
+    const input: {
+      name: string;
+      type: 'income' | 'expense';
+      color: string;
+      icon: string;
+      type_id?: string;
+    } = {
       name: formData.name,
       type: formData.type,
       color: formData.color,
+      icon: formData.icon,
     };
     if (formData.type_id) {
       input.type_id = formData.type_id;
@@ -166,25 +192,30 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       name: formData.name,
                       type: formData.type,
                       color: formData.color,
+                      icon: formData.icon,
                       type_id: formData.type_id || undefined,
                     }
                   : c
               )
             );
           } else {
-            // Optimistic add with temp ID; router.refresh() will correct it
-            setCategories([
-              ...categories,
-              {
-                id: `temp-${Date.now()}`,
-                name: formData.name,
-                type: formData.type,
-                color: formData.color,
-                type_id: formData.type_id || undefined,
-              },
-            ]);
+            const newCategory: ICategory = result.data ?? {
+              id: `temp-${Date.now()}`,
+              name: formData.name,
+              type: formData.type,
+              color: formData.color,
+              icon: formData.icon,
+              type_id: formData.type_id || undefined,
+            };
+            setCategories([...categories, newCategory]);
           }
-          setFormData({ name: '', type: 'expense', color: DEFAULT_CATEGORY_COLOR, type_id: '' });
+          setFormData({
+            name: '',
+            type: 'expense',
+            color: DEFAULT_CATEGORY_COLOR,
+            icon: DEFAULT_CATEGORY_ICON as string,
+            type_id: '',
+          });
           setEditingId(null);
           setIsShowForm(false);
           router.refresh();
@@ -273,6 +304,35 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="icon" className="text-xs text-muted-foreground">
+                      Icon
+                    </Label>
+                    <Select
+                      value={formData.icon}
+                      onValueChange={(v) => {
+                        setFormData({ ...formData, icon: v });
+                      }}
+                    >
+                      <SelectTrigger className="w-full" id="icon">
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_ICON_GROUPS.map((group) => (
+                          <SelectGroup key={group.group}>
+                            <SelectLabel>{group.group}</SelectLabel>
+                            {group.items.map(({ value, label, Icon }) => (
+                              <SelectItem key={value} value={value}>
+                                <Icon className="h-4 w-4" />
+                                <span>{label}</span>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="type_id" className="text-xs text-muted-foreground">
                       Category Type
                     </Label>
@@ -333,6 +393,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       name: '',
                       type: 'expense',
                       color: DEFAULT_CATEGORY_COLOR,
+                      icon: DEFAULT_CATEGORY_ICON as string,
                       type_id: '',
                     });
                   }}
@@ -360,9 +421,16 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                 <TableBody>
                   {categories.map((category) => {
                     const categoryType = categoryTypes.find((ct) => ct.id === category.type_id);
+                    const CategoryIcon = getCategoryIcon(category.icon);
+
                     return (
                       <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <CategoryIcon className="h-4 w-4 text-muted-foreground" />
+                            <span>{category.name}</span>
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <Badge
                             variant="outline"
@@ -379,13 +447,10 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                           <Badge variant="secondary">{categoryType?.name || '-'}</Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="h-6 w-6 rounded border border-border"
-                              style={{ backgroundColor: category.color }}
-                            />
-                            <span className="text-sm text-muted-foreground">{category.color}</span>
-                          </div>
+                          <div
+                            className="h-6 w-6 rounded-full border border-border"
+                            style={{ backgroundColor: category.color }}
+                          />
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-0.5">
@@ -399,6 +464,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                                   name: category.name,
                                   type: category.type,
                                   color: category.color,
+                                  icon: category.icon || DEFAULT_CATEGORY_ICON,
                                   type_id: category.type_id || '',
                                 });
                                 setIsShowForm(true);
@@ -462,10 +528,39 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                       placeholder="e.g., Consumer goods"
                       value={ctFormData.name}
                       onChange={(e) => {
-                        setCtFormData({ name: e.target.value });
+                        setCtFormData({ ...ctFormData, name: e.target.value });
                       }}
                       required
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="ctIcon" className="text-xs text-muted-foreground">
+                      Icon
+                    </Label>
+                    <Select
+                      value={ctFormData.icon}
+                      onValueChange={(v) => {
+                        setCtFormData({ ...ctFormData, icon: v });
+                      }}
+                    >
+                      <SelectTrigger className="w-full" id="ctIcon">
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_ICON_GROUPS.map((group) => (
+                          <SelectGroup key={group.group}>
+                            <SelectLabel>{group.group}</SelectLabel>
+                            {group.items.map(({ value, label, Icon }) => (
+                              <SelectItem key={value} value={value}>
+                                <Icon className="h-4 w-4" />
+                                <span>{label}</span>
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </fieldset>
@@ -481,7 +576,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                   onClick={() => {
                     setCtIsShowForm(false);
                     setCtEditingId(null);
-                    setCtFormData({ name: '' });
+                    setCtFormData({ name: '', icon: DEFAULT_CATEGORY_ICON as string });
                   }}
                 >
                   Cancel
@@ -502,35 +597,44 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {categoryTypes.map((ct) => (
-                    <TableRow key={ct.id}>
-                      <TableCell className="font-medium">{ct.name}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-0.5">
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label="Edit category type"
-                            onClick={() => {
-                              handleCtEdit(ct);
-                            }}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label="Delete category type"
-                            onClick={() => {
-                              setCtDeleteId(ct.id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {categoryTypes.map((ct) => {
+                    const CategoryTypeIcon = getCategoryIcon(ct.icon);
+
+                    return (
+                      <TableRow key={ct.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <CategoryTypeIcon className="h-4 w-4 text-muted-foreground" />
+                            <span>{ct.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              aria-label="Edit category type"
+                              onClick={() => {
+                                handleCtEdit(ct);
+                              }}
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              aria-label="Delete category type"
+                              onClick={() => {
+                                setCtDeleteId(ct.id);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
