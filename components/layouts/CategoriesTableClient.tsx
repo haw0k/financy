@@ -299,7 +299,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                     <Label htmlFor="color" className="text-xs text-muted-foreground">
                       Color
                     </Label>
-                    <div className="relative h-8 w-8 shrink-0">
+                    <div className="relative h-8 w-8 shrink-0 rounded-full focus-within:ring-[3px] focus-within:ring-ring/50">
                       <Input
                         id="color"
                         type="color"
@@ -310,7 +310,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
                         className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                       />
                       <div
-                        className="absolute inset-0 rounded-full border border-border"
+                        className="pointer-events-none absolute inset-0 rounded-full border border-border"
                         style={{ backgroundColor: formData.color }}
                       />
                     </div>
