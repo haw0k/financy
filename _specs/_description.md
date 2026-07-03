@@ -39,3 +39,4 @@
 - [x] refactor: Unify Categories Form Appearance with Transactions - { 2026-07-03-unify-categories-form-appearance.md }
 - [x] feat: Icon Selector for Categories and Category Types - { 2026-07-03-icon-selector-for-categories.md }
 - [ ] feat: Update Application Logo - { 2026-07-03-update-application-logo.md }
+- [ ] feat: Add SEO and OpenGraph Tags - { 2026-07-03-add-seo-opengraph-tags.md }
