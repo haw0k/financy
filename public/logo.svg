@@ -1,1 +1,4 @@
-../app/icon.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <path fill="#89cead" d="m648 73 364 227-364 227V391H407a25 25 0 0 0-25 25v383l-196 18V367a158 158 0 0 1 158-158h304z"/>
+  <path fill="#0f9761" d="M380 477 16 714l364 220V799h363V617H380z"/>
+</svg>
