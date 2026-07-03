@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Login',
   description: 'Sign in to your Financy account',
   path: '/auth/login',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default LoginPage;

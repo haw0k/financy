@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Settings',
   description: 'Manage your account settings',
   path: '/dashboard/settings',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default SettingsPage;

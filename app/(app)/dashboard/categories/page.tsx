@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Categories',
   description: 'Organize your transactions by category',
   path: '/dashboard/categories',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default CategoriesPage;

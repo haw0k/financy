@@ -8,7 +8,7 @@ export const metadata = createMetadata({
   title: 'Admin Dashboard',
   description: 'Manage user registrations and approvals',
   path: '/admin',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default async function AdminPageRoute() {

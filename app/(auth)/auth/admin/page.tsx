@@ -4,7 +4,7 @@ import { createMetadata } from '@/lib/metadata';
 export const metadata = createMetadata({
   title: 'Admin',
   path: '/auth/admin',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default AdminAuthPage;

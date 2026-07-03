@@ -1,15 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockUsePathname = vi.fn();
-
 vi.mock('next/navigation', () => ({
-  usePathname: () => mockUsePathname(),
+  usePathname: vi.fn(),
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn(), replace: vi.fn() }),
 }));
 
 beforeEach(() => {
   vi.clearAllMocks();
-  document.head.innerHTML = '';
 });
 
 describe('createMetadata', () => {
@@ -36,9 +33,9 @@ describe('createMetadata', () => {
     );
   });
 
-  it('should mark noIndex pages as non-indexable', async () => {
+  it('should mark isNoIndex pages as non-indexable', async () => {
     const { createMetadata } = await import('@/lib/metadata');
-    const metadata = createMetadata({ noIndex: true });
+    const metadata = createMetadata({ isNoIndex: true });
 
     expect(metadata.robots).toEqual({ index: false, follow: false });
   });

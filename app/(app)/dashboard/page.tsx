@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Dashboard',
   description: 'View your financial overview and statistics',
   path: '/dashboard',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default DashboardPage;

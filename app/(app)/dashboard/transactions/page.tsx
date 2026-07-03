@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Transactions',
   description: 'Manage your financial transactions',
   path: '/dashboard/transactions',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default TransactionsPage;

@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Account Pending',
   description: 'Your account is pending approval',
   path: '/auth/pending',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default PendingPage;

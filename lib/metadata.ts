@@ -5,23 +5,24 @@ interface ICreateMetadataOptions {
   title?: string;
   description?: string;
   path?: string;
-  noIndex?: boolean;
+  isNoIndex?: boolean;
 }
 
 export function createMetadata(options: ICreateMetadataOptions = {}): Metadata {
   const title = options.title ? `${options.title} — ${siteConfig.name}` : siteConfig.name;
   const description = options.description ?? siteConfig.description;
-  const url = options.path ? `${siteConfig.url}${options.path}` : siteConfig.url;
-  const imageUrl = `${siteConfig.url}${siteConfig.socialPreview}`;
+  const baseUrl = siteConfig.url.replace(/\/+$/, '');
+  const url = options.path ? `${baseUrl}${options.path}` : baseUrl;
+  const imageUrl = `${baseUrl}${siteConfig.socialPreview}`;
 
   return {
     title,
     description,
-    metadataBase: new URL(siteConfig.url),
+    metadataBase: new URL(baseUrl),
     alternates: {
       canonical: url,
     },
-    robots: options.noIndex
+    robots: options.isNoIndex
       ? {
           index: false,
           follow: false,

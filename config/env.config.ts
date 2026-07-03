@@ -4,6 +4,7 @@ export const env = {
   devSupabaseRedirectUrl: process.env.DEV_SUPABASE_REDIRECT_URL,
   supabaseRedirectUrl: process.env.SUPABASE_REDIRECT_URL,
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
 } as const;
 
 export function getSupabaseRedirectUrl(): string | undefined {

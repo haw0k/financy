@@ -5,7 +5,7 @@ export const metadata = createMetadata({
   title: 'Check Your Email',
   description: 'Verify your email to complete registration',
   path: '/auth/sign-up-success',
-  noIndex: true,
+  isNoIndex: true,
 });
 
 export default SignUpSuccessPage;
