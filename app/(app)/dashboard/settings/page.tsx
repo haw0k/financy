@@ -1,10 +1,11 @@
 import { SettingsPage } from '@/components/pages/dashboard';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Settings — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Settings',
   description: 'Manage your account settings',
-};
+  path: '/dashboard/settings',
+  noIndex: true,
+});
 
 export default SettingsPage;

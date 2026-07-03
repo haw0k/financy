@@ -1,10 +1,8 @@
 import { HomePage } from '@/components/pages/HomePage';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `${siteConfig.name} — Track Your Finances`,
-  description: siteConfig.description,
-};
+export const metadata = createMetadata({
+  title: 'Track Your Finances',
+});
 
 export default HomePage;

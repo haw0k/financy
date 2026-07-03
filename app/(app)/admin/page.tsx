@@ -1,13 +1,15 @@
 import { redirect } from 'next/navigation';
 import { AdminPage } from '@/components/pages/admin';
+import { createMetadata } from '@/lib/metadata';
 import { requireApprovedAdmin } from '@/lib/require-auth';
-import { routes, siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { routes } from '@/config';
 
-export const metadata: Metadata = {
-  title: `Admin Dashboard — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Admin Dashboard',
   description: 'Manage user registrations and approvals',
-};
+  path: '/admin',
+  noIndex: true,
+});
 
 export default async function AdminPageRoute() {
   const adminResult = await requireApprovedAdmin();

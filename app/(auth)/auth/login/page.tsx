@@ -1,10 +1,11 @@
 import { LoginPage } from '@/components/pages/auth';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Login — ${siteConfig.name}`,
-  description: `Sign in to your ${siteConfig.name} account`,
-};
+export const metadata = createMetadata({
+  title: 'Login',
+  description: 'Sign in to your Financy account',
+  path: '/auth/login',
+  noIndex: true,
+});
 
 export default LoginPage;

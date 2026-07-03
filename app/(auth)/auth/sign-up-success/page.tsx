@@ -1,10 +1,11 @@
 import { SignUpSuccessPage } from '@/components/pages/auth';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Check Your Email — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Check Your Email',
   description: 'Verify your email to complete registration',
-};
+  path: '/auth/sign-up-success',
+  noIndex: true,
+});
 
 export default SignUpSuccessPage;

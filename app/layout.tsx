@@ -4,11 +4,12 @@ import { Analytics } from '@vercel/analytics/next';
 import { Geist_Mono, Roboto } from 'next/font/google';
 import Script from 'next/script';
 import { SonnerToaster } from '@/lib/shadcn';
+import { createMetadata } from '@/lib/metadata';
 import { createClient } from '@/lib/supabase/server';
-import { siteConfig } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
-import type { Metadata } from 'next';
 import './globals.css';
+
+export const metadata = createMetadata();
 
 const roboto = Roboto({
   subsets: ['latin', 'cyrillic'],
@@ -17,11 +18,6 @@ const roboto = Roboto({
 });
 const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'], variable: '--font-mono' });
 const robotoHeading = Roboto({ subsets: ['latin', 'cyrillic'], variable: '--font-heading' });
-
-export const metadata: Metadata = {
-  title: siteConfig.name,
-  description: siteConfig.description,
-};
 
 type TProfileResult =
   | { role: ERole | null; status: EProfileStatus | null; isError: false }

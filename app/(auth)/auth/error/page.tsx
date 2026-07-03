@@ -1,10 +1,11 @@
 import { ErrorPage } from '@/components/pages/auth';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Error — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Error',
   description: 'An error occurred during authentication',
-};
+  path: '/auth/error',
+  noIndex: true,
+});
 
 export default ErrorPage;

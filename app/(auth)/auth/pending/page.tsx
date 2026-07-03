@@ -1,10 +1,11 @@
 import { PendingPage } from '@/components/pages/auth';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Account Pending — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Account Pending',
   description: 'Your account is pending approval',
-};
+  path: '/auth/pending',
+  noIndex: true,
+});
 
 export default PendingPage;

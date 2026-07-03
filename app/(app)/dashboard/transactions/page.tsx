@@ -1,10 +1,11 @@
 import { TransactionsPage } from '@/components/pages/dashboard';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Transactions — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Transactions',
   description: 'Manage your financial transactions',
-};
+  path: '/dashboard/transactions',
+  noIndex: true,
+});
 
 export default TransactionsPage;

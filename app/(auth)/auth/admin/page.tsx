@@ -1,10 +1,10 @@
 import { AdminAuthPage } from '@/components/pages/auth';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Admin — ${siteConfig.name}`,
-  description: 'Admin authentication',
-};
+export const metadata = createMetadata({
+  title: 'Admin',
+  path: '/auth/admin',
+  noIndex: true,
+});
 
 export default AdminAuthPage;

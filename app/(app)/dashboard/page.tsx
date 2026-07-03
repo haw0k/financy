@@ -1,10 +1,11 @@
 import { DashboardPage } from '@/components/pages/dashboard';
-import { siteConfig } from '@/config';
-import type { Metadata } from 'next';
+import { createMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: `Dashboard — ${siteConfig.name}`,
+export const metadata = createMetadata({
+  title: 'Dashboard',
   description: 'View your financial overview and statistics',
-};
+  path: '/dashboard',
+  noIndex: true,
+});
 
 export default DashboardPage;
