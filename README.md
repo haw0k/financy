@@ -1,5 +1,9 @@
 # Financy — Personal Finance Tracker
 
+<p align="center">
+  <img src="public/logo.svg" alt="Financy logo" width="96" height="96" />
+</p>
+
 **Financy** is a personal and small-team finance tracker for managing income, expenses, and transactions. It supports role-based workflows — senders log expenses, receivers track income, and admins approve new registrations — so it works for individual budgeting, family accounting, or small groups that need to split and track money flows.
 
 Built with Next.js 16, Supabase (PostgreSQL + Auth), and React 19. Features secure email/OAuth authentication, category management, interactive charts, and a dark/light theme.

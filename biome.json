@@ -16,7 +16,8 @@
       "!dist",
       "!.turbo",
       "!*.mjs",
-      "!next-env.d.ts"
+      "!next-env.d.ts",
+      "!*.svg"
     ]
   },
   "formatter": {
