@@ -393,7 +393,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
 
               <div className="flex justify-end gap-4 pt-2">
                 <Button type="submit" disabled={isPending || !formData.name}>
-                  {isPending ? 'Saving...' : editingId ? 'Update' : 'Add'} Category
+                  {isPending ? 'Saving...' : editingId ? 'Update Category' : 'Add Category'}
                 </Button>
                 <Button
                   type="button"
@@ -584,7 +584,7 @@ export const CategoriesTableClient: FC<ICategoriesTableClient> = ({
 
               <div className="flex justify-end gap-4 pt-2">
                 <Button type="submit" disabled={isPending || !ctFormData.name}>
-                  {isPending ? 'Saving...' : ctEditingId ? 'Update' : 'Add'} Type
+                  {isPending ? 'Saving...' : ctEditingId ? 'Update Type' : 'Add Type'}
                 </Button>
                 <Button
                   type="button"
