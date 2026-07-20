@@ -6,13 +6,13 @@ Link: [Local Supabase Setup Guide](_specs/2026-07-20-local-supabase-setup-guide.
 
 ## Current State
 
-`SETUP_GUIDE.md` documents cloud Supabase setup but does not cover running the project entirely locally. Contributors who want to avoid cloud infrastructure need a separate guide for installing the Supabase CLI, starting local services, configuring environment variables for local Supabase, and initializing the database.
+`CLOUD_SETUP.md` documents cloud Supabase setup but does not cover running the project entirely locally. Contributors who want to avoid cloud infrastructure need a separate guide for installing the Supabase CLI, starting local services, configuring environment variables for local Supabase, and initializing the database.
 
 ## Implementation Steps
 
 ### Phase 1 — Audit and Structure
 
-- [x] Decide whether to add a new `LOCAL_SETUP.md` file or extend `SETUP_GUIDE.md` with a local section. Choose the option that keeps cloud and local instructions clearly separated.
+- [x] Decide whether to add a new `LOCAL_SETUP.md` file or extend `CLOUD_SETUP.md` with a local section. Choose the option that keeps cloud and local instructions clearly separated.
 - [x] Identify all environment variables that differ between cloud and local Supabase (URL, anon key, service role key, redirect URL).
 - [x] List prerequisites: Node.js, pnpm, Docker, Supabase CLI.
 

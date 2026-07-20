@@ -38,7 +38,7 @@ Create documentation that explains how to install and run the Financy project lo
 
 ## Open Questions
 
-- Should this be a separate `LOCAL_SETUP.md` file or an additional section in the existing `SETUP_GUIDE.md`?
+- Should this be a separate `LOCAL_SETUP.md` file or an additional section in the existing `CLOUD_SETUP.md`?
 - Should the guide recommend the Supabase CLI as the primary method, or also document a plain Docker Compose alternative?
 - Should the guide include instructions for seeding sample data after local initialization?
 

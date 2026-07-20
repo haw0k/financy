@@ -39,9 +39,9 @@ NEXT_GOOGLE_CLIENT_SECRET=
 
 | Variable | Where to find it | Required? |
 | --- | --- | --- |
-| `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → Project URL | Yes |
-| `SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Anon key / Publishable key (`default`) | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Secret Keys → `default`. Keep this secret — it grants full database access | Yes |
+| `SUPABASE_URL` | Supabase Dashboard → Project Settings → General → Project ID. Build the URL as `https://<project-id>.supabase.co`. The Project URL is also shown on Project Settings → Configuration → API Keys | Yes |
+| `SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → Configuration → API Keys → Anon key / Publishable key (`default`) | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → Configuration → API Keys → Secret Keys → `default`. Keep this secret — it grants full database access | Yes |
 | `DEV_SUPABASE_REDIRECT_URL` | Local callback route. Use `http://localhost:3000/auth/callback`. This overrides `SUPABASE_REDIRECT_URL` when `NODE_ENV=development` | Recommended for local dev |
 | `SUPABASE_REDIRECT_URL` | Fallback/production callback URL. For local dev you can set it to `http://localhost:3000/auth/callback` because `DEV_SUPABASE_REDIRECT_URL` takes precedence | Yes |
 | `NEXT_PUBLIC_SITE_URL` | Public site URL. Required in all environments; use `http://localhost:3000` locally | Yes |
@@ -158,7 +158,7 @@ Make sure you ran [`scripts/001_init_database.sql`](scripts/001_init_database.sq
 
 Free Supabase projects can be paused after inactivity. After reactivation, the instance may be recreated with a different `SUPABASE_URL` and an empty database.
 
-1. Copy the new **Project URL** from Supabase Dashboard → Project Settings → API.
+1. Copy the new **Project URL** from Supabase Dashboard → Project Settings → Configuration → API Keys.
 2. Update `SUPABASE_URL` in `.env.local`.
 3. Re-run [`scripts/001_init_database.sql`](scripts/001_init_database.sql) in the SQL Editor.
 4. Re-create the admin account by following [Step 5: Create the First Admin](#step-5-create-the-first-admin).

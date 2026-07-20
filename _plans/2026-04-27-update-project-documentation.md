@@ -50,7 +50,7 @@ Five documentation files need updating to reflect recent project changes: new di
 - Add `NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL` to Environment Variables section
 - Add `_specs/` and `_plans/` references to development workflow
 
-#### SETUP_GUIDE.md
+#### CLOUD_SETUP.md
 
 - Fix path in Tech Stack and Project Structure
 - Add new directories to Tech Stack and Project Structure
@@ -62,7 +62,7 @@ Five documentation files need updating to reflect recent project changes: new di
 - `CLAUDE.md`
 - `PROJECT_SUMMARY.md`
 - `README.md`
-- `SETUP_GUIDE.md`
+- `CLOUD_SETUP.md`
 
 ## Verification
 

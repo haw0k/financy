@@ -6,13 +6,13 @@ Link: [Update Setup Guide Documentation](_specs/2026-07-20-update-setup-guide.md
 
 ## Current State
 
-`SETUP_GUIDE.md` exists but does not reflect the current environment configuration flow, database initialization steps, or recovery procedures after a Supabase infrastructure reset. The project now uses a centralized `config/env.config.ts`, a single database initialization script, and an admin approval flow that requires specific setup steps. Contributors and the project owner need clearer instructions to stand the application up from scratch or recover after a paused Supabase project is reactivated.
+`CLOUD_SETUP.md` exists but does not reflect the current environment configuration flow, database initialization steps, or recovery procedures after a Supabase infrastructure reset. The project now uses a centralized `config/env.config.ts`, a single database initialization script, and an admin approval flow that requires specific setup steps. Contributors and the project owner need clearer instructions to stand the application up from scratch or recover after a paused Supabase project is reactivated.
 
 ## Implementation Steps
 
 ### Phase 1 — Audit and Structure
 
-- [x] Read the full current `SETUP_GUIDE.md` and note outdated sections, broken links, or missing topics.
+- [x] Read the full current `CLOUD_SETUP.md` and note outdated sections, broken links, or missing topics.
 - [x] Identify all environment variables required by `config/env.config.ts` and `.env.example`.
 - [x] Outline the new sections: prerequisites, environment variables, database setup, first admin setup, regular user registration, and troubleshooting.
 
@@ -40,7 +40,7 @@ Link: [Update Setup Guide Documentation](_specs/2026-07-20-update-setup-guide.md
 
 ## Definition of Done
 
-- [x] `SETUP_GUIDE.md` is updated and reviewed against the spec acceptance criteria.
+- [x] `CLOUD_SETUP.md` is updated and reviewed against the spec acceptance criteria.
 - [x] All required environment variables are documented with retrieval instructions.
 - [x] Database initialization and first admin setup are described step by step.
 - [x] A troubleshooting section covers URL changes, empty database recovery, and manual admin approval.

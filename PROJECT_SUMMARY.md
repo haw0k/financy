@@ -135,7 +135,7 @@ financy/
 ├── tests/                       # Vitest test files
 │
 ├── components.json              # shadcn/ui configuration
-├── SETUP_GUIDE.md               # Detailed setup instructions
+├── CLOUD_SETUP.md               # Detailed cloud setup instructions
 └── package.json                 # Dependencies
 ```
 

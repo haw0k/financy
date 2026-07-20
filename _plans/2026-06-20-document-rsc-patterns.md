@@ -87,7 +87,7 @@ The goal is to consolidate these patterns into a single practical guide that dem
 ## Risks & Notes
 
 - The guide will reference specific files; those references may drift as the codebase changes. The guide should be treated as living documentation and updated when major architectural changes happen.
-- The guide intentionally stays focused on RSC practical patterns. It does not replace `PROJECT_SUMMARY.md` or `SETUP_GUIDE.md`.
+- The guide intentionally stays focused on RSC practical patterns. It does not replace `PROJECT_SUMMARY.md` or `CLOUD_SETUP.md`.
 
 ## Definition of Done
 

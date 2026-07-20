@@ -275,4 +275,4 @@ The local Auth service may still be initializing. Wait a few seconds and re-run 
 | Project pause | Free projects pause after inactivity | No pause |
 | Backups | Automatic on paid tiers | Your responsibility |
 
-For a cloud-based setup, see [SETUP_GUIDE.md](./SETUP_GUIDE.md).
+For a cloud-based setup, see [CLOUD_SETUP.md](./CLOUD_SETUP.md).
