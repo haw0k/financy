@@ -44,14 +44,16 @@ supabase start
 
 > **Note:** For local-only development you do **not** need `supabase login` or `supabase link` — those commands are only used when connecting to a cloud Supabase project.
 
-After startup, the terminal prints the local credentials. Look for these values:
+After startup, the terminal prints the local credentials. If you closed the window, run `supabase status` to print them again, or `supabase status -o env` to print them as environment-variable exports.
+
+Look for these values:
 
 | Local service | URL |
 | --- | --- |
 | Supabase Studio (UI) | `http://127.0.0.1:54323` |
 | Supabase API | `http://127.0.0.1:54321` |
 | Postgres database | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
-| Inbucket (test email) | `http://127.0.0.1:54324` |
+| Mailpit (test email) | `http://127.0.0.1:54324` |
 
 You will also see an **anon key** and a **service_role key** in the output. Copy both for the next step.
 
@@ -115,13 +117,23 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The first admin must be created before regular users can register.
 
+By default, the local Supabase CLI automatically confirms new email addresses (`auth.email.enable_confirmations = false` in `supabase/config.toml`). In that default mode, signing up at `/auth/admin` creates and approves the admin without sending a confirmation email.
+
+If you want to test the full email confirmation flow locally, enable confirmations first:
+
+1. Open `supabase/config.toml`.
+2. Under `[auth.email]`, set `enable_confirmations = true`.
+3. Run `supabase stop` then `supabase start` to reload the configuration.
+
+Then create the admin:
+
 1. Open [http://localhost:3000/auth/admin](http://localhost:3000/auth/admin).
 2. Fill in the admin email and password, then sign up.
-3. Supabase Auth sends a confirmation email to the local Inbucket server.
+3. Supabase Auth sends a confirmation email to the local Mailpit server.
 4. Open [http://127.0.0.1:54324](http://127.0.0.1:54324), find the confirmation email, and click the link.
 5. The application approves the admin automatically and redirects to `/admin`.
 
-If the confirmation link expired or Inbucket did not show the email, confirm the email in Supabase Studio and approve the admin manually:
+If the confirmation link expired or Mailpit did not show the email, confirm the email in Supabase Studio and approve the admin manually:
 
 1. Open `http://127.0.0.1:54323` → **Authentication** → **Users**.
 2. Click the user menu and select **Confirm email**.
@@ -150,7 +162,7 @@ Only one approved admin is allowed in the system.
 
 1. Open [http://localhost:3000/auth/sign-up](http://localhost:3000/auth/sign-up).
 2. Choose a role (`sender` or `receiver`) and complete sign up.
-3. Confirm the email via the Inbucket link, or confirm it manually in Supabase Studio.
+3. With the default `enable_confirmations = false`, the email is auto-confirmed. If you enabled confirmations, open the Mailpit link to confirm the email, or confirm it manually in Supabase Studio.
 4. The user lands on `/auth/pending` until the admin approves them.
 5. The admin signs in at `/admin`, finds the pending user, and clicks **Approve**.
 6. After approval, the user can sign in and access `/dashboard`.
@@ -213,6 +225,15 @@ Another service may be using the default Supabase ports. Supabase CLI ports are 
 ```toml
 [api]
 port = 54331
+
+[db]
+port = 54332
+
+[studio]
+port = 54333
+
+[local_smtp]
+port = 54334
 ```
 
 Then restart the stack:
@@ -222,15 +243,15 @@ supabase stop
 supabase start
 ```
 
-Update `SUPABASE_URL` in `.env.local` to match the new API port, for example `http://127.0.0.1:54331`.
+Run `supabase status` to confirm the actual ports. Update `SUPABASE_URL` and the other URLs you use in `.env.local` accordingly, for example `http://127.0.0.1:54331` for the API.
 
 ### Database script fails with "relation `auth.users` does not exist"
 
 The local Auth service may still be initializing. Wait a few seconds and re-run the script.
 
-### Confirmation email does not appear in Inbucket
+### Confirmation email does not appear in Mailpit
 
-1. Verify Inbucket is running at `http://127.0.0.1:54324`.
+1. Verify Mailpit is running at `http://127.0.0.1:54324`.
 2. Check that `DEV_SUPABASE_REDIRECT_URL` is set to `http://localhost:3000/auth/callback`.
 3. Manually confirm the email in Supabase Studio → **Authentication** → **Users**.
 
@@ -250,7 +271,7 @@ The local Auth service may still be initializing. Wait a few seconds and re-run 
 | --- | --- | --- |
 | Hosting | Supabase Cloud | Docker on your machine |
 | Database URL | Project-specific | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
-| Email delivery | Supabase / custom SMTP | Inbucket test server |
+| Email delivery | Supabase / custom SMTP | Mailpit test server |
 | Project pause | Free projects pause after inactivity | No pause |
 | Backups | Automatic on paid tiers | Your responsibility |
 
