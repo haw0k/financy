@@ -41,4 +41,4 @@
 - [x] feat: Icon Selector for Categories and Category Types - { 2026-07-03-icon-selector-for-categories.md }
 - [x] feat: Update Application Logo - { 2026-07-03-update-application-logo.md }
 - [x] feat: Add SEO and OpenGraph Tags - { 2026-07-03-add-seo-opengraph-tags.md }
-- [ ] docs: Update Setup Guide Documentation - { 2026-07-20-update-setup-guide.md }
+- [x] docs: Update Setup Guide Documentation - { 2026-07-20-update-setup-guide.md }
