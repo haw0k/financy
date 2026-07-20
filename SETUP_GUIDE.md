@@ -38,13 +38,12 @@ NEXT_GOOGLE_CLIENT_SECRET=
 | `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → Project URL | Yes |
 | `SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Publishable key (`default`) | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Secret Keys → `default` | Yes |
-| `DEV_SUPABASE_REDIRECT_URL` | Local callback route. Use `http://localhost:3000/auth/callback` | Recommended for local dev |
-| `SUPABASE_REDIRECT_URL` | Production callback URL. For local dev you can point it at `http://localhost:3000/auth/callback` | Yes |
-| `NEXT_PUBLIC_SITE_URL` | Public site URL. Required in production; defaults to `http://localhost:3000` locally | Yes in production |
+| `DEV_SUPABASE_REDIRECT_URL` | Local callback route. Use `http://localhost:3000/auth/callback`. This overrides `SUPABASE_REDIRECT_URL` when `NODE_ENV=development` | Recommended for local dev |
+| `SUPABASE_REDIRECT_URL` | Production callback URL. For local dev you can set it to `http://localhost:3000/auth/callback` because `DEV_SUPABASE_REDIRECT_URL` takes precedence | Yes |
+| `NEXT_PUBLIC_SITE_URL` | Public site URL. Required in all environments; use `http://localhost:3000` locally | Yes |
 | `NEXT_GOOGLE_CLIENT_ID` | Google Cloud Console → OAuth credentials | Only for Google OAuth |
 | `NEXT_GOOGLE_CLIENT_SECRET` | Google Cloud Console → OAuth credentials | Only for Google OAuth |
 
-`DEV_SUPABASE_REDIRECT_URL` overrides `SUPABASE_REDIRECT_URL` when `NODE_ENV=development`.
 
 ## Step 3: Initialize the Database
 
@@ -140,7 +139,8 @@ pnpm test:run     # Run Vitest tests (single run)
 2. Import the repository in [Vercel](https://vercel.com).
 3. Add the environment variables from `.env.local` to Vercel project settings.
 4. Set `SUPABASE_REDIRECT_URL` to your production callback URL, for example `https://your-domain.com/auth/callback`.
-5. Deploy.
+5. Leave `DEV_SUPABASE_REDIRECT_URL` unset on Vercel; it is only used for local development.
+6. Deploy.
 
 ## Troubleshooting
 
@@ -160,7 +160,7 @@ Free Supabase projects can be paused after inactivity. After reactivation, the i
 
 ### "Account Status: Check your email to confirm your admin account" persists after confirmation
 
-This usually means the auto-approval trigger did not fire. Run the SQL snippet from [Step 5](#step-5-create-the-first-admin) to manually approve the admin, then sign out and sign in again.
+This usually means the auto-approval trigger did not fire. Follow the manual confirmation and SQL approval steps in [Step 5: Create the First Admin](#step-5-create-the-first-admin), then sign out and sign in again.
 
 ### "Admin access denied" or redirect to `/dashboard`
 
@@ -180,71 +180,10 @@ Clear browser cookies and refresh, or check that the [`ThemeProvider`](component
 
 ## Architecture Overview
 
-### Database Schema
+For the full database schema, tech stack, and project structure, see [`README.md`](README.md). The key points for setup are:
 
-```
-profiles
-├── id (UUID, PK, references auth.users)
-├── email (TEXT)
-├── role (TEXT: sender | receiver | admin)
-├── status (TEXT: pending | approved)
-├── created_at (TIMESTAMPTZ)
-└── updated_at (TIMESTAMPTZ)
-
-category_types
-├── id (UUID, PK)
-├── name (TEXT, unique)
-└── created_at (TIMESTAMPTZ)
-
-categories
-├── id (UUID, PK)
-├── name (TEXT)
-├── type (TEXT: income | expense)
-├── type_id (UUID, FK → category_types)
-├── color (TEXT)
-├── created_at (TIMESTAMPTZ)
-└── updated_at (TIMESTAMPTZ)
-
-currencies
-├── id (UUID, PK)
-├── code (TEXT, unique)
-├── name (TEXT)
-├── symbol (TEXT)
-└── created_at (TIMESTAMPTZ)
-
-transactions
-├── id (UUID, PK)
-├── sender_id (UUID, FK → profiles)
-├── receiver_id (UUID, FK → profiles)
-├── amount (DECIMAL(12,2))
-├── currency_id (UUID, FK → currencies)
-├── exchange_rate (DECIMAL(18,6))
-├── rate_provider (TEXT)
-├── amount_usd (DECIMAL(12,2))
-├── category_id (UUID, FK → categories)
-├── type (TEXT: income | expense)
-├── description (TEXT)
-├── date (DATE)
-├── created_at (TIMESTAMPTZ)
-└── updated_at (TIMESTAMPTZ)
-```
-
-Row Level Security is intentionally disabled. Access control is enforced by Next.js middleware and Server Action guards.
-
-### Tech Stack
-
-- **Frontend**: Next.js 16 + React 19 + TypeScript
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth
-- **UI**: shadcn/ui + Tailwind CSS
-- **Charts**: Recharts
-- **Testing**: Vitest + React Testing Library
-- **Dates**: date-fns
-- **Linting/Formatting**: Biome
-
-### Project Structure
-
-See [`README.md`](README.md#project-structure) for the full structure overview.
+- Access control is enforced by Next.js middleware and Server Action guards, not by Row Level Security (RLS is intentionally disabled).
+- The application uses Server Actions for all database mutations. There is no browser Supabase client.
 
 ## Notes
 

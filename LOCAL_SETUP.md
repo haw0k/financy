@@ -40,7 +40,9 @@ supabase init
 supabase start
 ```
 
-`supabase init` creates a `supabase/` directory with local configuration. `supabase start` pulls Docker images and starts the local services.
+`supabase init` creates a `supabase/` directory with local configuration. You only need to run it once for this repository; skip it if the directory already exists. `supabase start` pulls Docker images and starts the local services.
+
+> **Note:** For local-only development you do **not** need `supabase login` or `supabase link` — those commands are only used when connecting to a cloud Supabase project.
 
 After startup, the terminal prints the local credentials. Look for these values:
 
@@ -206,13 +208,21 @@ Make sure Docker is running. On Windows and macOS, start Docker Desktop. On Linu
 
 ### `supabase start` reports port conflicts
 
-Another service may be using the default Supabase ports. Stop the conflicting service, or run Supabase on different ports:
+Another service may be using the default Supabase ports. Supabase CLI ports are configured in `supabase/config.toml`. Open that file and change the relevant entries, for example:
 
-```bash
-supabase start --port 54331
+```toml
+[api]
+port = 54331
 ```
 
-Update `SUPABASE_URL` in `.env.local` to match the new API port.
+Then restart the stack:
+
+```bash
+supabase stop
+supabase start
+```
+
+Update `SUPABASE_URL` in `.env.local` to match the new API port, for example `http://127.0.0.1:54321`.
 
 ### Database script fails with "relation `auth.users` does not exist"
 
