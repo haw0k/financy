@@ -161,7 +161,8 @@ export async function createTransactionAction(input: TInput): Promise<TAuthResul
 
 ## Documentation
 
-- **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Detailed setup instructions
+- **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** - Detailed cloud Supabase setup instructions
+- **[LOCAL_SETUP.md](./LOCAL_SETUP.md)** - Run the project locally without cloud Supabase
 - **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - Architecture overview
 - **[AGENTS.md](./AGENTS.md)** - Code style, conventions, and rules for AI agents (import order, Hungarian notation, testing patterns)
 - **[React Server Components Guide](./docs/react-server-components-guide.md)** - Practical RSC patterns with auth and SQL database

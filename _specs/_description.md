@@ -41,4 +41,4 @@
 - [ ] feat: Update Application Logo - { 2026-07-03-update-application-logo.md }
 - [x] feat: Add SEO and OpenGraph Tags - { 2026-07-03-add-seo-opengraph-tags.md }
 - [x] docs: Update Setup Guide Documentation - { 2026-07-20-update-setup-guide.md }
-- [ ] docs: Local Supabase Setup Guide - { 2026-07-20-local-supabase-setup-guide.md }
+- [x] docs: Local Supabase Setup Guide - { 2026-07-20-local-supabase-setup-guide.md }

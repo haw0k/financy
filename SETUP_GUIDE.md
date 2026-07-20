@@ -2,6 +2,8 @@
 
 This guide walks you through setting up the Financy application from scratch or recovering it after a Supabase infrastructure change.
 
+If you prefer to run Supabase locally instead of using the cloud, follow [LOCAL_SETUP.md](./LOCAL_SETUP.md).
+
 ## Prerequisites
 
 - A free [Supabase](https://supabase.com) account

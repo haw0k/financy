@@ -28,13 +28,13 @@ Create documentation that explains how to install and run the Financy project lo
 
 ## Acceptance Criteria
 
-- A dedicated local setup guide file exists and is reachable from the project root or README.
-- The guide includes copy-paste-ready commands for each setup step.
-- All required environment variables for local Supabase are documented with example values.
-- The guide clearly distinguishes between the cloud Supabase setup and the local setup.
-- Database initialization steps refer to the existing SQL script and explain how to apply it to the local instance.
-- The admin and user registration flows are described with the local Supabase specifics in mind.
-- A troubleshooting section lists at least three common local setup problems and solutions.
+- [x] A dedicated local setup guide file exists and is reachable from the project root or README.
+- [x] The guide includes copy-paste-ready commands for each setup step.
+- [x] All required environment variables for local Supabase are documented with example values.
+- [x] The guide clearly distinguishes between the cloud Supabase setup and the local setup.
+- [x] Database initialization steps refer to the existing SQL script and explain how to apply it to the local instance.
+- [x] The admin and user registration flows are described with the local Supabase specifics in mind.
+- [x] A troubleshooting section lists at least three common local setup problems and solutions.
 
 ## Open Questions
 
