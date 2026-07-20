@@ -18,7 +18,11 @@ If you prefer to run Supabase locally instead of using the cloud, follow [LOCAL_
 
 ## Step 2: Configure Environment Variables
 
-Create `.env.local` in the project root:
+Create `.env.local` in the project root. You can copy the included example file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
 
 ```bash
 SUPABASE_URL=https://<your-project-id>.supabase.co
@@ -36,10 +40,10 @@ NEXT_GOOGLE_CLIENT_SECRET=
 | Variable | Where to find it | Required? |
 | --- | --- | --- |
 | `SUPABASE_URL` | Supabase Dashboard → Project Settings → API → Project URL | Yes |
-| `SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Publishable key (`default`) | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Secret Keys → `default` | Yes |
+| `SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Anon key / Publishable key (`default`) | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → API Keys → Secret Keys → `default`. Keep this secret — it grants full database access | Yes |
 | `DEV_SUPABASE_REDIRECT_URL` | Local callback route. Use `http://localhost:3000/auth/callback`. This overrides `SUPABASE_REDIRECT_URL` when `NODE_ENV=development` | Recommended for local dev |
-| `SUPABASE_REDIRECT_URL` | Production callback URL. For local dev you can set it to `http://localhost:3000/auth/callback` because `DEV_SUPABASE_REDIRECT_URL` takes precedence | Yes |
+| `SUPABASE_REDIRECT_URL` | Fallback/production callback URL. For local dev you can set it to `http://localhost:3000/auth/callback` because `DEV_SUPABASE_REDIRECT_URL` takes precedence | Yes |
 | `NEXT_PUBLIC_SITE_URL` | Public site URL. Required in all environments; use `http://localhost:3000` locally | Yes |
 | `NEXT_GOOGLE_CLIENT_ID` | Google Cloud Console → OAuth credentials | Only for Google OAuth |
 | `NEXT_GOOGLE_CLIENT_SECRET` | Google Cloud Console → OAuth credentials | Only for Google OAuth |
@@ -76,6 +80,8 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Step 5: Create the First Admin
 
 The first admin must be created before regular users can register.
+
+Make sure email confirmations are enabled in Supabase Dashboard → **Authentication** → **Settings** → **Email Confirmations**. They are enabled by default on new projects.
 
 1. Open [http://localhost:3000/auth/admin](http://localhost:3000/auth/admin).
 2. Fill in the admin email and password, then sign up.
@@ -170,9 +176,11 @@ This usually means the auto-approval trigger did not fire. Follow the manual con
 
 ### Google OAuth not working
 
-- Verify `NEXT_GOOGLE_CLIENT_ID` and `NEXT_GOOGLE_CLIENT_SECRET` are filled in.
-- In Supabase Dashboard → Authentication → Providers → Google, paste the same credentials and enable the provider.
-- Make sure the authorized redirect URI in Google Cloud Console includes your Supabase callback URL.
+1. Verify `NEXT_GOOGLE_CLIENT_ID` and `NEXT_GOOGLE_CLIENT_SECRET` are filled in in `.env.local`.
+2. In Supabase Dashboard → **Authentication** → **Providers** → **Google**, paste the same **Client ID** and **Client Secret**, then enable the provider.
+3. Copy the **Redirect URI** shown in the Supabase Google provider settings.
+4. In [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services** → **Credentials** → your OAuth client → **Authorized redirect URIs**, paste the Supabase Redirect URI and save.
+5. Save the Google provider settings in Supabase.
 
 ### Dark mode not working
 
