@@ -44,7 +44,6 @@ NEXT_GOOGLE_CLIENT_SECRET=
 | `NEXT_GOOGLE_CLIENT_ID` | Google Cloud Console → OAuth credentials | Only for Google OAuth |
 | `NEXT_GOOGLE_CLIENT_SECRET` | Google Cloud Console → OAuth credentials | Only for Google OAuth |
 
-
 ## Step 3: Initialize the Database
 
 The application uses a single SQL script to create all tables and triggers.
@@ -139,8 +138,9 @@ pnpm test:run     # Run Vitest tests (single run)
 2. Import the repository in [Vercel](https://vercel.com).
 3. Add the environment variables from `.env.local` to Vercel project settings.
 4. Set `SUPABASE_REDIRECT_URL` to your production callback URL, for example `https://your-domain.com/auth/callback`.
-5. Leave `DEV_SUPABASE_REDIRECT_URL` unset on Vercel; it is only used for local development.
-6. Deploy.
+5. Update `NEXT_PUBLIC_SITE_URL` from `http://localhost:3000` to your production domain, for example `https://your-domain.com`.
+6. Leave `DEV_SUPABASE_REDIRECT_URL` unset on Vercel; it is only used for local development.
+7. Deploy.
 
 ## Troubleshooting
 

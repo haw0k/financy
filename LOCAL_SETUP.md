@@ -165,7 +165,7 @@ supabase stop
 
 ### Reset the local database
 
-This destroys all local data and reapplies initialization migrations:
+This destroys all local data and resets the database to a fresh state:
 
 ```bash
 supabase db reset
@@ -222,7 +222,7 @@ supabase stop
 supabase start
 ```
 
-Update `SUPABASE_URL` in `.env.local` to match the new API port, for example `http://127.0.0.1:54321`.
+Update `SUPABASE_URL` in `.env.local` to match the new API port, for example `http://127.0.0.1:54331`.
 
 ### Database script fails with "relation `auth.users` does not exist"
 
