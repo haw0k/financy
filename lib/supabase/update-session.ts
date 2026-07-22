@@ -71,10 +71,8 @@ export async function updateSession(request: NextRequest) {
   // with the Supabase client, your users may be randomly logged out.
   let user: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] | null = null;
   try {
-    const {
-      data: { user: resolvedUser },
-    } = await supabase.auth.getUser();
-    user = resolvedUser;
+    const userResponse = await supabase.auth.getUser();
+    user = userResponse.data.user;
   } catch {
     user = null;
   }

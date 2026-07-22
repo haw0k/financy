@@ -5,11 +5,17 @@ import { EProfileStatus, ERole } from '@/enums';
 
 type TAllowedCallbackRedirect =
   | (typeof routes)['dashboard']
+  | (typeof routes)['transactions']
+  | (typeof routes)['categories']
+  | (typeof routes)['settings']
   | (typeof routes)['admin']
   | (typeof routes)['pending'];
 
 const ALLOWED_CALLBACK_REDIRECTS: TAllowedCallbackRedirect[] = [
   routes.dashboard,
+  routes.transactions,
+  routes.categories,
+  routes.settings,
   routes.admin,
   routes.pending,
 ];
