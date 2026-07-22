@@ -260,15 +260,21 @@ describe('AdminPage', () => {
     });
   });
 
-  it('should redirect non-admin to dashboard', async () => {
+  it('should load users for admin role only after context is loaded', async () => {
     useRoleContextReturn = {
       ...useRoleContextReturn,
-      role: ERole.Sender,
+      role: ERole.Admin,
       status: EProfileStatus.Approved,
     };
+    mockGetPendingUsersAction.mockResolvedValueOnce({
+      isSuccess: true,
+      data: [{ id: '1', email: 'a@test.com', role: 'sender', created_at: '2026-01-01T00:00:00Z' }],
+    });
     const { AdminPage } = await import('@/components/pages/admin');
     render(<AdminPage />);
-    expect(mockRouter.replace).toHaveBeenCalledWith('/dashboard');
+    await waitFor(() => {
+      expect(screen.getByText('a@test.com')).toBeDefined();
+    });
   });
 
   it('should show empty state on fetch error', async () => {

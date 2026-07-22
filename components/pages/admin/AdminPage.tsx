@@ -25,8 +25,7 @@ import {
 } from '@/lib/shadcn';
 import { showError, showSuccess } from '@/components/ui/ToastNotification';
 import { withTimeout } from '@/lib/with-timeout';
-import { routes } from '@/config';
-import { EProfileStatus, ERole } from '@/enums';
+import { ERole } from '@/enums';
 import { approveUserAction, getPendingUsersAction, rejectUserAction } from '@/app/actions/admin';
 
 interface IPendingUser {
@@ -38,22 +37,14 @@ interface IPendingUser {
 
 export function AdminPage() {
   const router = useRouter();
-  const { role, status, isLoaded, isError } = useRoleContext();
+  const { isLoaded } = useRoleContext();
   const [users, setUsers] = useState<IPendingUser[]>([]);
-  const [isLoading, setIsLoading] = useState(
-    !isLoaded || role !== ERole.Admin || status !== EProfileStatus.Approved
-  );
+  const [isLoading, setIsLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (isLoaded && isError) {
-      router.replace(routes.dashboard);
-      return;
-    }
-
-    if (isLoaded && (role !== ERole.Admin || status !== EProfileStatus.Approved)) {
-      router.replace(routes.dashboard);
+    if (!isLoaded) {
       return;
     }
 
@@ -73,14 +64,12 @@ export function AdminPage() {
       }
     };
 
-    if (isLoaded && role === ERole.Admin && status === EProfileStatus.Approved) {
-      loadUsers();
-    }
+    loadUsers();
 
     return () => {
       isCancelled = true;
     };
-  }, [isLoaded, isError, role, status, router]);
+  }, [isLoaded]);
 
   const handleApprove = (userId: string) => {
     setProcessingIds((prev) => new Set(prev).add(userId));

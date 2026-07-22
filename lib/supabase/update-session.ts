@@ -69,9 +69,15 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getUser() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] | null = null;
+  try {
+    const {
+      data: { user: resolvedUser },
+    } = await supabase.auth.getUser();
+    user = resolvedUser;
+  } catch {
+    user = null;
+  }
 
   const isAdminPath = request.nextUrl.pathname.startsWith(routes.admin);
   const isDashboardPath = request.nextUrl.pathname.startsWith(routes.dashboard);

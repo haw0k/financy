@@ -19,11 +19,14 @@ const mockFrom = vi.fn();
 const mockUpdateUserById = vi.fn();
 const mockDeleteUser = vi.fn();
 
+const mockRpc = vi.fn();
+
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () =>
     Promise.resolve({
       auth: { getUser: mockGetUser },
       from: mockFrom,
+      rpc: mockRpc,
     }),
 }));
 
@@ -73,6 +76,7 @@ beforeEach(() => {
   );
   mockUpdateUserById.mockResolvedValue({ error: null });
   mockDeleteUser.mockResolvedValue({ error: null });
+  mockRpc.mockResolvedValue({ data: null, error: null });
 });
 
 /* ── Approve user ────────────────────────────────────────────── */
@@ -184,8 +188,8 @@ describe('approveUserAction', () => {
     const result = await approveUserAction({ userId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
 
     expect(result.isSuccess).toBe(true);
-    expect(mockUpdateUserById).toHaveBeenCalledWith('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', {
-      email_confirm: true,
+    expect(mockRpc).toHaveBeenCalledWith('approve_pending_user', {
+      target_user_id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     });
   });
 });

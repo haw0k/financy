@@ -230,6 +230,50 @@ create trigger on_auth_user_email_confirmed
   for each row
   execute function public.handle_email_confirmation();
 
+-- Atomically approve a pending user: confirm their email and mark the profile as approved.
+-- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
+create or replace function public.approve_pending_user(target_user_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_role text;
+  v_status text;
+begin
+  -- Lock the target profile row and verify it is a pending, non-admin user.
+  select role, status
+  into v_role, v_status
+  from public.profiles
+  where id = target_user_id
+  for update;
+
+  if not found then
+    raise exception 'User not found' using errcode = 'P0002';
+  end if;
+
+  if v_role = 'admin' then
+    raise exception 'Cannot manage another admin account' using errcode = 'P0001';
+  end if;
+
+  if v_status <> 'pending' then
+    raise exception 'User is not pending approval' using errcode = 'P0001';
+  end if;
+
+  -- Confirm the email first inside the same transaction.
+  update auth.users
+  set email_confirmed_at = now()
+  where id = target_user_id and email_confirmed_at is null;
+
+  -- Mark the profile as approved. The handle_profile_update trigger will sync
+  -- the new status into JWT app_metadata.
+  update public.profiles
+  set status = 'approved', updated_at = now()
+  where id = target_user_id;
+end;
+$$;
+
 -- Create function to get user statistics
 create or replace function public.get_user_stats()
 returns table (

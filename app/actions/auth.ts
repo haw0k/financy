@@ -219,16 +219,13 @@ export async function adminSignUpAction(input: TLoginInput): Promise<TAuthResult
  *
  * `signOut()` returns an error object on failure rather than throwing. We still
  * redirect on error because the session cookie is cleared client-side and the
- * user should land on the login page, but we log the failure for observability.
+ * user should land on the login page. Auth details are intentionally not logged
+ * to the console in production.
  * `redirect()` throws `NEXT_REDIRECT`, so this function never returns.
  */
 export async function signOutAction(): Promise<never> {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    // Log for observability but continue to redirect: the cookie will be
-    // cleared by the browser/middleware on the next request.
-    console.error('Sign out failed:', error.message);
-  }
+  await supabase.auth.signOut();
+
   redirect(routes.login);
 }

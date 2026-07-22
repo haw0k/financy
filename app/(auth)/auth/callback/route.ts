@@ -3,10 +3,32 @@ import { createClient } from '@/lib/supabase/server';
 import { routes } from '@/config';
 import { EProfileStatus, ERole } from '@/enums';
 
+type TAllowedCallbackRedirect =
+  | (typeof routes)['dashboard']
+  | (typeof routes)['admin']
+  | (typeof routes)['pending'];
+
+const ALLOWED_CALLBACK_REDIRECTS: TAllowedCallbackRedirect[] = [
+  routes.dashboard,
+  routes.admin,
+  routes.pending,
+];
+
+function safeCallbackRedirect(next: string | null): TAllowedCallbackRedirect {
+  if (!next) {
+    return routes.dashboard;
+  }
+
+  const normalized = next.startsWith('/') ? next : `/${next}`;
+  return ALLOWED_CALLBACK_REDIRECTS.includes(normalized as TAllowedCallbackRedirect)
+    ? (normalized as TAllowedCallbackRedirect)
+    : routes.dashboard;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? routes.dashboard;
+  const next = safeCallbackRedirect(searchParams.get('next'));
 
   if (code) {
     const supabase = await createClient();
@@ -27,7 +49,7 @@ export async function GET(request: NextRequest) {
       }
       return NextResponse.redirect(`${origin}${next}`);
     }
-    console.error('Auth callback error:', error.message);
+    // Intentionally not logging auth errors to avoid leaking details in production.
   }
 
   return NextResponse.redirect(`${origin}${routes.authError}`);

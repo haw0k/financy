@@ -87,28 +87,14 @@ export async function approveUserAction({
     return { isSuccess: false, error: targetResult.error };
   }
 
-  const adminClient = createAdminClient();
-
-  // Confirm the email first. If this fails, the user remains pending and can be
-  // approved again later; we never leave them "approved but unable to log in".
-  const { error: confirmError } = await adminClient.auth.admin.updateUserById(userId, {
-    email_confirm: true,
+  // Confirm the email and update the profile atomically via an RPC so we never
+  // leave a user "email confirmed but still pending" or "approved but unable to log in".
+  const { error: approveError } = await adminResult.supabase.rpc('approve_pending_user', {
+    target_user_id: userId,
   });
 
-  if (confirmError) {
-    return { isSuccess: false, error: mapSupabaseError(confirmError) };
-  }
-
-  // Now that the email is confirmed, mark the profile as approved.
-  // The DB trigger handle_profile_update will sync the new status into JWT
-  // app_metadata, so the user's next auth exchange sees the approved state.
-  const { error: statusError } = await adminResult.supabase
-    .from('profiles')
-    .update({ status: EProfileStatus.Approved })
-    .eq('id', userId);
-
-  if (statusError) {
-    return { isSuccess: false, error: ADMIN_MSGS.APPROVE_STATUS_FAILED };
+  if (approveError) {
+    return { isSuccess: false, error: mapSupabaseError(approveError) };
   }
 
   revalidateTag(CACHE_TAGS.receivers, mutationRevalidateProfile);

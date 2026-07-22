@@ -1,29 +1,22 @@
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
 import { ThemeSelect } from '@/components/ui/ThemeSelect';
-import { createClient } from '@/lib/supabase/server';
+import { requireApprovedUser } from '@/lib/require-auth';
 import { routes, siteConfig } from '@/config';
-import { EProfileStatus, ERole } from '@/enums';
 
 export async function SettingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const authResult = await requireApprovedUser();
+  if ('error' in authResult) {
     redirect(routes.login);
   }
 
-  const { data: profile } = await supabase
+  const userResponse = await authResult.supabase.auth.getUser();
+  const user = userResponse.data.user;
+  const { data: profile } = await authResult.supabase
     .from('profiles')
-    .select('role, status')
-    .eq('id', user.id)
+    .select('role')
+    .eq('id', authResult.userId)
     .maybeSingle();
-
-  if (!profile || profile.status !== EProfileStatus.Approved || profile.role === ERole.Admin) {
-    redirect(profile?.role === ERole.Admin ? routes.admin : routes.pending);
-  }
 
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">
@@ -47,7 +40,7 @@ export async function SettingsPage() {
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Account Type</label>
-              <p className="text-sm font-medium capitalize">{profile.role}</p>
+              <p className="text-sm font-medium capitalize">{profile?.role}</p>
             </div>
             <div className="grid gap-2">
               <label className="text-sm font-medium text-muted-foreground">Member Since</label>
