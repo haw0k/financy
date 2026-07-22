@@ -1,20 +1,34 @@
 'use client';
 
-import { type FC } from 'react';
+import { type FC, useMemo } from 'react';
 import { useMobileNav } from '@/components/providers';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTitle } from '@/lib/shadcn';
 import { LogoLink, NavItemLink } from '@/components/ui';
-import { type INavItem, navItems } from '@/config';
+import { type INavItem, navItems, routes } from '@/config';
 
 interface IMobileNav {
   items?: INavItem[];
+}
+
+function isNavItemActive(pathname: string, itemHref: string): boolean {
+  // Dashboard overview is a prefix of every dashboard route; only match it exactly.
+  if (itemHref === routes.dashboard) {
+    return pathname === routes.dashboard;
+  }
+
+  return pathname.startsWith(itemHref);
 }
 
 export const MobileNav: FC<IMobileNav> = ({ items }) => {
   const { isOpen, setIsOpen } = useMobileNav();
   const pathname = usePathname();
   const resolvedItems = items ?? navItems;
+
+  const activeMap = useMemo(
+    () => new Map(resolvedItems.map((item) => [item.href, isNavItemActive(pathname, item.href)])),
+    [pathname, resolvedItems]
+  );
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -32,7 +46,7 @@ export const MobileNav: FC<IMobileNav> = ({ items }) => {
             <NavItemLink
               key={item.href}
               item={item}
-              isActive={pathname === item.href}
+              isActive={activeMap.get(item.href) ?? false}
               onClick={() => {
                 setIsOpen(false);
               }}

@@ -37,7 +37,7 @@ alter table public.category_types disable row level security;
 -- Create categories table (global reference, not user-specific)
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
-  name text not null,
+  name text not null unique,
   type text not null check (type in ('income', 'expense')),
   type_id uuid references public.category_types(id) on delete set null,
   color text default '#3b82f6',
@@ -85,6 +85,45 @@ create table if not exists public.transactions (
 );
 
 alter table public.transactions disable row level security;
+
+-- Create a single function to auto-update updated_at on any table.
+-- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+-- Attach updated_at triggers to tables that have the column.
+drop trigger if exists set_profiles_updated_at on public.profiles;
+create trigger set_profiles_updated_at
+  before update on public.profiles
+  for each row
+  execute function public.set_updated_at();
+
+drop trigger if exists set_categories_updated_at on public.categories;
+create trigger set_categories_updated_at
+  before update on public.categories
+  for each row
+  execute function public.set_updated_at();
+
+drop trigger if exists set_transactions_updated_at on public.transactions;
+create trigger set_transactions_updated_at
+  before update on public.transactions
+  for each row
+  execute function public.set_updated_at();
+
+-- Indexes on frequently filtered/joined foreign keys in transactions.
+create index if not exists idx_transactions_sender_id on public.transactions (sender_id);
+create index if not exists idx_transactions_receiver_id on public.transactions (receiver_id);
+create index if not exists idx_transactions_category_id on public.transactions (category_id);
+create index if not exists idx_transactions_currency_id on public.transactions (currency_id);
 
 -- Create trigger for auto-creating profile on signup
 -- SECURITY: Uses 'security definer' with explicit search_path to prevent privilege escalation
