@@ -1,3 +1,4 @@
+import { ErrorState } from '@/components/ui/ErrorState';
 import { getCurrenciesAction } from '@/app/actions/currencies';
 import { getTransactionsDataAction } from '@/app/actions/transactions';
 import { TransactionsTableClient } from './TransactionsTableClient';
@@ -9,10 +10,18 @@ export async function TransactionsTableServer() {
   ]);
 
   if (!transactionsResult.isSuccess) {
-    throw new Error(transactionsResult.error);
+    return (
+      <ErrorState
+        title="Failed to load transactions"
+        description={transactionsResult.error}
+        retry
+      />
+    );
   }
   if (!currenciesResult.isSuccess) {
-    throw new Error(currenciesResult.error);
+    return (
+      <ErrorState title="Failed to load currencies" description={currenciesResult.error} retry />
+    );
   }
 
   const { transactions, categories, categoryTypes } = transactionsResult.data;

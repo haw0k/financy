@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/lib/shadcn';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { ThemeSelect } from '@/components/ui/ThemeSelect';
+import { mapSupabaseError } from '@/lib/db-errors';
 import { requireApprovedUser } from '@/lib/require-auth';
 import { routes, siteConfig } from '@/config';
 
@@ -11,12 +13,36 @@ export async function SettingsPage() {
   }
 
   const userResponse = await authResult.supabase.auth.getUser();
+  if (userResponse.error) {
+    return (
+      <div className="p-6 md:p-8">
+        <ErrorState
+          title="Failed to load account"
+          description={mapSupabaseError(userResponse.error)}
+          retry
+        />
+      </div>
+    );
+  }
+
   const user = userResponse.data.user;
-  const { data: profile } = await authResult.supabase
+  const { data: profile, error: profileError } = await authResult.supabase
     .from('profiles')
     .select('role')
     .eq('id', authResult.userId)
     .maybeSingle();
+
+  if (profileError) {
+    return (
+      <div className="p-6 md:p-8">
+        <ErrorState
+          title="Failed to load profile"
+          description={mapSupabaseError(profileError)}
+          retry
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6 md:p-8">

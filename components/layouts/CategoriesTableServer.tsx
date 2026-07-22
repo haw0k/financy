@@ -1,3 +1,4 @@
+import { ErrorState } from '@/components/ui/ErrorState';
 import { getCategoriesDataAction } from '@/app/actions/categories';
 import { CategoriesTableClient } from './CategoriesTableClient';
 
@@ -5,7 +6,7 @@ export async function CategoriesTableServer() {
   const result = await getCategoriesDataAction();
 
   if (!result.isSuccess) {
-    throw new Error(result.error);
+    return <ErrorState title="Failed to load categories" description={result.error} retry />;
   }
 
   const { categories, categoryTypes } = result.data;

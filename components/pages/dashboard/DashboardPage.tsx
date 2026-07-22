@@ -1,11 +1,16 @@
 import { DashboardOverview } from '@/components/layouts';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { getDashboardDataAction } from '@/app/actions/dashboard';
 
 export async function DashboardPage() {
   const result = await getDashboardDataAction();
 
   if (!result.isSuccess) {
-    throw new Error(result.error);
+    return (
+      <div className="p-6 md:p-8">
+        <ErrorState title="Failed to load dashboard" description={result.error} retry />
+      </div>
+    );
   }
 
   return (
