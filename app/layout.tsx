@@ -17,7 +17,6 @@ const roboto = Roboto({
   variable: '--font-roboto',
 });
 const geistMono = Geist_Mono({ subsets: ['latin', 'cyrillic'], variable: '--font-mono' });
-const robotoHeading = Roboto({ subsets: ['latin', 'cyrillic'], variable: '--font-heading' });
 
 type TProfileResult =
   | { role: ERole | null; status: EProfileStatus | null; isError: false }
@@ -82,7 +81,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${roboto.className} ${roboto.variable} ${geistMono.variable} ${robotoHeading.variable} bg-background font-sans antialiased`}
+        className={`${roboto.className} ${roboto.variable} ${geistMono.variable} bg-background font-sans antialiased`}
       >
         <Script id="theme-init" strategy="beforeInteractive">
           {`

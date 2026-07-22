@@ -211,7 +211,7 @@
 
 @theme inline {
   --font-sans: var(--font-roboto);
-  --font-heading: var(--font-heading);
+  --font-heading: var(--font-roboto);
   --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

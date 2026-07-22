@@ -38,7 +38,7 @@
 - [x] feat: Custom Select Component - { 2026-06-29-custom-select-component.md }
 - [x] refactor: Unify Categories Form Appearance with Transactions - { 2026-07-03-unify-categories-form-appearance.md }
 - [x] feat: Icon Selector for Categories and Category Types - { 2026-07-03-icon-selector-for-categories.md }
-- [ ] feat: Update Application Logo - { 2026-07-03-update-application-logo.md }
+- [x] feat: Update Application Logo - { 2026-07-03-update-application-logo.md }
 - [x] feat: Add SEO and OpenGraph Tags - { 2026-07-03-add-seo-opengraph-tags.md }
 - [x] docs: Update Setup Guide Documentation - { 2026-07-20-update-setup-guide.md }
 - [x] docs: Local Supabase Setup Guide - { 2026-07-20-local-supabase-setup-guide.md }
